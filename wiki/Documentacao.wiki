@@ -1,0 +1,20 @@
+#summary Documentação das funcionalidades implementadas no programa.
+#labels Phase-Implementation,Phase-Design
+
+= Introdução =
+
+O objetivo deste projeto é disponibilizar implementações que possam ser usadas para comparar o desempenho das instruções de multimídia nas arquiteturas Intel(r).
+
+O código original do programa pode ser baixado em [http://msdn.microsoft.com/en-us/library/0aws1s9k(v=vs.80).aspx]
+
+= Implementações =
+
+== Fade In/Out ==
+
+Esta funcionalidade faz a transição de uma imagem a outra e está implementada apenas com instruções de ponto flutuante. O valor de `alpha` varia entre 0.0 e 1.0 gradualmente fazendo com que a imagem de origem `cO` se transforme na imagem de destino `cD`.
+
+{{{
+            r = (BYTE)((GetRValue(cO)*alpha+GetRValue(cD)*(1.0-alpha)));
+            g = (BYTE)((GetGValue(cO)*alpha+GetGValue(cD)*(1.0-alpha)));
+            b = (BYTE)((GetBValue(cO)*alpha+GetBValue(cD)*(1.0-alpha)));
+}}}
