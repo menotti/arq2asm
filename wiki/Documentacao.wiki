@@ -9,12 +9,74 @@ O código original do programa pode ser baixado em [http://msdn.microsoft.com/en
 
 = Implementações =
 
-== Fade In/Out ==
+== Blur/Smooth (Borrar) ==
 
-Esta funcionalidade faz a transição de uma imagem a outra e está implementada apenas com instruções de ponto flutuante. O valor de `alpha` varia entre 0.0 e 1.0 gradualmente fazendo com que a imagem de origem `cO` se transforme na imagem de destino `cD`.
+Este efeito é obtido por meio da média do pixel com seus vizinhos, porém o pixel central tem peso maior.
+
+=== _Naive_ ===
+
+Nesta implementação o valor de cada pixel é multiplicado por 4 (`GetRValue(cCur) << 2`), somado aos 4 vizinhos e dividido por 8.
+
+{{{
+void CSurface::BlurBits()
+{
+    COLORREF cLeft = 0, cCur = PointColor(0,0), cRight, cUp, cDown;
+    BYTE r, g, b;
+    for (int i = 0; i < m_wndHeight; i++) {
+        cLeft = 0;
+        for (int j = 0; j < m_wndWidth; j++) {
+            cRight = PointColor(j+1, i);
+            cUp = PointColor(j, i-1);
+            cDown = PointColor(j, i+1);
+            r = (BYTE)(((int)(GetRValue(cCur) << 2) + GetRValue(cLeft) + GetRValue(cRight) + GetRValue(cUp) + GetRValue(cDown)) >> 3);
+            g = (BYTE)(((int)(GetGValue(cCur) << 2) + GetGValue(cLeft) + GetGValue(cRight) + GetGValue(cUp) + GetGValue(cDown)) >> 3);
+            b = (BYTE)(((int)(GetBValue(cCur) << 2) + GetBValue(cLeft) + GetBValue(cRight) + GetBValue(cUp) + GetBValue(cDown)) >> 3);
+            PointColor(j, i, RGB(b,g,r)); // RGBs are physically inverted
+            cLeft = cCur;
+            cCur = cRight;
+        }
+    }
+}
+}}}
+
+=== MMX ===
+
+TODO: descrever aqui
+
+=== SSE(n) ===
+
+TODO: descrever aqui
+
+== Fade In/Out (Transição) ==
+
+Esta funcionalidade faz a transição de uma imagem a outra e está implementada apenas com instruções de ponto flutuante (_Naive_).
+
+=== _Naive_ ===
+
+Nesta implementação o valor de `alpha` varia entre 0.0 e 1.0 gradualmente fazendo com que a imagem de origem `cO` se transforme na imagem de destino `cD`.
 
 {{{
             r = (BYTE)((GetRValue(cO)*alpha+GetRValue(cD)*(1.0-alpha)));
             g = (BYTE)((GetGValue(cO)*alpha+GetGValue(cD)*(1.0-alpha)));
             b = (BYTE)((GetBValue(cO)*alpha+GetBValue(cD)*(1.0-alpha)));
 }}}
+
+=== MMX ===
+
+A implementação pode usar _inline assembly_ ou declarar objetos do tipo `CMMXUnsigned16Saturated` ou outros para invocar métodos como `UnpackBytesLo`, `PackBytes` e `Clear`.
+
+TODO: implementar e descrever aqui
+
+=== SSE(n) ===
+
+A implementação pode usar _inline assembly_ ou declarar objetos do tipo `CSSE2Unsigned16Saturated` ou outros para invocar métodos como `UnpackBytesLo`, `PackBytes` e `Clear`.
+
+TODO: implementar e descrever aqui
+
+== Grayscale (Tons de cinza) ==
+
+TODO: descrever o algoritmo e suas implementações
+
+== Sobel (Detecção de bordas) ==
+
+TODO: descrever o algoritmo e suas implementações
