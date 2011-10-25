@@ -11,7 +11,9 @@ O código original do programa pode ser baixado em [http://msdn.microsoft.com/en
 
 = Versões 16, 24 e 32 bits =
 
-#descrever as diferenças e em quais implementações se aplicam
+<wiki:comment>
+Descrever as diferenças e em quais implementações se aplicam
+</wiki:comment>
 
 ----
 
