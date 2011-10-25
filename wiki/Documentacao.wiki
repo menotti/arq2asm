@@ -12,12 +12,18 @@ O código original do programa pode ser baixado em [http://msdn.microsoft.com/en
 = Versões 16, 24 e 32 bits =
 
 <wiki:comment>
-Descrever as diferenças e em quais implementações se aplicam
+Grupo 1
+Descrever as diferenças de desempenho e em quais implementações se aplicam. (Normal, MMX e SSE)
 </wiki:comment>
 
 ----
 
 = Implementações =
+
+<wiki:comment>
+Grupo 2
+Descrever Blur, Blit e Swarm nas três versões (Normal, MMX e SSE).
+</wiki:comment>
 
 == Blur/Smooth (Borrar) ==
 
@@ -87,6 +93,11 @@ TODO: descrever aqui
 
 == Fade In/Out (Transição) ==
 
+<wiki:comment>
+Grupo 3
+Implementar e descrever as nas versões Normal, MMX e SSE.
+</wiki:comment>
+
 Esta funcionalidade faz a transição de uma imagem a outra e está implementada apenas com instruções de ponto flutuante (_Naive_).
 
 === _Naive_ ===
@@ -113,6 +124,11 @@ TODO: implementar e descrever aqui
 
 == Grayscale (Tons de cinza) ==
 
+<wiki:comment>
+Grupo 4
+Implementar e descrever as nas versões Normal, MMX e SSE.
+</wiki:comment>
+
 === _Naive_ ===
 
 TODO: descrever aqui
@@ -129,6 +145,11 @@ TODO: descrever o algoritmo e suas implementações
 
 == Sobel (Detecção de bordas) ==
 
+<wiki:comment>
+Grupo 5
+Implementar e descrever as nas versões Normal, MMX e SSE.
+</wiki:comment>
+
 TODO: descrever o algoritmo e suas implementações
 
 === _Naive_ ===
@@ -144,6 +165,11 @@ TODO: descrever aqui
 TODO: descrever aqui
 
 == Mandelbrot ==
+
+<wiki:comment>
+Grupo 6
+Implementar e descrever as nas versões Normal, MMX e SSE.
+</wiki:comment>
 
 ----
 
