@@ -47,6 +47,34 @@ TODO: descrever aqui
 
 TODO: descrever aqui
 
+== Blit ==
+
+=== _Naive_ ===
+
+TODO: descrever aqui
+
+=== MMX ===
+
+TODO: descrever aqui
+
+=== SSE(n) ===
+
+TODO: descrever aqui
+
+== Swarm ==
+
+=== _Naive_ ===
+
+TODO: descrever aqui
+
+=== MMX ===
+
+TODO: descrever aqui
+
+=== SSE(n) ===
+
+TODO: descrever aqui
+
 == Fade In/Out (Transição) ==
 
 Esta funcionalidade faz a transição de uma imagem a outra e está implementada apenas com instruções de ponto flutuante (_Naive_).
@@ -75,8 +103,36 @@ TODO: implementar e descrever aqui
 
 == Grayscale (Tons de cinza) ==
 
+=== _Naive_ ===
+
+TODO: descrever aqui
+
+=== MMX ===
+
+TODO: descrever aqui
+
+=== SSE(n) ===
+
+TODO: descrever aqui
+
 TODO: descrever o algoritmo e suas implementações
 
 == Sobel (Detecção de bordas) ==
 
 TODO: descrever o algoritmo e suas implementações
+
+=== _Naive_ ===
+
+TODO: descrever aqui
+
+=== MMX ===
+
+TODO: descrever aqui
+
+=== SSE(n) ===
+
+TODO: descrever aqui
+
+= Capture =
+
+= GPU (OpenCL) =
