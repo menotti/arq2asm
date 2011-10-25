@@ -7,6 +7,8 @@ O objetivo deste projeto é disponibilizar implementações que possam ser usada
 
 O código original do programa pode ser baixado em [http://msdn.microsoft.com/en-us/library/0aws1s9k(v=vs.80).aspx]
 
+----
+
 = Implementações =
 
 == Blur/Smooth (Borrar) ==
@@ -133,6 +135,12 @@ TODO: descrever aqui
 
 TODO: descrever aqui
 
+== Mandelbrot ==
+
+----
+
 = Capture =
+
+----
 
 = GPU (OpenCL) =
