@@ -16,6 +16,26 @@ Grupo 1
 Descrever as diferenças de desempenho e em quais implementações se aplicam. (Normal, MMX e SSE)
 </wiki:comment>
 
+A análise de desempenho entre as versões de 16, 24 e 32 bits é feita a partir dos códigos-fonte das implementações: Naive, MMX e SSE2.
+
+Primeiramente é importante conhecer a parte teórica referente a cada conjunto de instruções. 
+
+Naive
+
+Trata-se da implementação básica, pois não utiliza um conjunto de instruções específicos para otimização.
+
+MMX
+
+Conjunto de instruções criado pela Intel para aplicações multimídia com a finalidade de aumentar performance. Ele é voltado para a melhora na execução de operações em grandes vetores de dados.
+Implementa o modelo de execução SIMD (Single Instruction Multiple Data) pois assim quando se trabalha com arquivos multimídia são utilizados grandes vetores de dados de modo a agilizar a leitura e processamento devido aos registradores de 64 bits.
+
+SSE2
+
+Trata-se do sucessor do MMX e permite aumentar performance em operações de ponto flutuante. Extende as operações do MMX para registradores XMM (64 bits) o que permite ao programador evitar os registradores MM, que não possuem suporte específico para operações de ponto flutuante, fornecendo maior precisão.
+
+<a continuar>
+
+
 ----
 
 = Implementações =
