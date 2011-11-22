@@ -230,7 +230,7 @@ Implementar e descrever as nas versões Normal, MMX e SSE.
 
 = GPU (OpenCL) =
 
-<viki:comment>
+<wiki:comment>
 Grupo 7
 Implementar e descrever a função InvertImage nas versões Normal, MMX e SSE
 </wiki:comment>
