@@ -118,7 +118,7 @@ void CChildView::OnFileOpen()
 	}
 
 	m_nFilterLoad = dlg.m_ofn.nFilterIndex;
-	hResult = image.Load(dlg.GetFolderPath()+"\\"+dlg.GetFileName());
+	hResult = image.Load(dlg.GetPathName());
 	ASSERT(SUCCEEDED(hResult));
 	if (SUCCEEDED(hResult)) {
 		// menotti
@@ -132,7 +132,7 @@ void CChildView::OnFileOpen()
 		}
 		
 		m_nFilterLoad = dlg2.m_ofn.nFilterIndex;
-		hResult = image2.Load(dlg2.GetFolderPath()+"\\"+dlg2.GetFileName());
+		hResult = image2.Load(dlg2.GetPathName());
 
 		m_pSurface->Import(image, image2);
 		// Stop the weird effects
