@@ -37,7 +37,14 @@ Trata-se do sucessor do MMX e permite aumentar performance em operações de pon
 
 A tabela a seguir mostra os resultados de testes feitos usando o código fornecido no repositório para os três conjuntos de instruções citados.
 
-<img>http://img684.imageshack.us/img684/620/pupo.png</img>
+||   || * Naive * ||  *MMX* || *SSE2* ||
+|| 16 bit || 87fps || 42fps || 66fps ||
+|| 24 bit || 84fps || 77fps || 105fps ||
+|| 32 bit || 89fps || 70fps || 88fps ||
+
+Obs1: Valores da tabela em frames per second (fps) e testados em resolução 320x240.
+
+Obs2: Valores possuem certa variância devido ao fato do computador estar executando outras tarefas.
 
 <a continuar>
 
