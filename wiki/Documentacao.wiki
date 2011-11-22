@@ -155,9 +155,30 @@ Grupo 4
 Implementar e descrever as nas versões Normal, MMX e SSE.
 </wiki:comment>
 
+Este filtro transforma a imagem atual em uma imagem com tons de cinza.
+
 === _Naive_ ===
 
-TODO: descrever aqui
+Para esta implementação os valores R, G, B são atualizados com uma média simples entre estes valores.
+
+{{{
+void CSurface::GrayScale()
+{
+	COLORREF cCur;
+	BYTE r, g, b;
+
+	for (int i = 0; i < m_wndHeight; i++) {
+		for (int j = 0; j < m_wndWidth; j++) {
+			cCur = PointColor(j,i);
+			r = (BYTE)((GetRValue(cCur)+GetGValue(cCur)+GetBValue(cCur))/3);
+			g = (BYTE)((GetRValue(cCur)+GetGValue(cCur)+GetBValue(cCur))/3);
+			b = (BYTE)((GetRValue(cCur)+GetGValue(cCur)+GetBValue(cCur))/3);			
+			PointColor(j,i,RGB(b,g,r));
+		}
+	}
+}
+}}}
+
 
 === MMX ===
 
