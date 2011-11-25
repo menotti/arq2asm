@@ -39,6 +39,11 @@ O gráfico a seguir mostra os resultados de testes feitos usando o código forne
 
 http://chart.apis.google.com/chart?chxl=1:|16+bits|24+bits|32+bits&chxr=0,-3.333,100|1,-3.333,100&chxs=1,676767,11.5,0,lt,676767&chxt=y,x&chbh=a,5,15&chs=600x300&cht=bvg&chco=FF0000,00FF00,0000FF&chd=s:Umk,mRi,VnW&chdl=Na%C3%AFve|MMX|SSE2&chtt=Gr%C3%A1fico+de+Desempenho+(FPS)&fake=name.png
 
+|| *Versão* || *Naïve* || *MMX* || *SSE2* ||
+|| *16 bits* || 87 || 42 || 66 ||
+|| *24 bits* || 84 || 77 || 105 ||
+|| *32 bits* || 89 || 70 || 88 ||
+
 Obs1: Valores do eixo y em frames per second (fps) e testados em resolução 320x240.
 
 Obs2: Valores possuem certa variância devido ao fato do computador estar executando outras tarefas.
