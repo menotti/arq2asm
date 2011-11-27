@@ -36,8 +36,7 @@ Trata-se do sucessor do MMX e permite aumentar performance em operações de pon
 === Estudando o desempenho ===
 
 O gráfico a seguir mostra os resultados de testes feitos usando o código fornecido no repositório para os três conjuntos de instruções citados.
-
-<img src="http://chart.apis.google.com/chart?chxl=1:|16+bits|24+bits|32+bits&chxr=0,0,105&chxs=0,676767,11.5,0,lt,676767&chxt=y,x&chbh=14,5,10&chs=300x225&cht=bvg&chco=FF0000,00FF00,0000FF&chds=0,100,0,100,0,105&chd=t:87,84,89|42,77,70|66,105,88&chdl=Naive|MMX|SSE2&chtt=Gr%C3%A1fico+de+Desempenho+(FPS)" width="300" height="225" alt="Gráfico de Desempenho (FPS)" />
+http://chart.apis.google.com/chart?chxl=1:|16+bits|24+bits|32+bits&chxr=0,0,105&chxs=0,676767,11.5,0,lt,676767&chxt=y,x&chbh=14,5,10&chs=300x225&cht=bvg&chco=FF0000,00FF00,0000FF&chds=0,100,0,100,0,105&chd=t:87,84,89|42,77,70|66,105,88&chdl=Naive|MMX|SSE2&chtt=Gr%C3%A1fico+de+Desempenho+(FPS)
 
 || *Versão* || *Naïve* || *MMX* || *SSE2* ||
 || *16 bits* || 87 || 42 || 66 ||
