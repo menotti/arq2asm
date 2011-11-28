@@ -50,7 +50,8 @@ protected:
 	afx_msg void OnUpdatePauseBlur(CCmdUI* pCmdUI);
 	afx_msg void OnUpdatePauseSwarm(CCmdUI* pCmdUI);
 	afx_msg void OnUpdatePauseBlit(CCmdUI* pCmdUI);
-	afx_msg void OnUpdatePauseFade(CCmdUI* pCmdUI);
+	afx_msg void OnUpdateUseFade(CCmdUI* pCmdUI);
+	afx_msg void OnUpdateUseGray(CCmdUI* pCmdUI);	//Grupo 4
 	afx_msg void OnUpdateResolution(CCmdUI* pCmdUI);
 	afx_msg void OnUpdateImageFormats(CCmdUI* pCmdUI);
 	afx_msg void OnFileOpen();
@@ -58,7 +59,8 @@ protected:
 	afx_msg void OnViewPauseBlur();
 	afx_msg void OnViewPauseSwarm();
 	afx_msg void OnViewPauseBlit();
-	afx_msg void OnViewPauseFade();
+	afx_msg void OnViewUseFade();
+	afx_msg void OnViewUseGray();	//Grupo 4
 	afx_msg void OnImageFormats(UINT nID);
 	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
 	//}}AFX_MSG
@@ -88,10 +90,11 @@ private:
 	int		m_nFilterSave; // remember file/save filter
 	DWORD	m_dwTickStart;
 	bool	m_bSizeChanged;
-	bool	m_bPauseBlur;
+	bool	m_bPauseBlur;	
 	bool	m_bPauseSwarm;
 	bool	m_bPauseBlit;
-	bool	m_bPauseFade;
+	bool	m_bUsefade;
+	bool	m_bUseGray;  //Grupo 4	
 	bool    m_bTimerPopped;
 
 	static const UINT_PTR m_kTimerID = 31;
