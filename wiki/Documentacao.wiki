@@ -71,7 +71,15 @@ Após isto, as cores dos pixels ao redor são usadas na modificação desejada (
 
 *MMX-32*
 	O código MMX para cores com 32 bits de profundidade consiste em:
-       <TODO: >
+1.	Passar o endereço da posição corrente para uma variável pCur, no formato ULONGLONG. 
+2.	Após todas as declarações, entra-se no loop da operação: A partir do ponteiro inicial, os pixels adjacentes(contando com os pixels da diagonal direita superior, diagonal direita inferior e o segundo pixel da direita) são "desempacotados" e usados nas operações de modificação de cores. 
+3.	Depois das modificações das cores, os pixels são reempacotados em uma variável de 64 bits. Repetem-se os passos 2 e 3.
+
+_Observações sobre MMX:_
+	Todas as operações em MMX envolvem o uso de instruções de empacotamento de bytes. Estas instruções tem alguns pontos onde a performance do sistema é afetada por operações desnecessárias nos pixels. Por exemplo, o PUNPCKLBW, instrução MMX para o desempacotamento de uma DWORD, gera bits zerados que não contribuem para o programa, e que entram em loops e operações supérfluas.
+	Podemos ver pela performance dos códigos em MMX que estes não são eficientes neste programa, sendo mais lentos que a implementação Naïve e a SSE2.
+
+
 SSE2-16
 <TODO: >
 SSE2-24
