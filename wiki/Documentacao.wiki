@@ -35,7 +35,15 @@ Trata-se do sucessor do MMX e permite aumentar performance em operações de pon
 
 === Estudando o desempenho ===
 
-O gráfico a seguir mostra os resultados de testes feitos usando o código fornecido no repositório para os três conjuntos de instruções citados.
+Numa primeira análise observamos as linhas de código (LOC) das implementações MMX e SSE2. Porém sabemos que trata-se apenas de um indicador de performance e não nos dá uma ideia precisa das reais diferenças entre as implementações. As linhas de código do Naïve não foram consideradas, pois não apresentam diferença nenhuma.
+
+|| *Versão* || *MMX* || *SSE2* ||
+|| *16 bits*|| 538 LOC  || 533 LOC ||
+|| *24 bits*|| 204 LOC || 301 LOC || 
+|| *32 bits*|| 283 LOC || 311 LOC ||
+
+
+Já o gráfico a seguir mostra os resultados de testes feitos usando o código fornecido no repositório para os três conjuntos de instruções citados.
 
 http://chart.apis.google.com/chart?chxl=1:|16+bits|24+bits|32+bits&chxr=0,0,105&chxs=0,676767,11.5,0,lt,676767&chxt=y,x&chbh=14,5,10&chs=300x225&cht=bvg&chco=FF0000,00FF00,0000FF&chds=0,100,0,100,0,105&chd=t:87,84,89|42,77,70|66,105,88&chdl=Naive|MMX|SSE2&chtt=Gr%C3%A1fico+de+Desempenho+%28FPS%29.jpg
 
@@ -113,18 +121,6 @@ _Observações sobre MMX:_
 4.	Empacotamos a cor do pixel corrente no seu ponteiro, e avançamos o pCur. Recomeça o processo a partir do 2.
 
 
-Análise por LOC (assembly)
-	MMX-16: aprox. 538 LOC
-
-	MMX-24: aprox. 204 LOC
-
-	MMX-32: aprox. 283 LOC
-
-	SSE2-16: aprox. 533 LOC
-
-	SSE2-24: aprox. 301 LOC
-
-	SSE2-32: aprox. 311 LOC
 
 
 
