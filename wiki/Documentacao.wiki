@@ -126,8 +126,6 @@ Análise por LOC (assembly)
 
 	SSE2-32: aprox. 311 LOC
 
-<TODO: >
-
 
 
 ----
