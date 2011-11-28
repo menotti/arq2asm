@@ -73,7 +73,7 @@ IDR_MAINFRAME           ICON                    "MMXSwarm.ico"
 // Bitmap
 //
 
-IDR_MAINFRAME           BITMAP                  "Toolbar.bmp"
+IDR_MAINFRAME           BITMAP                  "res\\Toolbar.bmp"
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -118,19 +118,19 @@ BEGIN
         BEGIN
             MENUITEM "&SSE2 Intrinsics",            IDD_32BIT_SSE2INTRINSICS
             MENUITEM "&MMX Intrinsics",             IDD_32BIT_MMXINTRINSICS
-            MENUITEM "&Generic C++ Blur",           IDD_32BIT_GENERICCBLUR
+            MENUITEM "&Generic C++ Code",           IDD_32BIT_GENERICCBLUR
         END
         POPUP "&24 Bit"
         BEGIN
             MENUITEM "&SSE2 Intrinsics",            IDD_24BIT_SSE2INTRINSICS
             MENUITEM "&MMX Intrinsics",             IDD_24BIT_MMXINTRINSICS
-            MENUITEM "&Generic C++ Blur",           IDD_24BIT_GENERICCBLUR
+            MENUITEM "&Generic C++ Code",           IDD_24BIT_GENERICCBLUR
         END
         POPUP "&16 Bit"
         BEGIN
             MENUITEM "&SSE2 Intrinsics",            IDD_16BIT_SSE2INTRINSICS
             MENUITEM "&MMX Intrinsics",             IDD_16BIT_MMXINTRINSICS
-            MENUITEM "&Generic C++ Blur",           IDD_16BIT_GENERICCBLUR
+            MENUITEM "&Generic C++ Code",           IDD_16BIT_GENERICCBLUR
         END
     END
     POPUP "&View"
@@ -141,7 +141,8 @@ BEGIN
         MENUITEM "&Pause Swarm\tS",             ID_VIEW_PAUSE_SWARM
         MENUITEM "Pause &Blur\tB",              ID_VIEW_PAUSE_BLUR
         MENUITEM "Pause Bli&t\tT",              ID_VIEW_PAUSE_BLIT
-        MENUITEM "Pause &Fade\tF",              ID_VIEW_PAUSE_FADE
+        MENUITEM "Use &Fade\tF",           ID_VIEW_USE_FADE
+		MENUITEM "Use &GrayScale\tG",      ID_VIEW_USE_GRAY
     END
     POPUP "&Help"
     BEGIN
@@ -172,7 +173,8 @@ BEGIN
     "B",            ID_VIEW_PAUSE_BLUR,     VIRTKEY, NOINVERT
     "S",            ID_VIEW_PAUSE_SWARM,    VIRTKEY, NOINVERT
     "T",            ID_VIEW_PAUSE_BLIT,     VIRTKEY, NOINVERT
-    "F",            ID_VIEW_PAUSE_FADE,     VIRTKEY, NOINVERT
+    "F",            ID_VIEW_USE_FADE,     VIRTKEY, NOINVERT
+	"G",            ID_VIEW_USE_GRAY,     VIRTKEY, NOINVERT
 END
 
 
@@ -189,7 +191,7 @@ BEGIN
     ICON            IDR_MAINFRAME,IDC_STATIC,10,11,21,20,SS_REALSIZEIMAGE
     LTEXT           "MMXSwarm Version 1.0",IDC_STATIC,56,10,112,8,
                     SS_NOPREFIX
-    LTEXT           "© 1998 - 2001 Microsoft Corporation.  All rights reserved.",
+    LTEXT           "Â© 1998 - 2001 Microsoft Corporation.  All rights reserved.",
                     IDC_STATIC,56,23,119,18
     DEFPUSHBUTTON   "OK",IDOK,183,7,50,14,WS_GROUP
     LTEXT           "Author: Joe Rohde, Microsoft Corporation",IDC_STATIC,56,
@@ -385,7 +387,7 @@ END
 LANGUAGE 9, 1
 #pragma code_page(1252)
 #endif //_WIN32
-//#include "res\MMXSwarm.rc2"  // non-Microsoft Visual C++ edited resources
+#include "res\MMXSwarm.rc2"  // non-Microsoft Visual C++ edited resources
 #include "afxres.rc"         // Standard components
 #endif
 
