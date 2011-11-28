@@ -264,7 +264,52 @@ void CSurface::GrayScale()
 
 === MMX ===
 
-TODO: descrever aqui
+Esta implementação utiliza o empacotamento de dados mmx através do método UnpackBytesLo. Para retirar os valores RGB destes dados empacotados foi utilizada um máscara que pega 1 byte por vez. Com isso isolamos os valores RGB para realizar uma média e com esta média formamos um novo dado empacotado, gerando assim uma imagem em tons de cinza. Como este empacotamento realiza um tipo de "fusão" entre uma dword do ponto atual da imagem e um dword 0, foi necessária a realização do dobro de operações, por isso a variável height é multiplicada por 2, o que consequentemente pesará no desempenho da função, como já visto na parte de introdução citada no começo deste documento. 
+ 
+{{{
+void CMMXSurface32Intrinsic::GrayScale()
+{
+    int height = GetVisibleHeight()*2;
+    DWORD *pCur  = (DWORD *)GetPixelAddress(0,0);
+
+        CMMX cCur,cRight;
+        CMMX cMask;
+        CMMX cR,cG,cB;
+        CMMX media;
+
+        cCur.UnpackBytesLo( *pCur );
+        do {
+                int width = m_width;
+                do {                    
+                        cRight.UnpackBytesLo(pCur[1]);
+                        cMask.UnpackBytesLo(0xff);
+                        media.Clear();
+                        cR = cCur & cMask;
+                        cMask = cMask*65536;             //cMask <<= 16;                 
+                        cG = cCur & cMask;
+                        cMask = cMask*65536;             //cMask <<= 16;                                                                      
+                        cB = cCur & cMask;
+                        cG = cG/65536;                   //cG >>= 16;                                                                           
+                        cB = cB/4294967296;              //cB >>= 32;                                                                           
+                        media = (cR + cG + cB)/3;        
+                        cCur.Clear();
+                        cMask = cMask/4294967296;        //cMask >>= 32;                                                                
+                        cCur = cMask;
+                        cCur = cCur*65536;               //cCur <<= 16;                                                                         
+                        cCur += media;
+                        cCur = cCur*65536;               //cCur <<= 16;                                                                         
+                        cCur += media;
+                        cCur = cCur*65536;               //cCur <<= 16;                                                                         
+                        cCur += media;
+                        *(ULONGLONG *)pCur = cCur.PackBytes(cCur);
+                        cCur = cRight;
+                        pCur ++;
+                } while (--width > 0);
+        } while (--height > 0);
+}
+}}}
+
+Nota-se que para realizar deslocamentos tanto na máscara quanto no objeto empacotado foram utilizadas multiplicações e divisões. Isto ocorreu devido a uma diferença de resultados entre os operadores >> e << sobrecarregados na classe CMMXUnsigned16Saturated. Com isso o desempenho desta função será drasticamente afetado, apesar de gerar um resultado correto.  
 
 === SSE(n) ===
 
