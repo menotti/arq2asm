@@ -45,8 +45,8 @@ BEGIN_MESSAGE_MAP(CChildView, CWnd)
 	ON_UPDATE_COMMAND_UI(ID_INDICATOR_PAUSE_BLUR, OnUpdatePauseBlur)
 	ON_UPDATE_COMMAND_UI(ID_INDICATOR_PAUSE_SWARM, OnUpdatePauseSwarm)
 	ON_UPDATE_COMMAND_UI(ID_INDICATOR_PAUSE_BLIT, OnUpdatePauseBlit)
-	ON_UPDATE_COMMAND_UI(ID_INDICATOR_PAUSE_FADE, OnUpdateUseFade)
-	ON_UPDATE_COMMAND_UI(ID_INDICATOR_PAUSE_GRAY, OnUpdateUseGray)	//Grupo 4
+	ON_UPDATE_COMMAND_UI(ID_INDICATOR_USE_FADE, OnUpdateUseFade)
+	ON_UPDATE_COMMAND_UI(ID_INDICATOR_USE_GRAY, OnUpdateUseGray)	//Grupo 4
 	ON_UPDATE_COMMAND_UI(ID_INDICATOR_FPS, OnUpdateFPS)
 	ON_UPDATE_COMMAND_UI(ID_INDICATOR_RESOLUTION, OnUpdateResolution)
 	ON_COMMAND_RANGE(IDD_16BIT_MMXINTRINSICS, IDD_32BIT_GENERICCBLUR, OnImageFormats)
@@ -66,7 +66,7 @@ CChildView::CChildView()
 	m_bPauseBlur = false;	
 	m_bPauseSwarm = false;
 	m_bPauseBlit = false;
-	m_bUsefade = false;
+	m_bUseFade = false;
 	m_bUseGray = false;	//Grupo 4
 	m_bTimerPopped = false;
 	m_eSurf = eNone;
@@ -143,7 +143,7 @@ void CChildView::OnFileOpen()
 		m_bPauseBlur = true;
 		m_bPauseSwarm = true;
 		m_bUseGray = false;
-		m_bUsefade = false;
+		m_bUseFade = false;
 	}
 }
 
@@ -231,7 +231,7 @@ void CChildView::OnViewPauseBlit()
 
 void CChildView::OnViewUseFade()
 {
-	m_bUsefade = !m_bUsefade;
+	m_bUseFade = !m_bUseFade;
 }
 
 //Grupo 4
@@ -286,7 +286,7 @@ BOOL CChildView::OnIdle(LONG /*lCount*/)
 		bContinue = TRUE;
 	}
 
-	if (m_bUsefade) {
+	if (m_bUseFade) {
 		m_pSurface->FadeInOut();
 		bContinue = TRUE;
 	}
@@ -502,12 +502,12 @@ void CChildView::OnUpdatePauseBlit(CCmdUI* pCmdUI)
 
 void CChildView::OnUpdateUseFade(CCmdUI* pCmdUI)
 {
-	if (pCmdUI->m_nID == ID_INDICATOR_PAUSE_FADE) {
-		pCmdUI->Enable(m_bUsefade ? FALSE : TRUE);
+	if (pCmdUI->m_nID == ID_INDICATOR_USE_FADE) {
+		pCmdUI->Enable(m_bUseFade ? FALSE : TRUE);
 	}
 	else {
 		ASSERT(pCmdUI->m_nID == ID_VIEW_USE_FADE);
-		pCmdUI->SetCheck(m_bUsefade ? 1 : 0);
+		pCmdUI->SetCheck(m_bUseFade ? 1 : 0);
 		pCmdUI->Enable(TRUE);
 	}
 }
@@ -515,7 +515,7 @@ void CChildView::OnUpdateUseFade(CCmdUI* pCmdUI)
 //Grupo 4
 void CChildView::OnUpdateUseGray(CCmdUI* pCmdUI)
 {
-	if (pCmdUI->m_nID == ID_INDICATOR_PAUSE_GRAY) {
+	if (pCmdUI->m_nID == ID_INDICATOR_USE_GRAY) {
 		pCmdUI->Enable(m_bUseGray ? FALSE : TRUE);
 	}
 	else {
