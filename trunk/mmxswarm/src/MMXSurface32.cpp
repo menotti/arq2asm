@@ -75,7 +75,7 @@ void CMMXSurface32Intrinsic::BlurBits()
 
 			// Actual math. Don't step on current, or right.
 			// Sum the 4 around and double the middle
-			
+
 			// Do current pixel in this line
 			cUp = (cDown+cUp+cLeft+cRight+(cCur<<2))>>3;
 
@@ -91,9 +91,51 @@ void CMMXSurface32Intrinsic::BlurBits()
 #endif
 			cLeft = cRight; 		// Slide left!
 			cCur = cRightRight;
-	
+
 			*(ULONGLONG *)pCur = cUp.PackBytes(cDown);
 			pCur += 2;
+		} while (--width > 0);
+	} while (--height > 0);
+}
+
+//Grupo 4
+void CMMXSurface32Intrinsic::GrayScale()
+{
+    int height = GetVisibleHeight()*2;
+    DWORD *pCur  = (DWORD *)GetPixelAddress(0,0);
+
+	CMMX cCur,cRight;
+	CMMX cMask;
+	CMMX cR,cG,cB;
+	CMMX media;
+
+	cCur.UnpackBytesLo( *pCur );
+	do {
+		int width = m_width;
+		do {			
+			cRight.UnpackBytesLo(pCur[1]);
+			cMask.UnpackBytesLo(0xff);
+			media.Clear();
+			cR = cCur & cMask;
+			cMask = cMask*65536;								//cMask <<= 16;			
+			cG = cCur & cMask;
+			cMask = cMask*65536;								//cMask <<= 16;			
+			cB = cCur & cMask;
+			cG = cG/65536;										//cG >>= 16;			
+			cB = cB/4294967296;									//cB >>= 32;			
+			media = (cR + cG + cB)/3;
+			cCur.Clear();
+			cMask = cMask/4294967296;							//cMask >>= 32;			
+			cCur = cMask;
+			cCur = cCur*65536;									//cCur <<= 16;			
+			cCur += media;
+			cCur = cCur*65536;									//cCur <<= 16;			
+			cCur += media;
+			cCur = cCur*65536;									//cCur <<= 16;			
+			cCur += media;
+			*(ULONGLONG *)pCur = cCur.PackBytes(cCur);
+			cCur = cRight;
+			pCur ++;
 		} while (--width > 0);
 	} while (--height > 0);
 }
