@@ -66,7 +66,7 @@ CChildView::CChildView()
 	m_bPauseBlur = false;	
 	m_bPauseSwarm = false;
 	m_bPauseBlit = false;
-	m_bUseFase = false;
+	m_bUsefade = false;
 	m_bUseGray = false;	//Grupo 4
 	m_bTimerPopped = false;
 	m_eSurf = eNone;
@@ -143,7 +143,7 @@ void CChildView::OnFileOpen()
 		m_bPauseBlur = true;
 		m_bPauseSwarm = true;
 		m_bUseGray = false;
-		m_bUseFase = false;
+		m_bUsefade = false;
 	}
 }
 
@@ -231,7 +231,7 @@ void CChildView::OnViewPauseBlit()
 
 void CChildView::OnViewUseFade()
 {
-	m_bUseFase = !m_bUseFase;
+	m_bUsefade = !m_bUsefade;
 }
 
 //Grupo 4
@@ -286,7 +286,7 @@ BOOL CChildView::OnIdle(LONG /*lCount*/)
 		bContinue = TRUE;
 	}
 
-	if (m_bUseFase) {
+	if (m_bUsefade) {
 		m_pSurface->FadeInOut();
 		bContinue = TRUE;
 	}
@@ -503,11 +503,11 @@ void CChildView::OnUpdatePauseBlit(CCmdUI* pCmdUI)
 void CChildView::OnUpdateUseFade(CCmdUI* pCmdUI)
 {
 	if (pCmdUI->m_nID == ID_INDICATOR_PAUSE_FADE) {
-		pCmdUI->Enable(m_bUseFase ? FALSE : TRUE);
+		pCmdUI->Enable(m_bUsefade ? FALSE : TRUE);
 	}
 	else {
 		ASSERT(pCmdUI->m_nID == ID_VIEW_USE_FADE);
-		pCmdUI->SetCheck(m_bUseFase ? 1 : 0);
+		pCmdUI->SetCheck(m_bUsefade ? 1 : 0);
 		pCmdUI->Enable(TRUE);
 	}
 }
