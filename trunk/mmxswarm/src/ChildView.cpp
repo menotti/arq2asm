@@ -35,15 +35,18 @@ BEGIN_MESSAGE_MAP(CChildView, CWnd)
     ON_COMMAND(ID_VIEW_PAUSE_BLUR, OnViewPauseBlur)
     ON_COMMAND(ID_VIEW_PAUSE_SWARM, OnViewPauseSwarm)
     ON_COMMAND(ID_VIEW_PAUSE_BLIT, OnViewPauseBlit)
-    ON_COMMAND(ID_VIEW_PAUSE_FADE, OnViewPauseFade)
+    ON_COMMAND(ID_VIEW_USE_FADE, OnViewUseFade)
+	ON_COMMAND(ID_VIEW_USE_GRAY, OnViewUseGray)	//Grupo 4
 	ON_UPDATE_COMMAND_UI(ID_VIEW_PAUSE_BLUR, OnUpdatePauseBlur)
 	ON_UPDATE_COMMAND_UI(ID_VIEW_PAUSE_SWARM, OnUpdatePauseSwarm)
 	ON_UPDATE_COMMAND_UI(ID_VIEW_PAUSE_BLIT, OnUpdatePauseBlit)
-	ON_UPDATE_COMMAND_UI(ID_VIEW_PAUSE_FADE, OnUpdatePauseFade)
+	ON_UPDATE_COMMAND_UI(ID_VIEW_USE_FADE, OnUpdateUseFade)
+	ON_UPDATE_COMMAND_UI(ID_VIEW_USE_GRAY, OnUpdateUseGray)	//Grupo 4
 	ON_UPDATE_COMMAND_UI(ID_INDICATOR_PAUSE_BLUR, OnUpdatePauseBlur)
 	ON_UPDATE_COMMAND_UI(ID_INDICATOR_PAUSE_SWARM, OnUpdatePauseSwarm)
 	ON_UPDATE_COMMAND_UI(ID_INDICATOR_PAUSE_BLIT, OnUpdatePauseBlit)
-	ON_UPDATE_COMMAND_UI(ID_INDICATOR_PAUSE_FADE, OnUpdatePauseFade)
+	ON_UPDATE_COMMAND_UI(ID_INDICATOR_PAUSE_FADE, OnUpdateUseFade)
+	ON_UPDATE_COMMAND_UI(ID_INDICATOR_PAUSE_GRAY, OnUpdateUseGray)	//Grupo 4
 	ON_UPDATE_COMMAND_UI(ID_INDICATOR_FPS, OnUpdateFPS)
 	ON_UPDATE_COMMAND_UI(ID_INDICATOR_RESOLUTION, OnUpdateResolution)
 	ON_COMMAND_RANGE(IDD_16BIT_MMXINTRINSICS, IDD_32BIT_GENERICCBLUR, OnImageFormats)
@@ -60,10 +63,11 @@ CChildView::CChildView()
 	m_nFilterLoad = 0;
 	m_nFilterSave = 0;
 	m_bSizeChanged = false;
-	m_bPauseBlur = false;
+	m_bPauseBlur = false;	
 	m_bPauseSwarm = false;
 	m_bPauseBlit = false;
-	m_bPauseFade = false;
+	m_bUseFase = false;
+	m_bUseGray = false;	//Grupo 4
 	m_bTimerPopped = false;
 	m_eSurf = eNone;
 }
@@ -120,17 +124,17 @@ void CChildView::OnFileOpen()
 	m_nFilterLoad = dlg.m_ofn.nFilterIndex;
 	hResult = image.Load(dlg.GetPathName());
 	ASSERT(SUCCEEDED(hResult));
-	if (SUCCEEDED(hResult)) {
-		// menotti
+	if (SUCCEEDED(hResult)) {		
 
 		CFileDialog dlg2(TRUE, NULL, NULL, OFN_FILEMUSTEXIST, strFilter);
 		dlg2.m_ofn.nFilterIndex = m_nFilterLoad;
-
+	
 		nResult = dlg2.DoModal();
+
 		if(nResult != IDOK) {
 			return;
 		}
-		
+
 		m_nFilterLoad = dlg2.m_ofn.nFilterIndex;
 		hResult = image2.Load(dlg2.GetPathName());
 
@@ -138,8 +142,8 @@ void CChildView::OnFileOpen()
 		// Stop the weird effects
 		m_bPauseBlur = true;
 		m_bPauseSwarm = true;
-	} else {
-
+		m_bUseGray = false;
+		m_bUseFase = false;
 	}
 }
 
@@ -225,9 +229,15 @@ void CChildView::OnViewPauseBlit()
 	m_bPauseBlit = !m_bPauseBlit;
 }
 
-void CChildView::OnViewPauseFade()
+void CChildView::OnViewUseFade()
 {
-	m_bPauseFade = !m_bPauseFade;
+	m_bUseFase = !m_bUseFase;
+}
+
+//Grupo 4
+void CChildView::OnViewUseGray()	
+{
+	m_bUseGray = !m_bUseGray;
 }
 
 void CChildView::OnPaint() 
@@ -276,11 +286,16 @@ BOOL CChildView::OnIdle(LONG /*lCount*/)
 		bContinue = TRUE;
 	}
 
-	if (m_bPauseFade) {
+	if (m_bUseFase) {
 		m_pSurface->FadeInOut();
 		bContinue = TRUE;
 	}
 
+	//Grupo 4
+	if (m_bUseGray) {
+		m_pSurface->GrayScale();
+		bContinue = TRUE;
+	}
 
 	if (bContinue) {
 		m_nFrameCounter++;
@@ -485,14 +500,27 @@ void CChildView::OnUpdatePauseBlit(CCmdUI* pCmdUI)
 	}
 }
 
-void CChildView::OnUpdatePauseFade(CCmdUI* pCmdUI)
+void CChildView::OnUpdateUseFade(CCmdUI* pCmdUI)
 {
 	if (pCmdUI->m_nID == ID_INDICATOR_PAUSE_FADE) {
-		pCmdUI->Enable(m_bPauseFade ? FALSE : TRUE);
+		pCmdUI->Enable(m_bUseFase ? FALSE : TRUE);
 	}
 	else {
-		ASSERT(pCmdUI->m_nID == ID_VIEW_PAUSE_FADE);
-		pCmdUI->SetCheck(m_bPauseFade ? 1 : 0);
+		ASSERT(pCmdUI->m_nID == ID_VIEW_USE_FADE);
+		pCmdUI->SetCheck(m_bUseFase ? 1 : 0);
+		pCmdUI->Enable(TRUE);
+	}
+}
+
+//Grupo 4
+void CChildView::OnUpdateUseGray(CCmdUI* pCmdUI)
+{
+	if (pCmdUI->m_nID == ID_INDICATOR_PAUSE_GRAY) {
+		pCmdUI->Enable(m_bUseGray ? FALSE : TRUE);
+	}
+	else {
+		ASSERT(pCmdUI->m_nID == ID_VIEW_USE_GRAY);
+		pCmdUI->SetCheck(m_bUseGray ? 1 : 0);
 		pCmdUI->Enable(TRUE);
 	}
 }
