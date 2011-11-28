@@ -93,7 +93,7 @@ private:
 	bool	m_bPauseBlur;	
 	bool	m_bPauseSwarm;
 	bool	m_bPauseBlit;
-	bool	m_bUsefade;
+	bool	m_bUseFade;
 	bool	m_bUseGray;  //Grupo 4	
 	bool    m_bTimerPopped;
 
