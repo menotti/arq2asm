@@ -37,9 +37,12 @@ public:
     void ShiftBits();
     void BlitBits();
     virtual void BlurBits(); // this is where the MMX action is
-
+		
 	//menotti
 	void FadeInOut();
+
+	//Grupo 4
+	virtual void GrayScale();
 
     void Line(const CPoint &p1, const CPoint &p2, COLORREF c);
     void RandomLine(COLORREF c);
