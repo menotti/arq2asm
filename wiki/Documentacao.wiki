@@ -82,12 +82,36 @@ _Observações sobre MMX:_
 	Podemos ver pela performance dos códigos em MMX que estes não são eficientes neste programa, sendo mais lentos que a implementação Naïve e a SSE2.
 
 
-SSE2-16
-<TODO: >
-SSE2-24
-<TODO: >
-SSE2-32
-<TODO: >
+*SSE2-16*
+
+	Este código processa cada pixel em uma WORD, carregando poucos dados em cada uma de suas execuções, fazendo com que sua performance seja diminuída.
+
+1.	Passar o endereço da posição corrente para uma variável pCur, no formato __m128i.
+
+2.	Por meio de manipulações neste ponteiro, podemos obter as posições dos pixels adjacentes (cDownBase, etc). Estas posições são passadas por uma máscara: cada parte de 16 bits de um pixel tem os últimos cinco bits reservados para as informações de cor (cDown, cUp, etc).
+
+3.	Após isto, ele executa as operações matemáticas para no pixel corrente e nos dois próximos pixels à direita. Avança o ponteiro e repetem-se os dois passos.
+
+*SSE2-24*
+
+1.	Passar o endereço da posição corrente para uma variável pCur, no formato ULONGLONG.
+
+2.	Com base neste ponteiro corrente, desempacota-o para obter os pixels adjacentes, e executa as operações matemáticas nas cores da posição corrente.
+
+3.	Avança o ponteiro, e re-executa o passo 2.
+
+4.	O resultado é empacotado na posição do ponteiro corrente. Avança o ponteiro, e recomeça o processo do passo 2.
+
+*SSE2-32*
+
+1.	Passar o endereço da posição corrente para uma variável pCur, no formato ULONGLONG.
+
+2.	Fazemos o casting deste ponteiro para o tipo RGBQUAD, que é formado por: três Bytes que fazem referência às cores vermelha, verde e azul, e um Byte reservado. O próximo ponteiro é definido aqui também.
+
+3.	Fazemos as operações matemáticas para definir a cor do pixel corrente, e do próximo. O cFader entra logo depois, aumentando ou diminuindo o tom da cor.
+
+4.	Empacotamos a cor do pixel corrente no seu ponteiro, e avançamos o pCur. Recomeça o processo a partir do 2.
+
 
 Análise por LOC (assembly)
 	MMX-16: aprox. 538 LOC
