@@ -171,6 +171,24 @@ void CSurface::FadeInOut()
     }
 }
 
+
+//Grupo 4
+void CSurface::GrayScale()
+{
+	COLORREF cCur;
+	BYTE r, g, b;
+
+	for (int i = 0; i < m_wndHeight; i++) {
+		for (int j = 0; j < m_wndWidth; j++) {
+			cCur = PointColor(j,i);
+			r = (BYTE)((GetRValue(cCur)+GetGValue(cCur)+GetBValue(cCur))/3);
+			g = (BYTE)((GetRValue(cCur)+GetGValue(cCur)+GetBValue(cCur))/3);
+			b = (BYTE)((GetRValue(cCur)+GetGValue(cCur)+GetBValue(cCur))/3);			
+			PointColor(j,i,RGB(b,g,r));
+		}
+	}
+}
+
 // nothing beats good old fashioned Bresenham
 void CSurface::Line(const CPoint &p1, const CPoint &p2, COLORREF c)
 {
