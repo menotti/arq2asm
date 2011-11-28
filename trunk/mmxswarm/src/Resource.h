@@ -29,11 +29,13 @@
 #define ID_INDICATOR_PAUSE_SWARM        59144
 #define ID_INDICATOR_PAUSE_BLUR         59145
 #define ID_INDICATOR_PAUSE_BLIT         59146
-#define ID_INDICATOR_PAUSE_FADE         59147
+#define ID_INDICATOR_USE_FADE         59147
+#define ID_INDICATOR_USE_GRAY			59148
 #define ID_VIEW_PAUSE_SWARM             59394
 #define ID_VIEW_PAUSE_BLUR              59395
 #define ID_VIEW_PAUSE_BLIT              59396
-#define ID_VIEW_PAUSE_FADE              59397
+#define ID_VIEW_USE_FADE				59397
+#define ID_VIEW_USE_GRAY				59398	//Grupo 4
 
 // Next default values for new objects
 // 
