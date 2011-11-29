@@ -330,6 +330,17 @@ A sua implementação consiste no cálculo do gradiente da imagem. Esse cálculo
 === _Naive_ ===
 
 {{{
+
+//Máscara do sobel
+//X
+GXS[0][0] = -1; GXS[0][1] = 0; GXS[0][2] = 1;
+GXS[1][0] = -2; GXS[1][1] = 0; GXS[1][2] = 2;
+GXS[2][0] = -1; GXS[2][1] = 0; GXS[2][2] = 1;
+//Y
+GYS[0][0] = -1; GYS[0][1] = -2; GYS[0][2] = -1;
+GYS[1][0] = 0; GYS[1][1] = 0; GYS[1][2] = 0;
+GYS[2][0] = 1; GYS[2][1] = 2; GYS[2][2] = 1;
+
 void CSurface::Sobel()
 {
     COLORREF cCur;
