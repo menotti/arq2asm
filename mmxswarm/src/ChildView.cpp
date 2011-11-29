@@ -38,14 +38,14 @@ BEGIN_MESSAGE_MAP(CChildView, CWnd)
     ON_COMMAND(ID_VIEW_USE_FADE, OnViewUseFade)
 	ON_COMMAND(ID_VIEW_USE_GRAY, OnViewUseGray)	//Grupo 4
 	ON_COMMAND(ID_VIEW_USE_SOBEL, OnViewUseSobel)//Grupo 5
-	ON_COMMAND(ID_VIEW_PAUSE_POSTERIZE, OnViewPausePosterize)//Grupo 9
+	ON_COMMAND(ID_VIEW_USE_POSTERIZE, OnViewUsePosterize)//Grupo 9
 	ON_UPDATE_COMMAND_UI(ID_VIEW_PAUSE_BLUR, OnUpdatePauseBlur)
 	ON_UPDATE_COMMAND_UI(ID_VIEW_PAUSE_SWARM, OnUpdatePauseSwarm)
 	ON_UPDATE_COMMAND_UI(ID_VIEW_PAUSE_BLIT, OnUpdatePauseBlit)
 	ON_UPDATE_COMMAND_UI(ID_VIEW_USE_FADE, OnUpdateUseFade)
 	ON_UPDATE_COMMAND_UI(ID_VIEW_USE_GRAY, OnUpdateUseGray)	//Grupo 4
 	ON_UPDATE_COMMAND_UI(ID_VIEW_USE_SOBEL, OnUpdateUseSobel)//Grupo 5
-	ON_UPDATE_COMMAND_UI(ID_VIEW_PAUSE_POSTERIZE, OnUpdatePausePosterize)//Grupo 9
+	ON_UPDATE_COMMAND_UI(ID_VIEW_USE_POSTERIZE, OnUpdateUsePosterize)//Grupo 9
 	ON_UPDATE_COMMAND_UI(ID_INDICATOR_PAUSE_BLUR, OnUpdatePauseBlur)
 	ON_UPDATE_COMMAND_UI(ID_INDICATOR_PAUSE_SWARM, OnUpdatePauseSwarm)
 	ON_UPDATE_COMMAND_UI(ID_INDICATOR_PAUSE_BLIT, OnUpdatePauseBlit)
@@ -257,8 +257,8 @@ void CChildView::OnViewUseSobel()
 }
 
 //Grupo 9
-void CChildView::OnViewPausePosterize(){
-	m_bPausePosterize = !m_bPausePosterize;
+void CChildView::OnViewUsePosterize(){
+	m_bUsePosterize = !m_bUsePosterize;
 }
 
 void CChildView::OnPaint() 
@@ -329,7 +329,7 @@ BOOL CChildView::OnIdle(LONG /*lCount*/)
 	}
 
 	//Grupo 9
-	if (!m_bPausePosterize) {
+	if (!m_bUsePosterize) {
 		m_pSurface->Posterize();
 		bContinue = TRUE;
 	}
@@ -576,14 +576,14 @@ void CChildView::OnUpdateUseSobel(CCmdUI* pCmdUI)
 }
 
 //Grupo 9
-void CChildView::OnUpdatePausePosterize(CCmdUI *pCmdUI)
+void CChildView::OnUpdateUsePosterize(CCmdUI *pCmdUI)
 {
-	if (pCmdUI->m_nID == ID_INDICATOR_PAUSE_POSTERIZE) {
-		pCmdUI->Enable(m_bPausePosterize ? FALSE : TRUE);
+	if (pCmdUI->m_nID == ID_INDICATOR_USE_POSTERIZE) {
+		pCmdUI->Enable(m_bUsePosterize ? FALSE : TRUE);
 	}
 	else {
-		ASSERT(pCmdUI->m_nID == ID_VIEW_PAUSE_POSTERIZE);
-		pCmdUI->SetCheck(m_bPausePosterize ? 1 : 0);
+		ASSERT(pCmdUI->m_nID == ID_VIEW_USE_POSTERIZE);
+		pCmdUI->SetCheck(m_bUsePosterize ? 1 : 0);
 		pCmdUI->Enable(TRUE);
 	}
 }

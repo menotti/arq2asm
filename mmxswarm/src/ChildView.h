@@ -53,7 +53,7 @@ protected:
 	afx_msg void OnUpdateUseFade(CCmdUI* pCmdUI);
 	afx_msg void OnUpdateUseGray(CCmdUI* pCmdUI);	//Grupo 4
 	afx_msg void OnUpdateUseSobel(CCmdUI* pCmdUI);//Grupo 5
-	afx_msg void OnUpdatePausePosterize(CCmdUI* pCmdUI);//Grupo 9
+	afx_msg void OnUpdateUsePosterize(CCmdUI* pCmdUI);//Grupo 9
 	afx_msg void OnUpdateResolution(CCmdUI* pCmdUI);
 	afx_msg void OnUpdateImageFormats(CCmdUI* pCmdUI);
 	afx_msg void OnFileOpen();
@@ -64,7 +64,7 @@ protected:
 	afx_msg void OnViewUseFade();
 	afx_msg void OnViewUseGray();	//Grupo 4
 	afx_msg void OnViewUseSobel();//Grupo 5
-	afx_msg void OnViewPausePosterize();//Grupo 9
+	afx_msg void OnViewUsePosterize();	//Grupo 9
 	afx_msg void OnImageFormats(UINT nID);
 	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
 	//}}AFX_MSG
@@ -100,7 +100,7 @@ private:
 	bool	m_bPauseFade;
 	bool	m_bUseGray;  //Grupo 4
 	bool	m_bUseSobel;//Grupo 5
-	bool	m_bPausePosterize;//Grupo 9
+	bool	m_bUsePosterize;//Grupo 9
 	bool    m_bTimerPopped;
 	bool	execSobel;//Grupo 5 - Verifica se executou o Sobel alguma vez quando fadeIn estÅEoff
 
