@@ -141,8 +141,9 @@ BEGIN
         MENUITEM "&Pause Swarm\tS",             ID_VIEW_PAUSE_SWARM
         MENUITEM "Pause &Blur\tB",              ID_VIEW_PAUSE_BLUR
         MENUITEM "Pause Bli&t\tT",              ID_VIEW_PAUSE_BLIT
-        MENUITEM "Use &Fade\tF",           ID_VIEW_USE_FADE
-		MENUITEM "Use &GrayScale\tG",      ID_VIEW_USE_GRAY
+        MENUITEM "Use &Fade\tF",				ID_VIEW_USE_FADE
+		MENUITEM "Use &GrayScale\tG",			ID_VIEW_USE_GRAY
+		MENUITEM "Use &Sobel\tAlt+S",			ID_VIEW_USE_GRAY
     END
     POPUP "&Help"
     BEGIN
@@ -173,8 +174,9 @@ BEGIN
     "B",            ID_VIEW_PAUSE_BLUR,     VIRTKEY, NOINVERT
     "S",            ID_VIEW_PAUSE_SWARM,    VIRTKEY, NOINVERT
     "T",            ID_VIEW_PAUSE_BLIT,     VIRTKEY, NOINVERT
-    "F",            ID_VIEW_USE_FADE,     VIRTKEY, NOINVERT
-	"G",            ID_VIEW_USE_GRAY,     VIRTKEY, NOINVERT
+    "F",            ID_VIEW_USE_FADE,		VIRTKEY, NOINVERT
+	"G",            ID_VIEW_USE_GRAY,		VIRTKEY, NOINVERT//Grupo 4
+	"S",            ID_VIEW_USE_SOBEL,		VIRTKEY, ALT, NOINVERT//Grupo5
 END
 
 

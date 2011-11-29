@@ -37,22 +37,21 @@ BEGIN_MESSAGE_MAP(CChildView, CWnd)
     ON_COMMAND(ID_VIEW_PAUSE_BLIT, OnViewPauseBlit)
     ON_COMMAND(ID_VIEW_USE_FADE, OnViewUseFade)
 	ON_COMMAND(ID_VIEW_USE_GRAY, OnViewUseGray)	//Grupo 4
-	ON_COMMAND(ID_VIEW_PAUSE_SOBEL, OnViewPauseSobel)//Grupo5
+	ON_COMMAND(ID_VIEW_USE_SOBEL, OnViewUseSobel)//Grupo 5
 	ON_COMMAND(ID_VIEW_PAUSE_POSTERIZE, OnViewPausePosterize)//Grupo 9
 	ON_UPDATE_COMMAND_UI(ID_VIEW_PAUSE_BLUR, OnUpdatePauseBlur)
 	ON_UPDATE_COMMAND_UI(ID_VIEW_PAUSE_SWARM, OnUpdatePauseSwarm)
 	ON_UPDATE_COMMAND_UI(ID_VIEW_PAUSE_BLIT, OnUpdatePauseBlit)
 	ON_UPDATE_COMMAND_UI(ID_VIEW_USE_FADE, OnUpdateUseFade)
 	ON_UPDATE_COMMAND_UI(ID_VIEW_USE_GRAY, OnUpdateUseGray)	//Grupo 4
-	ON_UPDATE_COMMAND_UI(ID_VIEW_PAUSE_SOBEL, OnUpdatePauseSobel)//Grupo5
+	ON_UPDATE_COMMAND_UI(ID_VIEW_USE_SOBEL, OnUpdateUseSobel)//Grupo 5
 	ON_UPDATE_COMMAND_UI(ID_VIEW_PAUSE_POSTERIZE, OnUpdatePausePosterize)//Grupo 9
 	ON_UPDATE_COMMAND_UI(ID_INDICATOR_PAUSE_BLUR, OnUpdatePauseBlur)
 	ON_UPDATE_COMMAND_UI(ID_INDICATOR_PAUSE_SWARM, OnUpdatePauseSwarm)
 	ON_UPDATE_COMMAND_UI(ID_INDICATOR_PAUSE_BLIT, OnUpdatePauseBlit)
 	ON_UPDATE_COMMAND_UI(ID_INDICATOR_USE_FADE, OnUpdateUseFade)
 	ON_UPDATE_COMMAND_UI(ID_INDICATOR_USE_GRAY, OnUpdateUseGray)	//Grupo 4
-	ON_UPDATE_COMMAND_UI(ID_INDICATOR_PAUSE_SOBEL, OnUpdatePauseSobel)//Grupo5
-
+	ON_UPDATE_COMMAND_UI(ID_INDICATOR_USE_SOBEL, OnUpdateUseSobel)//Grupo 5
 	ON_UPDATE_COMMAND_UI(ID_INDICATOR_FPS, OnUpdateFPS)
 	ON_UPDATE_COMMAND_UI(ID_INDICATOR_RESOLUTION, OnUpdateResolution)
 	ON_COMMAND_RANGE(IDD_16BIT_MMXINTRINSICS, IDD_32BIT_GENERICCBLUR, OnImageFormats)
@@ -74,8 +73,10 @@ CChildView::CChildView()
 	m_bPauseBlit = false;
 	m_bPauseFade = false;
 	m_bUseGray = false;	//Grupo 4
+	m_bUseSobel = false;	//Grupo 5
 	m_bTimerPopped = false;
 	m_eSurf = eNone;
+	execSobel = false; //Grupo 5
 }
 
 CChildView::~CChildView()
@@ -248,9 +249,9 @@ void CChildView::OnViewUseGray()
 }
 
 //Grupo5
-void CChildView::OnViewPauseSobel()
+void CChildView::OnViewUseSobel()
 {
-	m_bPauseSobel = !m_bPauseSobel;
+	m_bUseSobel = !m_bUseSobel;
 	if(m_bPauseFade || !m_bPauseSwarm)
 		execSobel = false;
 }
@@ -318,7 +319,7 @@ BOOL CChildView::OnIdle(LONG /*lCount*/)
 	}
 	
 	//Grupo5
-	if (m_bPauseSobel && !execSobel) {
+	if (m_bUseSobel && !execSobel) {
 		//verifica os Filtros ativos, para executar 1 ou mais vezes o Sobel
 		if(!m_bPauseFade && m_bPauseSwarm){
 			execSobel = true;
@@ -562,14 +563,14 @@ void CChildView::OnUpdateUseGray(CCmdUI* pCmdUI)
 }
 
 //Grupo5
-void CChildView::OnUpdatePauseSobel(CCmdUI* pCmdUI)
+void CChildView::OnUpdateUseSobel(CCmdUI* pCmdUI)
 {
-	if (pCmdUI->m_nID == ID_INDICATOR_PAUSE_SOBEL) {
-		pCmdUI->Enable(m_bPauseSobel ? FALSE : TRUE);
+	if (pCmdUI->m_nID == ID_INDICATOR_USE_SOBEL) {
+		pCmdUI->Enable(m_bUseSobel ? FALSE : TRUE);
 	}
 	else {
-		ASSERT(pCmdUI->m_nID == ID_VIEW_PAUSE_SOBEL);
-		pCmdUI->SetCheck(m_bPauseSobel ? 1 : 0);
+		ASSERT(pCmdUI->m_nID == ID_VIEW_USE_SOBEL);
+		pCmdUI->SetCheck(m_bUseSobel ? 1 : 0);
 		pCmdUI->Enable(TRUE);
 	}
 }
