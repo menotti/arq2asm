@@ -23,7 +23,7 @@ public:
 		m_wndHeight(0), m_wndWidth(0), m_nBitDepth(0), m_nByteDepth(0), alpha(0), alphadir(1)
 	{ 
 	
-		//Grupo5
+		//Grupo 5
 		//Máscara do sobel
 		//X
 		GXS[0][0] = -1; GXS[0][1] = 0; GXS[0][2] = 1;
@@ -60,7 +60,7 @@ public:
 	//Grupo 4
 	virtual void GrayScale();
 	
-	//Grupo5
+	//Grupo 5
 	virtual void Sobel(); // neste método está a implementação do Sobel
 
     void Line(const CPoint &p1, const CPoint &p2, COLORREF c);
@@ -110,16 +110,16 @@ protected:
 	virtual void AdjustWidth(int * /*pWidth */)	{}
 	virtual void OnCreated() {}
 	
-	//Grupo5 - Variáveis do Sobel
+	//Grupo 5 - Variáveis do Sobel
 	char GXS[3][3];
 	char GYS[3][3];
    
-  //Grupo5 - Imagem auxiliar criada para armazenar o resultado da imagem antes de exibí-la
+	//Grupo 5 - Imagem auxiliar criada para armazenar o resultado da imagem antes de exibí-la
 	int t_nBitDepth;
 	HDC t_hDestDC;
 	CImage t_image;
 	
-	//Grupo5 - variáveis usadas pelo Sobel
+	//Grupo 5 - variáveis usadas pelo Sobel
 	int	sumX;
 	int	sumY;
 	int	SUM;
@@ -129,7 +129,7 @@ protected:
 
 	
 	// GRUPO 9 - Filtro Posterize
-		// variaveis
+	// variaveis
 	int numNivel;
 	int nivel[256];
 	bool inicializado;
@@ -209,7 +209,7 @@ inline COLORREF CSurface::PointColorD(int x, int y) const
 	}
 }
 
-//Grupo5
+//Grupo 5
 inline void CSurface::PointColorT(int x, int y, COLORREF c)
 {
 	// m_image.SetPixel() call ::SetPixel() which is too slow
@@ -226,7 +226,7 @@ inline void CSurface::PointColorT(int x, int y, COLORREF c)
 	}
 }
 
-//Grupo5
+//Grupo 5
 inline COLORREF CSurface::PointColorT(int x, int y) const
 { 
 	// m_image.GetPixel() calls ::GetPixel() which is too slow

@@ -43,15 +43,19 @@ void CSurface::Create(CWnd *pWnd, int nBitDepth)
 	VERIFY(m_image.Create(width, -(m_wndHeight + m_kDeltaY*2), m_nBitDepth, 0));
 	VERIFY(n_image.Create(width, -(m_wndHeight + m_kDeltaY*2), m_nBitDepth, 0));
 	VERIFY(o_image.Create(width, -(m_wndHeight + m_kDeltaY*2), m_nBitDepth, 0));
+	VERIFY(t_image.Create(width, -(m_wndHeight + m_kDeltaY*2), m_nBitDepth, 0));//Grupo5
 	ASSERT((DWORD_PTR(m_image.GetBits()) & 0xf) == 0); // make sure we are at least 128 bit aligned.(SSE2)
 	ASSERT((DWORD_PTR(n_image.GetBits()) & 0xf) == 0); // make sure we are at least 128 bit aligned.(SSE2)
 	ASSERT((DWORD_PTR(o_image.GetBits()) & 0xf) == 0); // make sure we are at least 128 bit aligned.(SSE2)
+	ASSERT((DWORD_PTR(t_image.GetBits()) & 0xf) == 0); // //Grupo5 - make sure we are at least 128 bit aligned.(SSE2)
 	ASSERT(m_image.GetPitch() > 0); // Verify top down DIB
 	ASSERT(n_image.GetPitch() > 0); // Verify top down DIB
 	ASSERT(o_image.GetPitch() > 0); // Verify top down DIB
+	ASSERT(t_image.GetPitch() > 0); //Grupo5 - Verify top down DIB
 	VERIFY(m_image.GetDC() != NULL); // Prefer the DC to exist for life of object
 	VERIFY(n_image.GetDC() != NULL); // Prefer the DC to exist for life of object
 	VERIFY(o_image.GetDC() != NULL); // Prefer the DC to exist for life of object
+	VERIFY(t_image.GetDC() != NULL); // Grupo5 - Prefer the DC to exist for life of object
 	OnCreated();
 
 	//Posterize inicializacao
@@ -73,6 +77,12 @@ void CSurface::Destroy()
 	o_image.ReleaseDC();
 	o_image.Destroy(); 
 	::ReleaseDC(m_pSrcWnd->GetSafeHwnd(), o_hDestDC);
+
+	//Grupo5
+	t_image.ReleaseDC();
+	t_image.Destroy(); 
+	::ReleaseDC(m_pSrcWnd->GetSafeHwnd(), t_hDestDC);
+
 	m_wndHeight = 0;
 	m_wndWidth = 0;
 }
@@ -331,8 +341,6 @@ void CSurface::BlitBits()
 
     ASSERT(bStat);
 }
-
-
 
 // GRUPO 9 - Filtro Posterize
 void CSurface::Posterize()
