@@ -24,7 +24,7 @@ public:
 	{ 
 	
 		//Grupo5
-		//M·scara do sobel
+		//M√°scara do sobel
 		//X
 		GXS[0][0] = -1; GXS[0][1] = 0; GXS[0][2] = 1;
 		GXS[1][0] = -2; GXS[1][1] = 0; GXS[1][2] = 2;
@@ -44,7 +44,7 @@ public:
 
 	void Import(const CImage &image, const CImage &image2);
 	
-	//Grupo 5 - MÈtodo usado para fazer copiar uma imagem para imagem_m(em exibiÁ„o)
+	//Grupo 5 - M√©todo usado para fazer copiar uma imagem para imagem_m(em exibi√ß√£o)
 	void Copy(const CImage &image);
 
     void ClearBits();
@@ -61,7 +61,7 @@ public:
 	virtual void GrayScale();
 	
 	//Grupo5
-	virtual void Sobel(); // neste mÈtodo est· a implementaÁ„o do Sobel
+	virtual void Sobel(); // neste m√©todo est√° a implementa√ß√£o do Sobel
 
     void Line(const CPoint &p1, const CPoint &p2, COLORREF c);
     void RandomLine(COLORREF c);
@@ -69,14 +69,14 @@ public:
 	// These methods compensate for m_kDelta
     void PointColor(int x, int y, COLORREF c);
 	
-	//Grupo 5 - Altera o valor de um pixel na imagem tempor·ria
+	//Grupo 5 - Altera o valor de um pixel na imagem tempor√°ria
 	void PointColorT(int x, int y, COLORREF c);
 	
     COLORREF PointColor(int x, int y) const;
     COLORREF PointColorO(int x, int y) const;
     COLORREF PointColorD(int x, int y) const;
 	
-	//Grupo 5 - Retorna um pixel da imagem tempor·ria
+	//Grupo 5 - Retorna um pixel da imagem tempor√°ria
 	COLORREF PointColorT(int x, int y) const;
 	
 	BYTE *GetPixelAddress(int x, int y) const
@@ -103,11 +103,16 @@ protected:
 	virtual void AdjustWidth(int * /*pWidth */)	{}
 	virtual void OnCreated() {}
 	
-	//Grupo5 - Vari·veis do Sobel
+	//Grupo5 - Vari√°veis do Sobel
 	char GXS[3][3];
 	char GYS[3][3];
+   
+  //Grupo5 - Imagem auxiliar criada para armazenar o resultado da imagem antes de exib√≠-la
+	int t_nBitDepth;
+	HDC t_hDestDC;
+	CImage t_image;
 	
-	//Grupo5 - vari·veis usadas pelo Sobel
+	//Grupo5 - vari√°veis usadas pelo Sobel
 	int	sumX;
 	int	sumY;
 	int	SUM;
