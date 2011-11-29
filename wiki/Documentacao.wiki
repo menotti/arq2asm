@@ -33,7 +33,7 @@ Implementa o modelo de execução SIMD (Single Instruction Multiple Data) pois a
 
 Trata-se do sucessor do MMX e permite aumentar performance em operações de ponto flutuante. Extende as operações do MMX para registradores XMM (64 bits) o que permite ao programador evitar os registradores MM, que não possuem suporte específico para operações de ponto flutuante, fornecendo maior precisão.
 
-==Análise de performance==
+===Análise de performance===
 
 Os programas em MMX e SSE2 usam recursos para aumentar a performance das operações e movimentações de informações: utilizam os registradores estendidos de 64 bits para executar várias instruções em um grande vetor de dados em um tempo reduzido, em comparação com os registradores usuais da linguagem. No caso do programa em questão, os registradores são usados para obtenção de vários pixels na tela de uma só vez, e baseado nessas localizações, fazer as operações necessárias em todos estes lugares.
 
