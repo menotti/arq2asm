@@ -33,6 +33,76 @@ Implementa o modelo de execução SIMD (Single Instruction Multiple Data) pois a
 
 Trata-se do sucessor do MMX e permite aumentar performance em operações de ponto flutuante. Extende as operações do MMX para registradores XMM (64 bits) o que permite ao programador evitar os registradores MM, que não possuem suporte específico para operações de ponto flutuante, fornecendo maior precisão.
 
+==Análise de performance==
+
+Os programas em MMX e SSE2 usam recursos para aumentar a performance das operações e movimentações de informações: utilizam os registradores estendidos de 64 bits para executar várias instruções em um grande vetor de dados em um tempo reduzido, em comparação com os registradores usuais da linguagem. No caso do programa em questão, os registradores são usados para obtenção de vários pixels na tela de uma só vez, e baseado nessas localizações, fazer as operações necessárias em todos estes lugares.
+
+*MMX-16*
+
+O código MMX para cores com 16 bits de profundidade consiste em:
+
+1.Passar o endereço do pixel da posição corrente para uma variável pCur, no formato ULONGLONG(64bits).
+
+2.Por manipulação deste ponteiro, obter as posições dos pixels ao redor (cUp, cDown, cLeft, cRight, cCur) e compará-los a uma máscara previamente inicializada para editar os bits das posições relevantes à cor.
+
+Após isto, as cores dos pixels ao redor são usadas na modificação desejada (no caso, estamos analisando o efeito Blur). A distribuição das cores é feita entre os pixels, e a próxima posição desejada é calculada. A operação é repetida.
+
+*MMX-24*
+
+O código MMX para cores com 24 bits de profundidade consiste em:
+
+1.Passar o endereço da posição corrente para uma variável pCur, no formato DWORD. 
+
+2.Cria-se uma variável de 64 bits cFader, que será usada nas operações para a modificação dos valores dos pixels. Isto é feito a partir de uma operação chamada UnpackBytesLo de forma simplificada ele pega a dword que pCur aponta e faz um tipo de concatenação com uma dword cheia de zeros da seguinte forma: suponha que pCur aponta pra dword ff0a0b0c. Neste caso, 0a0b0c representa o RGB do pixel e ff sua transparência. Quando se chama cCur.UnpackBytesLo ( *pCur ), ele empacota na variável cCur uma QWORD 00ff000a000b000c, ou seja, ele faz uma "mescla" byte a byte do vetor passado como referência com um vetor de zeros. Então, as operações feitas neste registrador são feitas duas vezes mais (como se fossem feitas em um bit válido e um bit que sempre está em zero). Isto rende uma perda de performance.
+
+3.Após todas as declarações, entra-se no loop da operação: A partir do ponteiro inicial, os pixels adjacentes são "desempacotados" e usados nas operações de modificação de cores. Calcula-se o próximo pixel e repete-se o passo 3.
+
+*MMX-32*
+
+O código MMX para cores com 32 bits de profundidade consiste em:
+
+1.Passar o endereço da posição corrente para uma variável pCur, no formato ULONGLONG. 
+
+2.Após todas as declarações, entra-se no loop da operação: A partir do ponteiro inicial, os pixels adjacentes(contando com os pixels da diagonal direita superior, diagonal direita inferior e o segundo pixel da direita) são "desempacotados" e usados nas operações de modificação de cores. 
+
+3.Depois das modificações das cores, os pixels são reempacotados em uma variável de 64 bits. Repetem-se os passos 2 e 3.
+
+_Observações sobre MMX:_
+
+Todas as operações em MMX envolvem o uso de instruções de empacotamento de bytes. Estas instruções tem alguns pontos onde a performance do sistema é afetada por operações desnecessárias nos pixels. Por exemplo, o PUNPCKLBW, instrução MMX para o desempacotamento de uma DWORD, gera bits zerados que não contribuem para o programa, e que entram em loops e operações supérfluas.
+
+Podemos ver pela performance dos códigos em MMX que estes não são eficientes neste programa, sendo mais lentos que a implementação Naive e a SSE2.
+
+*SSE2-16*
+
+Este código processa cada pixel em uma WORD, carregando poucos dados em cada uma de suas execuções, fazendo com que sua performance seja diminuída.
+
+1.Passar o endereço da posição corrente para uma variável pCur, no formato __m128i.
+
+2.Por meio de manipulações neste ponteiro, podemos obter as posições dos pixels adjacentes (cDownBase, etc). Estas posições são passadas por uma máscara: cada parte de 16 bits de um pixel tem os últimos cinco bits reservados para as informações de cor (cDown, cUp, etc).
+
+3.Após isto, ele executa as operações matemáticas para no pixel corrente e nos dois próximos pixels à direita. Avança o ponteiro e repetem-se os dois passos.
+
+*SSE2-24*
+
+1.Passar o endereço da posição corrente para uma variável pCur, no formato ULONGLONG.
+
+2.Com base neste ponteiro corrente, desempacota-o para obter os pixels adjacentes, e executa as operações matemáticas nas cores da posição corrente.
+
+3.Avança o ponteiro, e re-executa o passo 2.
+
+4.O resultado é empacotado na posição do ponteiro corrente. Avança o ponteiro, e recomeça o processo do passo 2.
+
+*SSE2-32*
+
+1.Passar o endereço da posição corrente para uma variável pCur, no formato ULONGLONG.
+
+2.Fazemos o casting deste ponteiro para o tipo RGBQUAD, que é formado por: três Bytes que fazem referência às cores vermelha, verde e azul, e um Byte reservado. O próximo ponteiro é definido aqui também.
+
+3.Fazemos as operações matemáticas para definir a cor do pixel corrente, e do próximo. O cFader entra logo depois, aumentando ou diminuindo o tom da cor.
+
+4.Empacotamos a cor do pixel corrente no seu ponteiro, e avançamos o pCur. Recomeça o processo a partir do 2.
+
 === Estudando o desempenho ===
 
 Numa primeira análise observamos as linhas de código (LOC) das implementações MMX e SSE2. Porém sabemos que trata-se apenas de um indicador de performance e não nos dá uma ideia precisa das reais diferenças entre as implementações. As linhas de código do Naive não foram consideradas, pois não apresentam diferença nenhuma.
@@ -45,7 +115,7 @@ Numa primeira análise observamos as linhas de código (LOC) das implementaçõe
 
 Já o gráfico a seguir mostra os resultados de testes feitos usando o código fornecido no repositório para os três conjuntos de instruções citados.
 
-http://chart.apis.google.com/chart?chxl=1:|16+bits|24+bits|32+bits&chxr=0,0,105&chxs=0,676767,11.5,0,lt,676767&chxt=y,x&chbh=14,5,10&chs=300x225&cht=bvg&chco=FF0000,00FF00,0000FF&chds=0,100,0,100,0,105&chd=t:87,84,89|42,77,70|66,105,88&chdl=Naive|MMX|SSE2&chtt=Gr%C3%A1fico+de+Desempenho+%28FPS%29.jpg
+http://chart.apis.google.com/chart?chxl=1:|16+bits|24+bits|32+bits&chxr=0,0,105&chxs=0,676767,11.5,0,lt,676767&chxt=y,x&chbh=a,5,10&chs=600x300&cht=bvg&chco=FF0000,00FF00,0000FF&chds=0,100,0,100,0,105&chd=t:87,84,89|42,77,70|66,105,88&chdl=Naive|MMX|SSE2&chtt=Gr%C3%A1fico+de+Desempenho+(FPS)&fake=name.png
 
 || *Versão* || *Naive* || *MMX* || *SSE2* ||
 || *16 bits* || 87 || 42 || 66 ||
@@ -55,72 +125,6 @@ http://chart.apis.google.com/chart?chxl=1:|16+bits|24+bits|32+bits&chxr=0,0,105&
 Obs1: Valores do eixo y em frames per second (fps) e testados em resolução 320x240.
 
 Obs2: Valores possuem certa variância devido ao fato do computador estar executando outras tarefas.
-
-	Os programas em MMX e SSE2 usam recursos para aumentar a performance das operações e movimentações de informações: utilizam os registradores estendidos de 64 bits para executar várias instruções em um grande vetor de dados em um tempo reduzido, em comparação com os registradores usuais da linguagem. No caso do programa em questão, os registradores são usados para obtenção de vários pixels na tela de uma só vez, e baseado nessas localizações, fazer as operações necessárias em todos estes lugares.
-
-*MMX-16*
-	O código MMX para cores com 16 bits de profundidade consiste em:
-
-1.	Passar o endereço do pixel da posição corrente para uma variável pCur, no formato ULONGLONG(64bits).
-
-2.	Por manipulação deste ponteiro, obter as posições dos pixels ao redor (cUp, cDown, cLeft, cRight, cCur) e compará-los a uma máscara previamente inicializada para editar os bits das posições relevantes à cor.
-
-
-Após isto, as cores dos pixels ao redor são usadas na modificação desejada (no caso, estamos analisando o efeito Blur). A distribuição das cores é feita entre os pixels, e a próxima posição desejada é calculada. A operação é repetida.
-
-*MMX-24*
-	O código MMX para cores com 24 bits de profundidade consiste em:
-
-1.	Passar o endereço da posição corrente para uma variável pCur, no formato DWORD. 
-
-2.	Cria-se uma variável de 64 bits cFader, que será usada nas operações para a modificação dos valores dos pixels. Isto é feito a partir de uma operação chamada UnpackBytesLo de forma simplificada ele pega a dword que pCur aponta e faz um tipo de concatenação com uma dword cheia de zeros da seguinte forma: suponha que pCur aponta pra dword ff0a0b0c. Neste caso, 0a0b0c representa o RGB do pixel e ff sua transparência. Quando se chama cCur.UnpackBytesLo ( *pCur ), ele empacota na variável cCur uma QWORD 00ff000a000b000c, ou seja, ele faz uma "mescla" byte a byte do vetor passado como referência com um vetor de zeros. Então, as operações feitas neste registrador são feitas duas vezes mais (como se fossem feitas em um bit válido e um bit que sempre está em zero). Isto rende uma perda de performance.
-
-3.	Após todas as declarações, entra-se no loop da operação: A partir do ponteiro inicial, os pixels adjacentes são "desempacotados" e usados nas operações de modificação de cores. Calcula-se o próximo pixel e repete-se o passo 3.
-
-*MMX-32*
-	O código MMX para cores com 32 bits de profundidade consiste em:
-1.	Passar o endereço da posição corrente para uma variável pCur, no formato ULONGLONG. 
-
-2.	Após todas as declarações, entra-se no loop da operação: A partir do ponteiro inicial, os pixels adjacentes(contando com os pixels da diagonal direita superior, diagonal direita inferior e o segundo pixel da direita) são "desempacotados" e usados nas operações de modificação de cores. 
-
-3.	Depois das modificações das cores, os pixels são reempacotados em uma variável de 64 bits. Repetem-se os passos 2 e 3.
-
-_Observações sobre MMX:_
-	Todas as operações em MMX envolvem o uso de instruções de empacotamento de bytes. Estas instruções tem alguns pontos onde a performance do sistema é afetada por operações desnecessárias nos pixels. Por exemplo, o PUNPCKLBW, instrução MMX para o desempacotamento de uma DWORD, gera bits zerados que não contribuem para o programa, e que entram em loops e operações supérfluas.
-	Podemos ver pela performance dos códigos em MMX que estes não são eficientes neste programa, sendo mais lentos que a implementação Naive e a SSE2.
-
-
-*SSE2-16*
-
-	Este código processa cada pixel em uma WORD, carregando poucos dados em cada uma de suas execuções, fazendo com que sua performance seja diminuída.
-
-1.	Passar o endereço da posição corrente para uma variável pCur, no formato __m128i.
-
-2.	Por meio de manipulações neste ponteiro, podemos obter as posições dos pixels adjacentes (cDownBase, etc). Estas posições são passadas por uma máscara: cada parte de 16 bits de um pixel tem os últimos cinco bits reservados para as informações de cor (cDown, cUp, etc).
-
-3.	Após isto, ele executa as operações matemáticas para no pixel corrente e nos dois próximos pixels à direita. Avança o ponteiro e repetem-se os dois passos.
-
-*SSE2-24*
-
-1.	Passar o endereço da posição corrente para uma variável pCur, no formato ULONGLONG.
-
-2.	Com base neste ponteiro corrente, desempacota-o para obter os pixels adjacentes, e executa as operações matemáticas nas cores da posição corrente.
-
-3.	Avança o ponteiro, e re-executa o passo 2.
-
-4.	O resultado é empacotado na posição do ponteiro corrente. Avança o ponteiro, e recomeça o processo do passo 2.
-
-*SSE2-32*
-
-1.	Passar o endereço da posição corrente para uma variável pCur, no formato ULONGLONG.
-
-2.	Fazemos o casting deste ponteiro para o tipo RGBQUAD, que é formado por: três Bytes que fazem referência às cores vermelha, verde e azul, e um Byte reservado. O próximo ponteiro é definido aqui também.
-
-3.	Fazemos as operações matemáticas para definir a cor do pixel corrente, e do próximo. O cFader entra logo depois, aumentando ou diminuindo o tom da cor.
-
-4.	Empacotamos a cor do pixel corrente no seu ponteiro, e avançamos o pCur. Recomeça o processo a partir do 2.
-
-
 
 
 
