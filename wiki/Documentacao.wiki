@@ -332,54 +332,54 @@ A sua implementação consiste no cálculo do gradiente da imagem. Esse cálculo
 {{{
 void CSurface::Sobel()
 {
-	COLORREF cCur;
+    COLORREF cCur;
 
-	sumX = 0;
-	sumY = 0;
-	SUM = 0;
+    sumX = 0;
+    sumY = 0;
+    SUM = 0;
 
-	//Percorre toda imagem
-	for (y = 0; y < m_wndHeight; y++) {
-		for (x = 0; x <m_wndWidth; x++) {
-			sumX = 0;
-			sumY = 0;
+    //Percorre toda imagem
+    for (y = 0; y < m_wndHeight; y++) {
+        for (x = 0; x <m_wndWidth; x++) {
+	    sumX = 0;
+	    sumY = 0;
 
-			//Se for boada, atribui o valor 0(preto)
-			if((y==0) || (y == (m_wndHeight - 1)) || (x==0) || (x == (m_wndWidth - 1)))
-				SUM = 0;
-			else{
-				for(I=-1; I<=1; I++){
-					for(J=-1; J<=1; J++){
-						piX = J + x;
-						piY = I + y;
+	    //Se for boada, atribui o valor 0(preto)
+	    if((y==0) || (y == (m_wndHeight - 1)) || (x==0) || (x == (m_wndWidth - 1)))
+	        SUM = 0;
+		else{
+		    for(I=-1; I<=1; I++){
+		        for(J=-1; J<=1; J++){
+		            piX = J + x;
+			    piY = I + y;
 
-						//Pega o valor da imagem corrente
-						cCur = PointColor(piX,piY);
+			    //Pega o valor da imagem corrente
+			    cCur = PointColor(piX,piY);
 
-						r = GetRValue(cCur);
-						g = GetGValue(cCur);
-						b = GetBValue(cCur);
+			    r = GetRValue(cCur);
+			    g = GetGValue(cCur);
+			    b = GetBValue(cCur);
 
-						NC = (r+g+b)/3;
+			    NC = (r+g+b)/3;
 
-						sumX = sumX + (NC) * GXS[J+1][I+1];
-						sumY = sumY + (NC) * GYS[J+1][I+1];
-					}
-				}
-
-				SUM = abs(sumX) + abs(sumY);
+			    sumX = sumX + (NC) * GXS[J+1][I+1];
+			    sumY = sumY + (NC) * GYS[J+1][I+1];
 			}
+		    }
 
-			if(SUM>255) SUM=255;
-			if(SUM<0) SUM=0;
-			newPixel = ((unsigned char)(SUM));
-			
-			PointColorT(x,y,RGB(newPixel,newPixel,newPixel));
+		    SUM = abs(sumX) + abs(sumY);
 		}
+
+		if(SUM>255) SUM=255;
+		if(SUM<0) SUM=0;
+		newPixel = ((unsigned char)(SUM));
+			
+		PointColorT(x,y,RGB(newPixel,newPixel,newPixel));
+	    }
 	}
 
-	//Quando terminar, copia o resultado para a imagem corrente
-	Copy(t_image);
+    //Quando terminar, copia o resultado para a imagem corrente
+    Copy(t_image);
 }
 }}}
 
