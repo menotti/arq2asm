@@ -126,6 +126,13 @@ Obs1: Valores do eixo y em frames per second (fps) e testados em resolução 320
 
 Obs2: Valores possuem certa variância devido ao fato do computador estar executando outras tarefas.
 
+=== Conclusões ===
+
+Após o estudo do funcionamento dos algoritmos e da análise de desempenho de cada um, podemos verificar que a implementação SSE-2 em 24 bits é a que possui melhor desempenho (fps) em relação aos demais.Como o SSE-2 é uma versão avançada do MMX (MMX -> SSE -> SSE-2), não é surpresa tal diferença na performance.
+
+Com relação às implementações restantes, podemos ver que o MMX não foi devidamente implementado, ou seja, poderia ter melhor desempenho se devidamente otimizado.
+
+Por fim, podemos afirmar que a implementação Naive possuí uma performance acima da média, uma vez que a única versão que supera seu desempenho é a SSE-2 de 24 bits.
 
 
 ----
