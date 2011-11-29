@@ -17,6 +17,7 @@ class CSSE2Surface32Intrinsic : public CSurface
 public:
     virtual void AdjustWidth(int *pWidth);
     virtual void BlurBits(); // this is where the MMX action is
+	virtual void GrayScale();
 protected:
 	virtual void OnCreated();
 private:
