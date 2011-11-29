@@ -144,6 +144,7 @@ BEGIN
         MENUITEM "Use &Fade\tF",				ID_VIEW_USE_FADE
 		MENUITEM "Use &GrayScale\tG",			ID_VIEW_USE_GRAY //Grupo 4
 		MENUITEM "Use &Sobel\tAlt+S",			ID_VIEW_USE_SOBEL //Grupo 5
+		MENUITEM "Use &Posterize\tP",			ID_VIEW_USE_POSTERIZE //Grupo 9
     END
     POPUP "&Help"
     BEGIN
@@ -177,6 +178,7 @@ BEGIN
     "F",            ID_VIEW_USE_FADE,		VIRTKEY, NOINVERT
 	"G",            ID_VIEW_USE_GRAY,		VIRTKEY, NOINVERT//Grupo 4
 	"S",            ID_VIEW_USE_SOBEL,		VIRTKEY, ALT, NOINVERT//Grupo 5
+	"P",            ID_VIEW_USE_POSTERIZE,	VIRTKEY, NOINVERT//Grupo 9
 END
 
 
