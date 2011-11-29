@@ -21,7 +21,20 @@ public:
 	CSurface() :
 		m_pSrcWnd(NULL), m_hDestDC(NULL),
 		m_wndHeight(0), m_wndWidth(0), m_nBitDepth(0), m_nByteDepth(0), alpha(0), alphadir(1)
-	{ }
+	{ 
+	
+		//Grupo5
+		//Máscara do sobel
+		//X
+		GXS[0][0] = -1; GXS[0][1] = 0; GXS[0][2] = 1;
+		GXS[1][0] = -2; GXS[1][1] = 0; GXS[1][2] = 2;
+		GXS[2][0] = -1; GXS[2][1] = 0; GXS[2][2] = 1;
+		//Y
+		GYS[0][0] = -1; GYS[0][1] = -2; GYS[0][2] = -1;
+		GYS[1][0] = 0; GYS[1][1] = 0; GYS[1][2] = 0;
+		GYS[2][0] = 1; GYS[2][1] = 2; GYS[2][2] = 1;
+	
+	}
 
 	virtual ~CSurface()
 	{ Destroy(); }
@@ -30,6 +43,9 @@ public:
 	void Destroy();
 
 	void Import(const CImage &image, const CImage &image2);
+	
+	//Grupo 5 - Método usado para fazer copiar uma imagem para imagem_m(em exibição)
+	void Copy(const CImage &image);
 
     void ClearBits();
     void StripeBits();
@@ -43,15 +59,26 @@ public:
 
 	//Grupo 4
 	virtual void GrayScale();
+	
+	//Grupo5
+	virtual void Sobel(); // neste método está a implementação do Sobel
 
     void Line(const CPoint &p1, const CPoint &p2, COLORREF c);
     void RandomLine(COLORREF c);
 
 	// These methods compensate for m_kDelta
     void PointColor(int x, int y, COLORREF c);
+	
+	//Grupo 5 - Altera o valor de um pixel na imagem temporária
+	void PointColorT(int x, int y, COLORREF c);
+	
     COLORREF PointColor(int x, int y) const;
     COLORREF PointColorO(int x, int y) const;
     COLORREF PointColorD(int x, int y) const;
+	
+	//Grupo 5 - Retorna um pixel da imagem temporária
+	COLORREF PointColorT(int x, int y) const;
+	
 	BYTE *GetPixelAddress(int x, int y) const
 	{ return((BYTE*)m_image.GetPixelAddress(x, y+m_kDeltaY)); }
 
@@ -75,6 +102,18 @@ public:
 protected:
 	virtual void AdjustWidth(int * /*pWidth */)	{}
 	virtual void OnCreated() {}
+	
+	//Grupo5 - Variáveis do Sobel
+	char GXS[3][3];
+	char GYS[3][3];
+	
+	//Grupo5 - variáveis usadas pelo Sobel
+	int	sumX;
+	int	sumY;
+	int	SUM;
+	BYTE r,g,b,NC;
+	int piX, piY, x, y, I, J;
+	char newPixel;
 
 	static const int m_kDeltaX = 1;
 	static const int m_kDeltaY = 1;
@@ -148,5 +187,36 @@ inline COLORREF CSurface::PointColorD(int x, int y) const
 	}
 	else {
 		return(*(COLORREF*)(n_image.GetPixelAddress(x, y+m_kDeltaY))); 
+	}
+}
+
+//Grupo5
+inline void CSurface::PointColorT(int x, int y, COLORREF c)
+{
+	// m_image.SetPixel() call ::SetPixel() which is too slow
+	// since it has to work with all DCs.
+
+	BYTE *p = (BYTE*)t_image.GetPixelAddress(x, y+m_kDeltaY);
+	if (m_nBitDepth == 16) {
+		*(WORD *)p = (WORD)(((c&0xf80000) >> 19) | ((c&0xf800) >> 6) | ((c&0xf8) << 7));
+	}
+	else {
+	    *p++ = GetBValue(c);
+    	*p++ = GetGValue(c);
+    	*p = GetRValue(c);
+	}
+}
+
+//Grupo5
+inline COLORREF CSurface::PointColorT(int x, int y) const
+{ 
+	// m_image.GetPixel() calls ::GetPixel() which is too slow
+	// since it has to work for all types of DCs.
+	if (m_nBitDepth == 16) {
+	    COLORREF c = (COLORREF)*(WORD*)t_image.GetPixelAddress(x, y+m_kDeltaY);
+	    return((c&0x7c00) << 9 | (c&0x3e0) << 6 | (c&0x1f) << 3);		
+	}
+	else {
+		return(*(COLORREF*)(t_image.GetPixelAddress(x, y+m_kDeltaY))); 
 	}
 }

@@ -105,6 +105,13 @@ void CSurface::StripeBits()
 
 }
 
+//Grupo5 - Função para fazer cópia de uma imagem
+void CSurface::Copy(const CImage &image){
+	image.BitBlt(m_image.GetDC(), 0, m_kDeltaY, 
+		GetVisibleWidth(), GetVisibleHeight(), 0, 0);
+	m_image.ReleaseDC();
+}
+
 void CSurface::RandomBits()
 {
     for (int i = 0; i < m_wndHeight; i++) {
@@ -187,6 +194,59 @@ void CSurface::GrayScale()
 			PointColor(j,i,RGB(b,g,r));
 		}
 	}
+}
+
+//Grupo5
+void CSurface::Sobel()
+{
+	COLORREF cCur;
+
+	sumX = 0;
+	sumY = 0;
+	SUM = 0;
+
+	//Percorre toda imagem
+	for (y = 0; y < m_wndHeight; y++) {
+		for (x = 0; x <m_wndWidth; x++) {
+			sumX = 0;
+			sumY = 0;
+
+			//Se for boada, atribui o valor 0(preto)
+			if((y==0) || (y == (m_wndHeight - 1)) || (x==0) || (x == (m_wndWidth - 1)))
+				SUM = 0;
+			else{
+				for(I=-1; I<=1; I++){
+					for(J=-1; J<=1; J++){
+						piX = J + x;
+						piY = I + y;
+
+						//Pega o valor da imagem corrente
+						cCur = PointColor(piX,piY);
+
+						r = GetRValue(cCur);
+						g = GetGValue(cCur);
+						b = GetBValue(cCur);
+
+						NC = (r+g+b)/3;
+
+						sumX = sumX + (NC) * GXS[J+1][I+1];
+						sumY = sumY + (NC) * GYS[J+1][I+1];
+					}
+				}
+
+				SUM = abs(sumX) + abs(sumY);
+			}
+
+			if(SUM>255) SUM=255;
+			if(SUM<0) SUM=0;
+			newPixel = ((unsigned char)(SUM));
+			
+			PointColorT(x,y,RGB(newPixel,newPixel,newPixel));
+		}
+	}
+
+	//Quando terminar, copia o resultado para a imagem corrente
+	Copy(t_image);
 }
 
 // nothing beats good old fashioned Bresenham

@@ -37,16 +37,19 @@ BEGIN_MESSAGE_MAP(CChildView, CWnd)
     ON_COMMAND(ID_VIEW_PAUSE_BLIT, OnViewPauseBlit)
     ON_COMMAND(ID_VIEW_USE_FADE, OnViewUseFade)
 	ON_COMMAND(ID_VIEW_USE_GRAY, OnViewUseGray)	//Grupo 4
+	ON_COMMAND(ID_VIEW_PAUSE_SOBEL, OnViewPauseSobel)//Grupo5
 	ON_UPDATE_COMMAND_UI(ID_VIEW_PAUSE_BLUR, OnUpdatePauseBlur)
 	ON_UPDATE_COMMAND_UI(ID_VIEW_PAUSE_SWARM, OnUpdatePauseSwarm)
 	ON_UPDATE_COMMAND_UI(ID_VIEW_PAUSE_BLIT, OnUpdatePauseBlit)
 	ON_UPDATE_COMMAND_UI(ID_VIEW_USE_FADE, OnUpdateUseFade)
 	ON_UPDATE_COMMAND_UI(ID_VIEW_USE_GRAY, OnUpdateUseGray)	//Grupo 4
+	ON_UPDATE_COMMAND_UI(ID_VIEW_PAUSE_SOBEL, OnUpdatePauseSobel)//Grupo5
 	ON_UPDATE_COMMAND_UI(ID_INDICATOR_PAUSE_BLUR, OnUpdatePauseBlur)
 	ON_UPDATE_COMMAND_UI(ID_INDICATOR_PAUSE_SWARM, OnUpdatePauseSwarm)
 	ON_UPDATE_COMMAND_UI(ID_INDICATOR_PAUSE_BLIT, OnUpdatePauseBlit)
 	ON_UPDATE_COMMAND_UI(ID_INDICATOR_USE_FADE, OnUpdateUseFade)
 	ON_UPDATE_COMMAND_UI(ID_INDICATOR_USE_GRAY, OnUpdateUseGray)	//Grupo 4
+	ON_UPDATE_COMMAND_UI(ID_INDICATOR_PAUSE_SOBEL, OnUpdatePauseSobel)//Grupo5
 	ON_UPDATE_COMMAND_UI(ID_INDICATOR_FPS, OnUpdateFPS)
 	ON_UPDATE_COMMAND_UI(ID_INDICATOR_RESOLUTION, OnUpdateResolution)
 	ON_COMMAND_RANGE(IDD_16BIT_MMXINTRINSICS, IDD_32BIT_GENERICCBLUR, OnImageFormats)
@@ -232,12 +235,21 @@ void CChildView::OnViewPauseBlit()
 void CChildView::OnViewUseFade()
 {
 	m_bUseFade = !m_bUseFade;
+	execSobel = false;//Grupo5
 }
 
 //Grupo 4
 void CChildView::OnViewUseGray()	
 {
 	m_bUseGray = !m_bUseGray;
+}
+
+//Grupo5
+void CChildView::OnViewPauseSobel()
+{
+	m_bPauseSobel = !m_bPauseSobel;
+	if(m_bPauseFade || !m_bPauseSwarm)
+		execSobel = false;
 }
 
 void CChildView::OnPaint() 
@@ -294,6 +306,16 @@ BOOL CChildView::OnIdle(LONG /*lCount*/)
 	//Grupo 4
 	if (m_bUseGray) {
 		m_pSurface->GrayScale();
+		bContinue = TRUE;
+	}
+	
+	//Grupo5
+	if (m_bPauseSobel && !execSobel) {
+		//verifica os Filtros ativos, para executar 1 ou mais vezes o Sobel
+		if(!m_bPauseFade && m_bPauseSwarm){
+			execSobel = true;
+		} 
+		m_pSurface->Sobel();
 		bContinue = TRUE;
 	}
 
@@ -525,6 +547,18 @@ void CChildView::OnUpdateUseGray(CCmdUI* pCmdUI)
 	}
 }
 
+//Grupo5
+void CChildView::OnUpdatePauseSobel(CCmdUI* pCmdUI)
+{
+	if (pCmdUI->m_nID == ID_INDICATOR_PAUSE_SOBEL) {
+		pCmdUI->Enable(m_bPauseSobel ? FALSE : TRUE);
+	}
+	else {
+		ASSERT(pCmdUI->m_nID == ID_VIEW_PAUSE_SOBEL);
+		pCmdUI->SetCheck(m_bPauseSobel ? 1 : 0);
+		pCmdUI->Enable(TRUE);
+	}
+}
 
 void CChildView::OnUpdateResolution(CCmdUI* pCmdUI)
 {
