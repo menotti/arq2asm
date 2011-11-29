@@ -73,7 +73,7 @@ IDR_MAINFRAME           ICON                    "MMXSwarm.ico"
 // Bitmap
 //
 
-IDR_MAINFRAME           BITMAP                  "res\\Toolbar.bmp"
+IDR_MAINFRAME           BITMAP                  "Toolbar.bmp"
 
 /////////////////////////////////////////////////////////////////////////////
 //
