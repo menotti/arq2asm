@@ -139,11 +139,12 @@ Descrever Blur, Blit e Swarm nas três versões (Normal, MMX e SSE).
 
 == Blur/Smooth (Borrar) ==
 
-Este efeito é obtido por meio da média do pixel com seus vizinhos, porém o pixel central tem peso maior.
+Este efeito é obtido por meio da média do pixel com seus vizinhos, porém o pixel central tem peso maior, deixando um rastro que ao passar do tempo (dos cálculos da média) vai desaparecendo.
+Desta maneira, ao pausar o BLUR, as Llamas do SWARM tendem a acelerar instantaneamente, pois é pausado todos os cálculos de desempacotamento, leitura, e operações matematicas, permitindo com que a capacidade de processamento possa ser utilizada por completa na movimentação das Llamas.
 
 === _Naive_ ===
 
-Nesta implementação o valor de cada pixel é multiplicado por 4 (`GetRValue(cCur) << 2`), somado aos 4 vizinhos e dividido por 8.
+Nesta implementação o valor de cada pixel é multiplicado por 4 (GetRValue(cCur) << 2), somado aos 4 vizinhos (esquerdo, direito, inferior e superior) (GetRValue(cLeft) + GetRValue(cRight) + GetRValue(cUp) + GetRValue(cDown)) e dividido por 8 (>> 3).
 
 {{{
 void CSurface::BlurBits()
@@ -169,39 +170,406 @@ void CSurface::BlurBits()
 
 === MMX ===
 
-TODO: descrever aqui
+16 bits: Nesta implementação, como o buffer é de 16 bits e os registradores MMX são de 64 bits, os dados podem ser alinhados, sendo possível manipular 4 pixels, acelerando o processo de desempacotamento e de leitura de dados. Os valores dos vizinhos são calculados com um valor base e uma máscara que contém que possuem que ativa os 5 primeiros bits a cada 16, e são realizadas 3 iterações para calcular a média do pixel com base nos valores vizinhos (esquerdo, direito, inferior e superior). Essa etapa é efetuada em cada pixel.
+
+{{{
+void CMMXSurface16Intrinsic::BlurBits()
+{
+    int height = GetVisibleHeight();
+    ULONGLONG *pCur  = (ULONGLONG *)GetPixelAddress(0,0);
+
+	CMMX cUpBase, cDownBase, cCurBase, cLeftBase, cRightBase;
+	CMMX cUp, cDown, cCur, cLeft, cRight;
+	CMMX cDest;
+	CMMX cMask(0x001f001f001f001fu); // colorspace mask - 5 bits per color
+
+	do {
+		int width = m_width;
+		do {
+			// Load pixels and do the mmx unpack
+			// Note: pwCur is used to do non-aligned
+			// data reads - which is not normally recommended.
+			// on X86, it is faster than loading aligned and
+			// shift-oring.
+			WORD *pwCur = (WORD *)pCur;
+			cLeftBase = *(ULONGLONG*)(pwCur-1);
+			cCurBase = pCur[0];
+			cRightBase = *(ULONGLONG*)(pwCur+1);
+			cUpBase = pCur[-m_qwpl];
+			cDownBase = pCur[+m_qwpl];
+
+			cLeft = cLeftBase & cMask;
+			cCur = cCurBase & cMask;
+			cRight = cRightBase & cMask;
+			cUp = cUpBase & cMask;
+			cDown = cDownBase & cMask;
+
+			// Actual math. Don't step on current, or right.
+			// Sum the 4 around and double the middle
+			// Do current pixel in this line
+			cDest = ((cDown+cUp+cLeft+cRight+(cCur<<2))>>3);
+			cMask <<= 5;
+
+			cLeft = cLeftBase & cMask;
+			cCur = cCurBase & cMask;
+			cRight = cRightBase & cMask;
+			cUp = cUpBase & cMask;
+			cDown = cDownBase & cMask;
+
+			// Actual math for next color space
+			cDest |= cMask & ((cDown+cUp+cLeft+cRight+(cCur<<2))>>3);
+			cMask <<= 5;
+
+			cLeft = (cLeftBase & cMask) >> 3;
+			cCur = (cCurBase & cMask) >> 3;
+			cRight = (cRightBase & cMask) >> 3;
+			cUp = (cUpBase & cMask) >> 3;
+			cDown = (cDownBase & cMask) >> 3;
+
+			// Actual math for next color space
+			cDest |= cMask & (cDown+cUp+cLeft+cRight+(cCur<<2));
+			*pCur++ = cDest;
+			cMask >>= 10;
+		} while (--width > 0);
+	} while (--height > 0);
+}
+}}}
+
+24 bits: Nesta implementação , como o buffer é de 24 bits e os registradores MMX sã0 de 64 bits, os dados não podem ser corretamente alinhados, não havendo grande vantagem em utilizar MMX na versão 24 bits, em comparação às outras. O valor de cada pixel é multiplicado por 4 (GetRValue(cCur) << 2), somado aos 4 vizinhos (esquerdo, direito, inferior e superior) (cDown+cUp+cLeft+cRight), dividido por 8 (>> 3) e atribuído ao pixel superior (cUp). O CMMX cFader é usado para acelerar o processo de clareamento (com TRIPPY: cUp += cFader) ou escurecimento (com FAST_FADE: cUp -= cFader).
+
+{{{
+void CMMXSurface24Intrinsic::BlurBits()
+{
+    int height = GetVisibleHeight();
+    DWORD *pCur  = (DWORD*)GetPixelAddress(0,0);
+
+	CMMX cFader;
+	CMMX cRight;
+	CMMX cLeft;
+	CMMX cUp, cDown, cCur;
+
+	cFader.UnpackBytesLo( 0x01010101 );
+	cLeft.Clear();
+
+	do {
+		int width = m_width;
+		do {
+			BYTE *bpCur = (BYTE *)pCur;
+			// Load pixels and do the mmx unpack
+			cCur.UnpackBytesLo( pCur[0] );
+			// treating non-aligned data as dwords isn't generally a good idea
+			cRight.UnpackBytesLo( *(DWORD *)(bpCur+3) );
+			cUp.UnpackBytesLo( pCur[-m_dwpl] );
+			cDown.UnpackBytesLo( pCur[m_dwpl] );
+
+			// Sum the 4 around and double the middle
+			// Do current pixel in this line
+			cUp = (cDown+cUp+cLeft+cRight+(cCur<<2))>>3;
+
+#if defined(TRIPPY)
+			cUp += cFader; // increase the fade to white
+#elif defined (FAST_FADE)
+    	    cUp -= cFader; // increase the fade to black
+#endif
+			// Reset the left before we write anything out.
+			// treating non-aligned data as dwords isn't generally a good idea
+			cLeft.UnpackBytesLo( *(DWORD *)(bpCur+1) );
+			*pCur++ = cUp.PackBytes();
+		} while (--width > 0);
+		pCur += m_delta;
+	} while (--height > 0);
+}
+}}}
+
+32 bits: Nesta implementação, como o buffer é de 32 bits e os registradores MMX são de 64 bits, os dados podem ser alinhados, sendo possível manipular 2 pixels, acelerando o processo de desempacotamento e de leitura de dados. O valor de cada pixel é multiplicado por 4 (GetRValue(cCur) << 2), somado aos 4 vizinhos (esquerdo, direito, inferior e superior) (cDown+cUp+cLeft+cRight), dividido por 8 (>> 3) e atrobuído ao pixel superior (cUp), e o pixel seguinte também é calculado, mustiplicando-o por 4 (), soamando aos vizinhos mais distantes (cDownRight+cUpRight+cCur+cRightRight), dividido por 8 (>> 3) e atribuído ao pixel inferior (cDown) .O CMMX cFader é usado para acelerar o processo de  clareamento (com TRIPPY: cUp += cFader) ou escurecimento (com FAST_FADE: cUp -= cFader).
+
+{{{
+void CMMXSurface32Intrinsic::BlurBits()
+{
+    int height = GetVisibleHeight();
+    DWORD *pCur  = (DWORD*)GetPixelAddress(0,0);
+
+	CMMX cFader;
+	CMMX cRight, cRightRight;
+	CMMX cDownRight;
+	CMMX cLeft;
+	CMMX cUpRight;
+	CMMX cUp, cDown, cCur;
+
+	cFader.UnpackBytesLo( 0x01010101 );
+	cLeft.Clear();
+	cCur.UnpackBytesLo( *pCur );
+
+	do {
+		int width = m_width;
+		do {
+			// Load pixels and do the mmx unpack
+			cRight.UnpackBytesLo( pCur[1] );
+			cRightRight.UnpackBytesLo( pCur[2] );
+			cUp.UnpackBytesLo( pCur[-m_dwpl] );
+			cUpRight.UnpackBytesLo( pCur[-m_dwpl+1] );
+			cDown.UnpackBytesLo( pCur[m_dwpl] );
+			cDownRight.UnpackBytesLo( pCur[m_dwpl+1] );
+
+			// Actual math. Don't step on current, or right.
+			// Sum the 4 around and double the middle
+			
+			// Do current pixel in this line
+			cUp = (cDown+cUp+cLeft+cRight+(cCur<<2))>>3;
+
+			// Do next pixel
+			cDown = (cDownRight+cUpRight+cCur+cRightRight+(cRight<<2))>>3;
+
+#if defined(TRIPPY)
+			cUp += cFader; // increase the fade to white
+			cDown += cFader; // increase the fade to white
+#elif defined (FAST_FADE)
+    	    cUp -= cFader; // increase the fade to black
+    	    cDown -= cFader; // increase the fade to black
+#endif
+			cLeft = cRight; 		// Slide left!
+			cCur = cRightRight;
+	
+			*(ULONGLONG *)pCur = cUp.PackBytes(cDown);
+			pCur += 2;
+		} while (--width > 0);
+	} while (--height > 0);
+}
+}}}
 
 === SSE(n) ===
 
-TODO: descrever aqui
+16 bits: Nesta implementação, como o buffer é de 16 bits e os registradores MMX são de 128 bits, os dados podem ser alinhados, sendo possível manipular 8 pixels, acelerando o processo de desempacotamento e de leitura de dados. Os valores dos vizinhos são calculados com um valor base e uma máscara que contém que possuem que ativa os 5 primeiros bits a cada 16, e são realizadas 3 iterações para calcular a média do pixel com base nos valores vizinhos (esquerdo, direito, inferior e superior). Essa etapa é efetuada em cada pixel.
+
+{{{
+void CSSE2Surface16Intrinsic::BlurBits()
+{
+    int height = GetVisibleHeight();
+    __m128i *pCur  = (__m128i *)GetPixelAddress(0,0);
+
+	CSSE2 cUpBase, cDownBase, cCurBase, cLeftBase, cRightBase;
+	CSSE2 cUp, cDown, cCur, cLeft, cRight;
+	CSSE2 cDest;
+	CSSE2 cMask;
+	cMask.Fill(0x001f001f001f001fu); // colorspace mask - 5 bits per color
+
+	do {
+		int width = m_width;
+		do {
+			// Load pixels and do the mmx unpack
+			// Note: pwCur is used to do non-aligned
+			// data reads - which is not normally recommended.
+			// on X86, it is faster than loading aligned and
+			// shift-oring.
+			WORD *pwCur = (WORD *)pCur;
+			cLeftBase.LoadU(pwCur-1);
+			cCurBase.Load(pCur);
+			cRightBase.LoadU(pwCur+1);
+			cUpBase.Load(pCur-m_qqwpl);
+			cDownBase.Load(pCur+m_qqwpl);
+
+			cLeft = cLeftBase & cMask;
+			cCur = cCurBase & cMask;
+			cRight = cRightBase & cMask;
+			cUp = cUpBase & cMask;
+			cDown = cDownBase & cMask;
+
+			// Actual math. Don't step on current, or right.
+			// Sum the 4 around and double the middle
+			// Do current pixel in this line
+			cDest = ((cDown+cUp+cLeft+cRight+(cCur<<2))>>3);
+			cMask <<= 5;
+
+			cLeft = cLeftBase & cMask;
+			cCur = cCurBase & cMask;
+			cRight = cRightBase & cMask;
+			cUp = cUpBase & cMask;
+			cDown = cDownBase & cMask;
+
+			// Actual math for next color space
+			cDest |= cMask & ((cDown+cUp+cLeft+cRight+(cCur<<2))>>3);
+			cMask <<= 5;
+
+			cLeft = (cLeftBase & cMask) >> 3;
+			cCur = (cCurBase & cMask) >> 3;
+			cRight = (cRightBase & cMask) >> 3;
+			cUp = (cUpBase & cMask) >> 3;
+			cDown = (cDownBase & cMask) >> 3;
+
+			// Actual math for next color space
+			cDest |= cMask & (cDown+cUp+cLeft+cRight+(cCur<<2));
+			cDest.Store(pCur++);
+			cMask >>= 10;
+		} while (--width > 0);
+	} while (--height > 0);
+}
+}}}
+
+24 bits: Nesta implementação , como o buffer é de 24 bits e os registradores MMX são de 128 bits, os dados não podem ser corretamente alinhados, não havendo grande vantagem em utilizar MMX na versão 24 bits, em comparação às outras. O valor de cada pixel é multiplicado por 4 (GetRValue(cCur) << 2), somado aos 4 vizinhos (esquerdo, direito, inferior e superior) (cDown+cUp+cLeft+cRight), dividido por 8 (>> 3) e atribuído ao pixel superior (cUp). O CMMX cFader é usado para acelerar o processo de clareamento (com TRIPPY: cUp += cFader) ou escurecimento (com FAST_FADE: cUp -= cFader).
+
+{{{
+void CSSE2Surface24Intrinsic::BlurBits()
+{
+    int height = GetVisibleHeight();
+    ULONGLONG *pCur  = (ULONGLONG*)GetPixelAddress(0,0);
+
+	CSSE2 cFader;
+	CSSE2 cRight, cLeft;
+	CSSE2 cUp, cDown, cCur;
+	CSSE2 cResult;
+
+	cFader.UnpackBytesLo( 0x0101010101010101u );
+	cLeft.Clear();
+
+	do {
+		int width = m_width;
+		do {
+			BYTE *bpCur = (BYTE *)pCur;
+			// Load pixels and do the mmx unpack
+			cCur.UnpackBytesLo( pCur[0] );
+			// treating non-aligned data as dwords isn't generally a good idea
+			cRight.UnpackBytesLo( *(ULONGLONG *)(bpCur+3) );
+			cUp.UnpackBytesLo( pCur[-m_qwpl] );
+			cDown.UnpackBytesLo( pCur[m_qwpl] );
+
+			// Sum the 4 around and double the middle
+			// Do current pixel in this line
+			cResult = (cDown+cUp+cLeft+cRight+(cCur<<2))>>3;
+
+			cLeft.UnpackBytesLo( *(ULONGLONG *)(bpCur+5) );
+			pCur++;
+			bpCur = (BYTE *)pCur;
+			cCur.UnpackBytesLo( pCur[0] );
+			cRight.UnpackBytesLo( *(ULONGLONG *)(bpCur+3) );
+			cUp.UnpackBytesLo( pCur[-m_qwpl] );
+			cDown.UnpackBytesLo( pCur[m_qwpl] );
+			cCur = (cDown+cUp+cLeft+cRight+(cCur<<2))>>3;
+
+#if defined(TRIPPY)
+			cCur += cFader; // increase the fade to white
+			cResult += cFader; // increase the fade to white
+#elif defined (FAST_FADE)
+			cCur -= cFader; // increase the fade to white
+			cResult -= cFader; // increase the fade to white
+#endif
+			// Reset the left before we write anything out.
+			// treating non-aligned data as dwords isn't generally a good idea
+			cLeft.UnpackBytesLo( *(ULONGLONG *)(bpCur+5) );
+			cResult.PackBytes(pCur-1, cCur);
+			pCur++;
+		} while (--width > 0);
+		pCur += m_delta;
+	} while (--height > 0);
+}
+}}}
+
+32 bits: Nesta implementação, como o buffer é de 32 bits e os registradores MMX são 128 bits, os dados podem ser alinhados, sendo possível manipular 4 pixels, acelerando o processo de desempacotamento e de leitura de dados. O valor de cada pixel é multiplicado por 4 (GetRValue(cCur) << 2), somado aos 4 vizinhos (esquerdo, direito, inferior e superior) (cDown+cUp+cLeft+cRight), dividido por 8 (>> 3) e atribuído ao pixel superior (cUp), e o pixel seguinte também é calculado, mustiplicando-o por 4 (), soamando aos vizinhos mais distantes (cDownRight+cUpRight+cCur+cRightRight), dividido por 8 (>> 3) e atribuído ao pixel inferior (cDown).O CMMX cFader é usado para acelerar o processo de  clareamento (com TRIPPY: cUp += cFader) ou escurecimento (com FAST_FADE: cUp -= cFader).
+
+{{{
+void CSSE2Surface32Intrinsic::BlurBits()
+{
+    int height = GetVisibleHeight();
+    ULONGLONG *pCur  = (ULONGLONG *)GetPixelAddress(0,0);
+	ASSERT((DWORD_PTR(pCur) & 0xF) == 0);
+
+	CSSE2 cFader;
+	CSSE2 cRight, cLeft;
+	CSSE2 cUp, cDown, cCur;
+	CSSE2 cResult;
+
+	cFader.UnpackBytesLo( 0x0101010101010101u );
+	cLeft.Clear();
+
+	do {
+		int width = m_width;
+		ASSERT((DWORD_PTR(pCur) & 0xF) == 0);
+		do {
+			RGBQUAD *pdwCur = (RGBQUAD*)pCur;
+			ULONGLONG *pNext = (ULONGLONG*)(pdwCur+1);
+
+			// Load pixels and do the mmx unpack
+			cCur.UnpackBytesLo( *pCur );
+			cRight.UnpackBytesLo( *pNext );
+			cUp.UnpackBytesLo( pCur[-m_qwpl] );
+			cDown.UnpackBytesLo( pCur[m_qwpl] );
+
+			// Actual math. Don't step on current, or right.
+			// Sum the 4 around and double the middle
+			
+			// Do current pixel in this line
+			cResult = (cDown+cUp+cLeft+cRight+(cCur<<2))>>3;
+
+			// Do next pixel
+			cLeft = cRight; 		// Slide left!
+			cCur.UnpackBytesLo( pCur[1] );
+			cRight.UnpackBytesLo( pNext[1] );
+			cUp.UnpackBytesLo( pCur[-m_qwpl+1] );
+			cDown.UnpackBytesLo( pCur[m_qwpl+1] );
+			cCur = (cDown+cUp+cLeft+cRight+(cCur<<2))>>3;
+
+#if defined(TRIPPY)
+			cCur += cFader; // increase the fade to white
+			cResult += cFader; // increase the fade to white
+#elif defined (FAST_FADE)
+    	    cCur -= cFader; // increase the fade to black
+    	    cResult -= cFader; // increase the fade to black
+#endif
+			cLeft = cRight; 		// Slide left!
+	
+			cResult.PackBytes(pCur, cCur);
+			pCur += 2;
+		} while (--width > 0);
+	} while (--height > 0);
+}
+}}}
 
 == Blit ==
 
-=== _Naive_ ===
+Nesta implementação, as dimensões da janela são verificadas através da função ASSERT (aborta a execução de um programa caso o(s) argumento(s) sejam inválidos). Em seguida, usa uma variável booleana para receber o resultado lógico da função BitBlt (transfere um bloco de bits que corresponde à core de um retângulo de pixels de um ponto da tela para outro) que também é verificada com a função ASSERT.
+Desta maneira, ao pausar o BLIT, a imagem parece estar pausada, e ao despausar, uma nova disposição é mostrada. Isso acontece pois os valores de cada ponto continuam sendo calculados e modificados, entretanto, sem serem transferidos para a tela.
 
-TODO: descrever aqui
+{{{
+void CSurface::BlitBits()
+{
+	ASSERT(m_wndHeight && m_wndWidth);
+    BOOL bStat = m_image.BitBlt(m_hDestDC, 0, 0, m_wndWidth, m_wndHeight, 0, m_kDeltaY);
 
-=== MMX ===
+    ASSERT(bStat);
+}
 
-TODO: descrever aqui
+inline BOOL CImage::BitBlt(
+	_In_ HDC hDestDC,
+	_In_ int xDest,
+	_In_ int yDest,
+	_In_ int nDestWidth,
+	_In_ int nDestHeight,
+	_In_ int xSrc,
+	_In_ int ySrc,
+	_In_ DWORD dwROP) const throw()
+{
+	ATLASSUME( m_hBitmap != NULL );
+	ATLENSURE_RETURN_VAL( hDestDC != NULL, FALSE );
 
-=== SSE(n) ===
+	GetDC();
 
-TODO: descrever aqui
+	BOOL bResult = ::BitBlt( hDestDC, xDest, yDest, nDestWidth, nDestHeight, m_hDC, xSrc, ySrc, dwROP );
+
+	ReleaseDC();
+
+	return bResult;
+}
+}}}
 
 == Swarm ==
 
 === _Naive_ ===
 
-TODO: descrever aqui
+Nesta implementação, foi definida a classe Swarm e suas funções de manipulação. O construtor (CSwarm::CSwarm()) cria um ponteiro para a imagem de fundo (*CSurface) que inicia com NULL. O destrutor (CSwarm::~CSwarm()) chama a função de destruição (CSwarm::Destroy()) que deleta todos os líderes, todas as lhamas, zera seus contadores e atribue NUL à imagem de fundo. A função de inicialização (CSwarm::Initialize) começa destruindo a imagem atual, verificando as dimensões da nova imagem, limita as bordas da imagem e cria líderes (classe de pontos que se movimentam randomicamente pela imagem deixando rastros brancos) e lhamas (classe de pontos que seguem os líderes e deixam rastros coloridos e trocam de cor quando atingem uma borda da imagem ou quando obtém um novo líder). A função GetLeader(*CSwarm::GetLeader()) retorna o líder a ser seguido pelas lhamas. A função (CSwarm::Tick()) faz um sorteio onde cria um novo líder a partir de outro e deleta o antigo, e em seguida aplica essa funçao para todos outros líderes e lhamas.
+Desta maneira, ao pausar o SWARM, o líder e suas lhamas param de se movimentar, fazendo com que os rastros parem de ser criados e desapareçam aos poucos, devido ao efeito do BLUR.
 
 === MMX ===
 
-TODO: descrever aqui
-
-=== SSE(n) ===
-
-TODO: descrever aqui
+-
 
 == Fade In/Out (Transição) ==
 
