@@ -38,18 +38,21 @@ BEGIN_MESSAGE_MAP(CChildView, CWnd)
     ON_COMMAND(ID_VIEW_USE_FADE, OnViewUseFade)
 	ON_COMMAND(ID_VIEW_USE_GRAY, OnViewUseGray)	//Grupo 4
 	ON_COMMAND(ID_VIEW_PAUSE_SOBEL, OnViewPauseSobel)//Grupo5
+	ON_COMMAND(ID_VIEW_PAUSE_POSTERIZE, OnViewPausePosterize)//Grupo 9
 	ON_UPDATE_COMMAND_UI(ID_VIEW_PAUSE_BLUR, OnUpdatePauseBlur)
 	ON_UPDATE_COMMAND_UI(ID_VIEW_PAUSE_SWARM, OnUpdatePauseSwarm)
 	ON_UPDATE_COMMAND_UI(ID_VIEW_PAUSE_BLIT, OnUpdatePauseBlit)
 	ON_UPDATE_COMMAND_UI(ID_VIEW_USE_FADE, OnUpdateUseFade)
 	ON_UPDATE_COMMAND_UI(ID_VIEW_USE_GRAY, OnUpdateUseGray)	//Grupo 4
 	ON_UPDATE_COMMAND_UI(ID_VIEW_PAUSE_SOBEL, OnUpdatePauseSobel)//Grupo5
+	ON_UPDATE_COMMAND_UI(ID_VIEW_PAUSE_POSTERIZE, OnUpdatePausePosterize)//Grupo 9
 	ON_UPDATE_COMMAND_UI(ID_INDICATOR_PAUSE_BLUR, OnUpdatePauseBlur)
 	ON_UPDATE_COMMAND_UI(ID_INDICATOR_PAUSE_SWARM, OnUpdatePauseSwarm)
 	ON_UPDATE_COMMAND_UI(ID_INDICATOR_PAUSE_BLIT, OnUpdatePauseBlit)
 	ON_UPDATE_COMMAND_UI(ID_INDICATOR_USE_FADE, OnUpdateUseFade)
 	ON_UPDATE_COMMAND_UI(ID_INDICATOR_USE_GRAY, OnUpdateUseGray)	//Grupo 4
 	ON_UPDATE_COMMAND_UI(ID_INDICATOR_PAUSE_SOBEL, OnUpdatePauseSobel)//Grupo5
+
 	ON_UPDATE_COMMAND_UI(ID_INDICATOR_FPS, OnUpdateFPS)
 	ON_UPDATE_COMMAND_UI(ID_INDICATOR_RESOLUTION, OnUpdateResolution)
 	ON_COMMAND_RANGE(IDD_16BIT_MMXINTRINSICS, IDD_32BIT_GENERICCBLUR, OnImageFormats)
@@ -69,7 +72,7 @@ CChildView::CChildView()
 	m_bPauseBlur = false;	
 	m_bPauseSwarm = false;
 	m_bPauseBlit = false;
-	m_bUseFade = false;
+	m_bPauseFade = false;
 	m_bUseGray = false;	//Grupo 4
 	m_bTimerPopped = false;
 	m_eSurf = eNone;
@@ -146,7 +149,7 @@ void CChildView::OnFileOpen()
 		m_bPauseBlur = true;
 		m_bPauseSwarm = true;
 		m_bUseGray = false;
-		m_bUseFade = false;
+		m_bPauseFade = false;
 	}
 }
 
@@ -234,7 +237,7 @@ void CChildView::OnViewPauseBlit()
 
 void CChildView::OnViewUseFade()
 {
-	m_bUseFade = !m_bUseFade;
+	m_bPauseFade = !m_bPauseFade;
 	execSobel = false;//Grupo5
 }
 
@@ -250,6 +253,11 @@ void CChildView::OnViewPauseSobel()
 	m_bPauseSobel = !m_bPauseSobel;
 	if(m_bPauseFade || !m_bPauseSwarm)
 		execSobel = false;
+}
+
+//Grupo 9
+void CChildView::OnViewPausePosterize(){
+	m_bPausePosterize = !m_bPausePosterize;
 }
 
 void CChildView::OnPaint() 
@@ -298,7 +306,7 @@ BOOL CChildView::OnIdle(LONG /*lCount*/)
 		bContinue = TRUE;
 	}
 
-	if (m_bUseFade) {
+	if (m_bPauseFade) {
 		m_pSurface->FadeInOut();
 		bContinue = TRUE;
 	}
@@ -316,6 +324,12 @@ BOOL CChildView::OnIdle(LONG /*lCount*/)
 			execSobel = true;
 		} 
 		m_pSurface->Sobel();
+		bContinue = TRUE;
+	}
+
+	//Grupo 9
+	if (!m_bPausePosterize) {
+		m_pSurface->Posterize();
 		bContinue = TRUE;
 	}
 
@@ -525,11 +539,11 @@ void CChildView::OnUpdatePauseBlit(CCmdUI* pCmdUI)
 void CChildView::OnUpdateUseFade(CCmdUI* pCmdUI)
 {
 	if (pCmdUI->m_nID == ID_INDICATOR_USE_FADE) {
-		pCmdUI->Enable(m_bUseFade ? FALSE : TRUE);
+		pCmdUI->Enable(m_bPauseFade ? FALSE : TRUE);
 	}
 	else {
 		ASSERT(pCmdUI->m_nID == ID_VIEW_USE_FADE);
-		pCmdUI->SetCheck(m_bUseFade ? 1 : 0);
+		pCmdUI->SetCheck(m_bPauseFade ? 1 : 0);
 		pCmdUI->Enable(TRUE);
 	}
 }
@@ -556,6 +570,19 @@ void CChildView::OnUpdatePauseSobel(CCmdUI* pCmdUI)
 	else {
 		ASSERT(pCmdUI->m_nID == ID_VIEW_PAUSE_SOBEL);
 		pCmdUI->SetCheck(m_bPauseSobel ? 1 : 0);
+		pCmdUI->Enable(TRUE);
+	}
+}
+
+//Grupo 9
+void CChildView::OnUpdatePausePosterize(CCmdUI *pCmdUI)
+{
+	if (pCmdUI->m_nID == ID_INDICATOR_PAUSE_POSTERIZE) {
+		pCmdUI->Enable(m_bPausePosterize ? FALSE : TRUE);
+	}
+	else {
+		ASSERT(pCmdUI->m_nID == ID_VIEW_PAUSE_POSTERIZE);
+		pCmdUI->SetCheck(m_bPausePosterize ? 1 : 0);
 		pCmdUI->Enable(TRUE);
 	}
 }

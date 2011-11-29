@@ -203,3 +203,33 @@ void CMMXSurface32Intrinsic::Sobel() {
 	//Quando terminar, copia o resultado para a imagem corrente
 	Copy(t_image);
 }
+
+
+
+// GRUPO 9 - Filtro Posterize
+//sobrescreve o Posterize do Surface
+void CMMXSurface32Intrinsic::Posterize()
+{
+	int height = GetVisibleHeight();
+    DWORD *pCur  = (DWORD *)GetPixelAddress(0,0);	// cada pixel tem 32bits, 1byte para cada canal de cor: alfa, red, green, blue
+
+	// Variaveis do tipo unsigned long long, de 64 bits
+	ULONGLONG mascara = 0xC0C0C0C0C0C0C0C0;		//0xC = 1100, preservar dois MSD de cada byte.
+	ULONGLONG pixel;
+
+	/* Iteracao principal, processa 2 pixeis em cada iteracao */
+	do {
+		int width = m_width;
+		do {
+			pixel = *(ULONGLONG *)pCur;
+			// inline assembly
+			__asm{
+				movq mm0, pixel;	// ler pixeis atuais para registrador
+				pand mm0, mascara	// aplicar mascara para descardar bits menos significativos
+				movq pixel, mm0;
+			}
+			*(ULONGLONG *)pCur = pixel;
+			pCur+= 2;
+		} while (--width > 0);
+	} while (--height > 0);
+}

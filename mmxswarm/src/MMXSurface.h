@@ -19,6 +19,7 @@ public:
     virtual void BlurBits(); // this is where the MMX action is
 	virtual void GrayScale();	//Grupo 4
 		virtual void Sobel();	// Grupo5
+	virtual void Posterize();	// Grupo 9
 protected:
 	virtual void OnCreated();
 private:
@@ -31,6 +32,7 @@ class CMMXSurface24Intrinsic : public CSurface
 public:
     virtual void BlurBits(); // this is where the MMX action is	
 	virtual void Sobel();	//Grupo5
+	virtual void Posterize();	// Grupo 9
 protected:
 	virtual void OnCreated();
 private:
@@ -45,6 +47,7 @@ public:
     virtual void AdjustWidth(int *pWidth);
     virtual void BlurBits(); // this is where the MMX action is	
 	virtual void Sobel();	// Grupo5	
+	virtual void Posterize();	// Grupo 9
 protected:
 	virtual void OnCreated();
 private:

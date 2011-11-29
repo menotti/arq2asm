@@ -134,3 +134,10 @@ void CMMXSurface24Intrinsic::Sobel() {
 	//Quando terminar, copia o resultado para a imagem corrente
 	Copy(t_image);
 }
+
+// GRUPO 9 - Filtro Posterize
+//sobrescreve o Posterize do Surface
+void CMMXSurface24Intrinsic::Posterize()
+{
+	//Stub
+}
