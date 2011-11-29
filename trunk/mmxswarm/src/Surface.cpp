@@ -53,6 +53,10 @@ void CSurface::Create(CWnd *pWnd, int nBitDepth)
 	VERIFY(n_image.GetDC() != NULL); // Prefer the DC to exist for life of object
 	VERIFY(o_image.GetDC() != NULL); // Prefer the DC to exist for life of object
 	OnCreated();
+
+	//Posterize inicializacao
+	setNivel(6);
+	inicializar();
 }
 
 void CSurface::Destroy()
@@ -326,4 +330,46 @@ void CSurface::BlitBits()
         m_wndWidth, m_wndHeight, 0, m_kDeltaY);
 
     ASSERT(bStat);
+}
+
+
+
+// GRUPO 9 - Filtro Posterize
+void CSurface::Posterize()
+{
+	if (!inicializado) {
+		inicializar();
+		inicializado = true;
+	}
+	COLORREF cCur = PointColor(0,0);
+    BYTE r, g, b;
+    for (int i = 0; i < m_wndHeight; i++) {
+        for (int j = 0; j < m_wndWidth; j++) {
+			cCur = PointColor(j,i);
+            //r = (BYTE)((int)GetRValue(cCur)/2);
+            //g = (BYTE)((int)GetGValue(cCur)/2);
+            //b = (BYTE)((int)GetBValue(cCur)/2);
+			r = (BYTE)(nivel[(int)GetRValue(cCur)]);
+			g = (BYTE)(nivel[(int)GetGValue(cCur)]);
+			b = (BYTE)(nivel[(int)GetBValue(cCur)]);
+            PointColor(j, i, RGB(b,g,r)); // RGBs are physically inverted
+        }
+    }
+}
+void CSurface::setNivel(int n)
+{
+	if(n>0){
+		numNivel=n;
+		inicializado = false;
+	}
+}
+int CSurface::getNivel()
+{
+	return numNivel;
+}
+void CSurface::inicializar()
+{
+	if (numNivel != 1)
+		for (int i = 0; i < 256; i++)
+			nivel[i] = 255 * (numNivel*i / 256) / (numNivel-1);
 }

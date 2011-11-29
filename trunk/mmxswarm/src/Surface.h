@@ -79,6 +79,13 @@ public:
 	//Grupo 5 - Retorna um pixel da imagem temporária
 	COLORREF PointColorT(int x, int y) const;
 	
+	// GRUPO 9 - Filtro Posterize
+	void setNivel(int n);	// definir numero de niveis
+	int getNivel();
+	virtual void Posterize();	//aplicar filtro
+	void inicializar();			//inicializacao de vetor
+
+
 	BYTE *GetPixelAddress(int x, int y) const
 	{ return((BYTE*)m_image.GetPixelAddress(x, y+m_kDeltaY)); }
 
@@ -119,6 +126,13 @@ protected:
 	BYTE r,g,b,NC;
 	int piX, piY, x, y, I, J;
 	char newPixel;
+
+	
+	// GRUPO 9 - Filtro Posterize
+		// variaveis
+	int numNivel;
+	int nivel[256];
+	bool inicializado;
 
 	static const int m_kDeltaX = 1;
 	static const int m_kDeltaY = 1;

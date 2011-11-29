@@ -53,6 +53,7 @@ protected:
 	afx_msg void OnUpdateUseFade(CCmdUI* pCmdUI);
 	afx_msg void OnUpdateUseGray(CCmdUI* pCmdUI);	//Grupo 4
 	afx_msg void OnUpdatePauseSobel(CCmdUI* pCmdUI);//Grupo5
+	afx_msg void OnUpdatePausePosterize(CCmdUI* pCmdUI);//Grupo 9
 	afx_msg void OnUpdateResolution(CCmdUI* pCmdUI);
 	afx_msg void OnUpdateImageFormats(CCmdUI* pCmdUI);
 	afx_msg void OnFileOpen();
@@ -63,6 +64,7 @@ protected:
 	afx_msg void OnViewUseFade();
 	afx_msg void OnViewUseGray();	//Grupo 4
 	afx_msg void OnViewPauseSobel();//Grupo5
+	afx_msg void OnViewPausePosterize();//Grupo 9
 	afx_msg void OnImageFormats(UINT nID);
 	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
 	//}}AFX_MSG
@@ -95,11 +97,12 @@ private:
 	bool	m_bPauseBlur;	
 	bool	m_bPauseSwarm;
 	bool	m_bPauseBlit;
-	bool	m_bUseFade;
+	bool	m_bPauseFade;
 	bool	m_bUseGray;  //Grupo 4
-	bool	m_bPauseSobel;//Grupo5	
+	bool	m_bPauseSobel;//Grupo5
+	bool	m_bPausePosterize;//Grupo 9
 	bool    m_bTimerPopped;
-	bool	execSobel;//Grupo5 - Verifica se executou o Sobel alguma vez quando fadeIn est· off
+	bool	execSobel;//Grupo5 - Verifica se executou o Sobel alguma vez quando fadeIn estÅEoff
 
 	static const UINT_PTR m_kTimerID = 31;
 	static const UINT m_kTimerDelay = 1500;
