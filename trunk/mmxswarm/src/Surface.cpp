@@ -196,16 +196,17 @@ void CSurface::FadeInOut()
 //Grupo 4
 void CSurface::GrayScale()
 {
-	COLORREF cCur;
-	BYTE r, g, b;
+	COLORREF cCur;		//declara um dword
+	BYTE r, g, b;		//variáveis tipo byte que receberão os valores RGB
 
+	//realiza um loop dentro do outro para percorrer a tela inteira
 	for (int i = 0; i < m_wndHeight; i++) {
 		for (int j = 0; j < m_wndWidth; j++) {
-			cCur = PointColor(j,i);
-			r = (BYTE)((GetRValue(cCur)+GetGValue(cCur)+GetBValue(cCur))/3);
-			g = (BYTE)((GetRValue(cCur)+GetGValue(cCur)+GetBValue(cCur))/3);
-			b = (BYTE)((GetRValue(cCur)+GetGValue(cCur)+GetBValue(cCur))/3);			
-			PointColor(j,i,RGB(b,g,r));
+			cCur = PointColor(j,i);		//pega um pixel da tela da posição [i,j]
+			r = (BYTE)((GetRValue(cCur)+GetGValue(cCur)+GetBValue(cCur))/3);	//realiza média entre valores RGB e atualiza valor R
+			g = (BYTE)((GetRValue(cCur)+GetGValue(cCur)+GetBValue(cCur))/3);	//realiza média entre valores RGB e atualiza valor G
+			b = (BYTE)((GetRValue(cCur)+GetGValue(cCur)+GetBValue(cCur))/3);	//realiza média entre valores RGB e atualiza valor B
+			PointColor(j,i,RGB(b,g,r));		//reescreve na tela o pixel do valores RGB modificados na posição [i,j]
 		}
 	}
 }
