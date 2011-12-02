@@ -264,6 +264,25 @@ void CSurface::Sobel()
 	Copy(t_image);
 }
 
+//Grupo 12
+void CSurface::GrayFilter()
+{
+	COLORREF cCur;		//declara um dword
+	BYTE r, g, b;		//variáveis tipo byte que receberão os valores RGB
+
+
+	//realiza um loop dentro do outro para percorrer a tela inteira
+	for (int i = 0; i < m_wndHeight; i++) {
+		for (int j = 0; j < m_wndWidth; j++) {
+			cCur = PointColor(j,i);					//pega o pixel de posição [i,j] na tela
+			r = (BYTE)((GetRValue(cCur)+255)/2);	//realiza média do canal R com o branco e atualiza
+			g = (BYTE)((GetGValue(cCur)+255)/2);	//realiza média do canal G com o branco e atualiza
+			b = (BYTE)((GetBValue(cCur)+255)/2);	//realiza média do canal B com o branco e atualiza
+			PointColor(j,i,RGB(b,g,r));				//reescreve na tela o pixel do valores RGB modificados na posição [i,j]
+		}
+	}
+}
+
 // nothing beats good old fashioned Bresenham
 void CSurface::Line(const CPoint &p1, const CPoint &p2, COLORREF c)
 {

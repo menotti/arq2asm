@@ -63,6 +63,9 @@ public:
 	//Grupo 5
 	virtual void Sobel(); // neste método está a implementação do Sobel
 
+	//Grupo 12
+	virtual void GrayFilter();
+
     void Line(const CPoint &p1, const CPoint &p2, COLORREF c);
     void RandomLine(COLORREF c);
 

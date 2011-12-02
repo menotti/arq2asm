@@ -32,7 +32,8 @@
 #define ID_INDICATOR_USE_FADE         	59147
 #define ID_INDICATOR_USE_GRAY			59148 //Grupo 4
 #define ID_INDICATOR_USE_SOBEL			59149 //Grupo 5
-#define ID_INDICATOR_USE_POSTERIZE    59150 //Grupo 9
+#define ID_INDICATOR_USE_POSTERIZE		59150 //Grupo 9
+#define ID_INDICATOR_USE_GRAYF			59151 //Grupo 12
 #define ID_VIEW_PAUSE_SWARM             59394
 #define ID_VIEW_PAUSE_BLUR              59395
 #define ID_VIEW_PAUSE_BLIT              59396
@@ -40,6 +41,7 @@
 #define ID_VIEW_USE_GRAY				59398 //Grupo 4
 #define ID_VIEW_USE_SOBEL				59399 //Grupo 5
 #define ID_VIEW_USE_POSTERIZE			59400 //Grupo 9
+#define ID_VIEW_USE_GRAYF				59401 //Grupo 12
 
 // Next default values for new objects
 // 
