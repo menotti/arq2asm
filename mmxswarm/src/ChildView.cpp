@@ -39,6 +39,7 @@ BEGIN_MESSAGE_MAP(CChildView, CWnd)
 	ON_COMMAND(ID_VIEW_USE_GRAY, OnViewUseGray)	//Grupo 4
 	ON_COMMAND(ID_VIEW_USE_SOBEL, OnViewUseSobel)//Grupo 5
 	ON_COMMAND(ID_VIEW_USE_POSTERIZE, OnViewUsePosterize)//Grupo 9
+	ON_COMMAND(ID_VIEW_USE_GRAYF, OnViewUseGrayF)	//Grupo 12
 	ON_UPDATE_COMMAND_UI(ID_VIEW_PAUSE_BLUR, OnUpdatePauseBlur)
 	ON_UPDATE_COMMAND_UI(ID_VIEW_PAUSE_SWARM, OnUpdatePauseSwarm)
 	ON_UPDATE_COMMAND_UI(ID_VIEW_PAUSE_BLIT, OnUpdatePauseBlit)
@@ -46,12 +47,14 @@ BEGIN_MESSAGE_MAP(CChildView, CWnd)
 	ON_UPDATE_COMMAND_UI(ID_VIEW_USE_GRAY, OnUpdateUseGray)	//Grupo 4
 	ON_UPDATE_COMMAND_UI(ID_VIEW_USE_SOBEL, OnUpdateUseSobel)//Grupo 5
 	ON_UPDATE_COMMAND_UI(ID_VIEW_USE_POSTERIZE, OnUpdateUsePosterize)//Grupo 9
+	ON_UPDATE_COMMAND_UI(ID_VIEW_USE_GRAYF, OnUpdateUseGrayF)	//Grupo 12
 	ON_UPDATE_COMMAND_UI(ID_INDICATOR_PAUSE_BLUR, OnUpdatePauseBlur)
 	ON_UPDATE_COMMAND_UI(ID_INDICATOR_PAUSE_SWARM, OnUpdatePauseSwarm)
 	ON_UPDATE_COMMAND_UI(ID_INDICATOR_PAUSE_BLIT, OnUpdatePauseBlit)
 	ON_UPDATE_COMMAND_UI(ID_INDICATOR_USE_FADE, OnUpdateUseFade)
 	ON_UPDATE_COMMAND_UI(ID_INDICATOR_USE_GRAY, OnUpdateUseGray)	//Grupo 4
 	ON_UPDATE_COMMAND_UI(ID_INDICATOR_USE_SOBEL, OnUpdateUseSobel)//Grupo 5
+	ON_UPDATE_COMMAND_UI(ID_INDICATOR_USE_GRAYF, OnUpdateUseGrayF)	//Grupo 12
 	ON_UPDATE_COMMAND_UI(ID_INDICATOR_FPS, OnUpdateFPS)
 	ON_UPDATE_COMMAND_UI(ID_INDICATOR_RESOLUTION, OnUpdateResolution)
 	ON_COMMAND_RANGE(IDD_16BIT_MMXINTRINSICS, IDD_32BIT_GENERICCBLUR, OnImageFormats)
@@ -74,6 +77,7 @@ CChildView::CChildView()
 	m_bPauseFade = false;
 	m_bUseGray = false;	//Grupo 4
 	m_bUseSobel = false;	//Grupo 5
+	m_bUseGrayF = false;	//Grupo 12
 	m_bTimerPopped = false;
 	m_eSurf = eNone;
 	execSobel = false; //Grupo 5
@@ -261,6 +265,12 @@ void CChildView::OnViewUsePosterize(){
 	m_bUsePosterize = !m_bUsePosterize;
 }
 
+//Grupo 12
+void CChildView::OnViewUseGrayF()	
+{
+	m_bUseGrayF = !m_bUseGrayF;
+}
+
 void CChildView::OnPaint() 
 {
 	CPaintDC dc(this); // device context for painting
@@ -331,6 +341,12 @@ BOOL CChildView::OnIdle(LONG /*lCount*/)
 	//Grupo 9
 	if (!m_bUsePosterize) {
 		m_pSurface->Posterize();
+		bContinue = TRUE;
+	}
+
+	//Grupo 12
+	if (m_bUseGrayF) {
+		m_pSurface->GrayFilter();
 		bContinue = TRUE;
 	}
 
@@ -584,6 +600,19 @@ void CChildView::OnUpdateUsePosterize(CCmdUI *pCmdUI)
 	else {
 		ASSERT(pCmdUI->m_nID == ID_VIEW_USE_POSTERIZE);
 		pCmdUI->SetCheck(m_bUsePosterize ? 1 : 0);
+		pCmdUI->Enable(TRUE);
+	}
+}
+
+//Grupo 12
+void CChildView::OnUpdateUseGrayF(CCmdUI* pCmdUI)
+{
+	if (pCmdUI->m_nID == ID_INDICATOR_USE_GRAYF) {
+		pCmdUI->Enable(m_bUseGrayF ? FALSE : TRUE);
+	}
+	else {
+		ASSERT(pCmdUI->m_nID == ID_VIEW_USE_GRAYF);
+		pCmdUI->SetCheck(m_bUseGrayF ? 1 : 0);
 		pCmdUI->Enable(TRUE);
 	}
 }
