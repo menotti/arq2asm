@@ -100,3 +100,10 @@ void CSSE2Surface24Intrinsic::BlurBits()
 		pCur += m_delta;
 	} while (--height > 0);
 }
+
+// GRUPO 9 - Filtro Posterize
+//sobrescreve o Posterize do Surface
+void CSSE2Surface24Intrinsic::Posterize()
+{
+	//Stub
+}

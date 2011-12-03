@@ -147,3 +147,39 @@ void CSSE2Surface32Intrinsic::GrayScale()
 		} while (--width > 0);
 	} while (--height > 0);
 }
+
+// GRUPO 9 - Filtro Posterize
+//sobrescreve o Posterize do Surface
+void CSSE2Surface32Intrinsic::Posterize()
+{
+	int height = GetVisibleHeight();
+    DWORD *pCur  = (DWORD *) GetPixelAddress(0,0);	// cada pixel tem 32bits, 1byte para cada canal de cor: alfa, red, green, blue
+
+	// Variaveis do tipo unsigned long long, de 64 bits
+	ULONGLONG mascara = 0xC0C0C0C0C0C0C0C0;		//0xC = 1100, preservar dois MSD de cada byte.
+	ULONGLONG pixel1, pixel2;
+
+	/* Iteracao principal, processa 2 pixels em cada iteracao */
+	do {
+		int width = m_width;
+		do {
+			pixel1 = *(ULONGLONG *)pCur;
+			pixel2 = *(ULONGLONG *)(pCur+2);
+			// inline assembly
+			__asm{
+				movq xmm0, pixel1	// ler pixels atuais para registrador
+				movhpd xmm0, pixel2
+				movq xmm1, mascara
+				movhpd xmm1, mascara
+
+				pand xmm0, xmm1	// aplicar mascara para descartar bits menos significativos
+
+				movhpd pixel2, xmm0
+				movq pixel1, xmm0
+			}
+			*(ULONGLONG *)pCur = pixel1;
+			*(ULONGLONG *)(pCur+2) = pixel2;
+			pCur+= 4;
+		} while (--width > 0);
+	} while (--height > 0);
+}
