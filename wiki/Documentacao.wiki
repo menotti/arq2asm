@@ -625,76 +625,175 @@ Para esta implementação os valores R, G, B são atualizados com uma média sim
 {{{
 void CSurface::GrayScale()
 {
-	COLORREF cCur;
-	BYTE r, g, b;
+	COLORREF cCur;		//declara um dword
+	BYTE r, g, b;		//variáveis tipo byte que receberão os valores RGB
 
+	//realiza um loop dentro do outro para percorrer a tela inteira
 	for (int i = 0; i < m_wndHeight; i++) {
 		for (int j = 0; j < m_wndWidth; j++) {
-			cCur = PointColor(j,i);
-			r = (BYTE)((GetRValue(cCur)+GetGValue(cCur)+GetBValue(cCur))/3);
-			g = (BYTE)((GetRValue(cCur)+GetGValue(cCur)+GetBValue(cCur))/3);
-			b = (BYTE)((GetRValue(cCur)+GetGValue(cCur)+GetBValue(cCur))/3);			
-			PointColor(j,i,RGB(b,g,r));
+			cCur = PointColor(j,i);		//pega um pixel da tela da posição [i,j]
+			r = (BYTE)((GetRValue(cCur)+GetGValue(cCur)+GetBValue(cCur))/3);	//realiza média entre valores RGB e atualiza valor R
+			g = r;	//atualiza valor de G com média ja calculada em R
+			b = r;	//atualiza valor de B com média ja calculada em R
+			PointColor(j,i,RGB(b,g,r));		//reescreve na tela o pixel do valores RGB modificados na posição [i,j]
 		}
 	}
 }
 }}}
 
+Para uma imagem estática de 1498x935 esta implementação consegue calcular 10 fps. 
 
 === MMX ===
 
-Esta implementação utiliza o empacotamento de dados mmx através do método UnpackBytesLo. Para retirar os valores RGB destes dados empacotados foi utilizada um máscara que pega 1 byte por vez. Com isso isolamos os valores RGB para realizar uma média e com esta média formamos um novo dado empacotado, gerando assim uma imagem em tons de cinza. Como este empacotamento realiza um tipo de "fusão" entre uma dword do ponto atual da imagem e um dword 0, foi necessária a realização do dobro de operações, por isso a variável height é multiplicada por 2, o que consequentemente pesará no desempenho da função, como já visto na parte de introdução citada no começo deste documento. 
+Esta implementação utilizou inline assembly para acessar os registradores de 64 bits mmx. A ideia do código é simples: através de uma máscara que seleciona um byte por vez, os valores RGB são extraídos e uma média simples é realizada entre eles. Com isso o valor do pixel atual é modificado utilizando a média calculada anteriormente.  
  
 {{{
 void CMMXSurface32Intrinsic::GrayScale()
 {
-    int height = GetVisibleHeight()*2;
-    DWORD *pCur  = (DWORD *)GetPixelAddress(0,0);
+    int height = GetVisibleHeight()*2;	//altura multiplicada por 2 pois são pixels de 32 bits em variáveis de64 bits (2x maior)
+    DWORD *pCur  = (DWORD *)GetPixelAddress(0,0);	// cada pixel tem 32bits, 1byte para cada canal de cor: alfa, red, green, blue
 
-        CMMX cCur,cRight;
-        CMMX cMask;
-        CMMX cR,cG,cB;
-        CMMX media;
+	// Variaveis do tipo unsigned long long, de 64 bits
+	ULONGLONG mascara = 0xFF;	//seleciona um byte de alguma variável (utilizada para pegar valores individuais de RGB)	
+	ULONGLONG pixel;	//recebe os valores referentes a um ponto da tela
+	ULONGLONG next;		//recebe os valores do próximo ponto a partir de pixel 
+	
+	pixel = *(ULONGLONG *)pCur;	//faz um casting 64 bits dos dados do ponto atual na variável pixel
+	
+	//loops para percorrer toda a tela
+	do {
+		int width = m_width;
+		do {
+			
+			next = *(ULONGLONG *)(pCur+1);	//próximo ponto recebe o ponteiro que aponta para um ponto na tela + 1
+			
+			//utilização dos registradores mmx 64 bits com inline assembly 
+			__asm{
+				movq mm0, pixel		//registrador mm0 reebe o valor do pixel atual
+				pand mm0, mascara	//valor de mm0 recebe uma mascara para selecionar seu 1 byte menos significativo (B)
+				movq mm1, mm0		//guarda o valor calculado acima em mm1
+				movq mm0, pixel		//recarrega o valor do pixel em mm0
+				psrlq mm0, 8		//realiza um shift lógico para a direita para pegar o próximo byte
+				pand mm0, mascara	//utilizar mascara para isolar um byte (G)
+				paddd mm1, mm0		//soma o valor calculado anteriormente em mm1 (B+G)
+				movq mm0, pixel		//recarrega o valor do pixel em mm0
+				psrlq mm0, 16		//realiza um shift lógico para direita para pegar o 3 byte
+				pand mm0, mascara	//utiliza mascara para isolar um byte (R)
+				paddd mm1,mm0		//soma o valor calculado acima em mm1 (B+G+R)
+				movq pixel, mm1		//move para a variável pixel a soma dos valores RGB calculados nos registradores mmx
+			}
 
-        cCur.UnpackBytesLo( *pCur );
-        do {
-                int width = m_width;
-                do {                    
-                        cRight.UnpackBytesLo(pCur[1]);
-                        cMask.UnpackBytesLo(0xff);
-                        media.Clear();
-                        cR = cCur & cMask;
-                        cMask = cMask*65536;             //cMask <<= 16;                 
-                        cG = cCur & cMask;
-                        cMask = cMask*65536;             //cMask <<= 16;                                                                      
-                        cB = cCur & cMask;
-                        cG = cG/65536;                   //cG >>= 16;                                                                           
-                        cB = cB/4294967296;              //cB >>= 32;                                                                           
-                        media = (cR + cG + cB)/3;        
-                        cCur.Clear();
-                        cMask = cMask/4294967296;        //cMask >>= 32;                                                                
-                        cCur = cMask;
-                        cCur = cCur*65536;               //cCur <<= 16;                                                                         
-                        cCur += media;
-                        cCur = cCur*65536;               //cCur <<= 16;                                                                         
-                        cCur += media;
-                        cCur = cCur*65536;               //cCur <<= 16;                                                                         
-                        cCur += media;
-                        *(ULONGLONG *)pCur = cCur.PackBytes(cCur);
-                        cCur = cRight;
-                        pCur ++;
-                } while (--width > 0);
-        } while (--height > 0);
+			pixel /= 3;				//realiza media dos valores RGB ((R+G+B)/3)
+
+			__asm{
+				movq mm0, pixel		//mm0 recebe a media dos valores RGB
+				movq mm1, mm0		//copia mm0 em mm1
+				psllq mm0, 8		//realiza um shift lógico para esquerda em 1 byte
+				paddd mm1, mm0		//soma a (media<<8) em mm1 
+				psllq mm0, 8		//novamente um shift para esquerda em 1 byte
+				paddd mm1, mm0		//soma a (media<<16) em mm1
+				movq pixel, mm1		//mm1 agora possui os valores médios RGB (GrayScale), então salva isso em pixel
+			}
+
+			*(ULONGLONG *)pCur = pixel;		//joga o resultado no ponto apontado da tela
+			pixel = next;					//recebe o próximo pixel a ser processado
+			pCur++;							//avança o ponteiro sobre a tela
+		} while (--width > 0);
+	} while (--height > 0);
 }
 }}}
 
-Nota-se que para realizar deslocamentos tanto na máscara quanto no objeto empacotado foram utilizadas multiplicações e divisões. Isto ocorreu devido a uma diferença de resultados entre os operadores >> e << sobrecarregados na classe CMMXUnsigned16Saturated. Com isso o desempenho desta função será drasticamente afetado, apesar de gerar um resultado correto.  
+Para uma imagem estática de 1498x935 esta implementação consegue calcular 19 fps, o que mostra um bom ganho de desempenho comparando com a versão Naive, que consegue fazer somente 10 fps.
 
 === SSE(n) ===
 
-TODO: descrever aqui
+Esta implementação utilizou inline assembly para acessar os registradores de 128 bits sse. A lógica do código é a mesma da implementação MMX, a diferença é que agora dois pixels são processados de uma vez só em cada passagem do loop, gerando ganho de desempenho.
 
-TODO: descrever o algoritmo e suas implementações
+{{{
+void CSSE2Surface32Intrinsic::GrayScale()
+{
+    int height = GetVisibleHeight()*2;				//aumenta a altura em 2 pois são processados 2 pixels de 32-bits de uma só vez em variáveis de 128 bits	
+    DWORD *pCur  = (DWORD *)GetPixelAddress(0,0);	//ponteiro para posição atual da tela
+	
+	ULONGLONG mascara = 0xFF;						//máscara para selecionar um byte por vez
+	ULONGLONG pixel1, pixel2;						//variaveis de 64 bits que receberão valores de dois pixels consecutivos
+	ULONGLONG next1, next2;							//variéveis que guardam a próximas posições de pixel1 e pixel2
+	ULONGLONG media1, media2;						//medias RGB de pixel1 e pixel2 respectivamente
+
+	pixel1 = *(ULONGLONG *) pCur;					//pixel1 recebe pixel que está sendo apontado no inicio (0,0) 
+	pixel2 = *(ULONGLONG *) (pCur+1);				//pixel2 recebe pixel consecutivo (0,1)
+	
+	//loops para percorrer toda a tela
+	do {
+		int width = m_width;
+		do {
+			
+			next1 = *(ULONGLONG *) (pCur+2);		//guarda próximo valor para pixel1	
+			next2 = *(ULONGLONG *) (pCur+3);		//guarda próximo valor para pixel2	
+			
+			__asm{
+				movq xmm0, pixel1					//move pixel1 para os 64 bits menos significativos de xmm0 (128 bits)
+				movhpd xmm0, pixel2					//move pixel2 para os 64 bits mais significativos de xmm0
+				movq xmm1, mascara					//xmm1 fará o papel de seletor de bytes especificos de xmm0
+				pand xmm1,xmm0						//seleciona primeiro byte de xmm0 e guarda em xmm1
+				movq xmm2,xmm1						//xmm2 receberá a soma dos bytes selecionados
+				movq xmm1,mascara					
+				psrldq xmm0,1						//desloca em 1 para direita xmm0 (como são registradores 128 bits, na verdade ocorre um deslocamento de 2 unidades)
+				pand xmm1,xmm0
+				paddq xmm2,xmm1
+				movq xmm1,mascara
+				psrldq xmm0,1
+				pand xmm1,xmm0
+				paddq xmm2,xmm1
+				movq media1,xmm2					//recebe a soma dos valores RGB de pixel1 (parte menos significativa de xmm0)
+				movq xmm1,mascara
+				psrldq xmm0,2						//desloca em 2 para direita xmm0, para selecionar agora sua metade mais significativa (pixel2)
+				pand xmm1,xmm0
+				movq xmm2,xmm1
+				movq xmm1,mascara
+				psrldq xmm0,1
+				pand xmm1,xmm0
+				paddq xmm2,xmm1
+				movq xmm1,mascara
+				psrldq xmm0,1
+				pand xmm1,xmm0
+				paddq xmm2,xmm1
+				movq media2,xmm2					//salva a soma dos valores RGB de pixel2 em media2
+			}
+
+			media1 /= 3;							//realiza média efetiva dos pixels
+			media2 /= 3;
+
+			__asm{
+				movq xmm0,media1					//xmm0 receberá as medias byte a byte 
+				movq xmm1,xmm0
+				pslldq xmm0,1
+				paddq xmm0,xmm1
+				pslldq xmm0,1
+				paddq xmm0,xmm1
+				movq pixel1,xmm0					//atualiza o valor de pixel1, com xmm0 que contém a média nos seus valores RGB 
+				movq xmm0,media2
+				movq xmm1,xmm0
+				pslldq xmm0,1
+				paddq xmm0,xmm1
+				pslldq xmm0,1
+				paddq xmm0,xmm1
+				movq pixel2,xmm0					//atualiza o valor de pixel2, com xmm0 que contém a média nos seus valores RGB
+			}
+
+			*(ULONGLONG *)pCur = pixel1;			//joga o valor calculado de pixel1 de volta na tela
+			*(ULONGLONG *)(pCur+1) = pixel2;		//joga o valor calculado de pixel2 de volta na tela
+			pixel1 = next1;							//pixel1 recebe o próximo pixel 
+			pixel2 = next2;							//pixel2 recebe o próximo pixel
+			pCur += 2;								//aumenta o ponteiro da tela em 2 (calcula 2 pixels por vez)
+		} while (--width > 0);
+	} while (--height > 0);
+}
+}}}
+
+Para uma imagem estática de 1498x935 esta implementação consegue calcular 23 fps, demonstrando que o processamento de 2 pixels por vez consegue ainda ganhar no desempenho em relação a implementação MMX e mais que dobrar a quantidade de fps calculados em relação a versão Naive.
+
+
 
 == Sobel (Detecção de bordas) ==
 
