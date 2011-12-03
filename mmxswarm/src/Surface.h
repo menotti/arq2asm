@@ -72,6 +72,9 @@ public:
 	//Grupo 14
 	virtual void Invert();
 
+	//Grupo 15
+	virtual void Mask();
+
 
 	// These methods compensate for m_kDelta
     void PointColor(int x, int y, COLORREF c);
