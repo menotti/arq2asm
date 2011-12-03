@@ -204,8 +204,8 @@ void CSurface::GrayScale()
 		for (int j = 0; j < m_wndWidth; j++) {
 			cCur = PointColor(j,i);		//pega um pixel da tela da posição [i,j]
 			r = (BYTE)((GetRValue(cCur)+GetGValue(cCur)+GetBValue(cCur))/3);	//realiza média entre valores RGB e atualiza valor R
-			g = (BYTE)((GetRValue(cCur)+GetGValue(cCur)+GetBValue(cCur))/3);	//realiza média entre valores RGB e atualiza valor G
-			b = (BYTE)((GetRValue(cCur)+GetGValue(cCur)+GetBValue(cCur))/3);	//realiza média entre valores RGB e atualiza valor B
+			g = r;	//atualiza valor de G com média ja calculada em R
+			b = r;	//atualiza valor de B com média ja calculada em R
 			PointColor(j,i,RGB(b,g,r));		//reescreve na tela o pixel do valores RGB modificados na posição [i,j]
 		}
 	}
