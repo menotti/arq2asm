@@ -318,8 +318,6 @@ void CSurface::Mask()
 	}
 }
 
-
-
 // nothing beats good old fashioned Bresenham
 void CSurface::Line(const CPoint &p1, const CPoint &p2, COLORREF c)
 {
