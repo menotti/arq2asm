@@ -283,6 +283,26 @@ void CSurface::GrayFilter()
 	}
 }
 
+//Grupo 14
+void CSurface::Invert()
+{
+	COLORREF cCur;		
+	BYTE r, g, b;		//Variáveis que receberão os valores RGB
+
+	//Loop para acessar todos os pixels da imagem
+	for (int i = 0; i < m_wndHeight; i++) {
+		for (int j = 0; j < m_wndWidth; j++) {
+			cCur = PointColor(j,i);		//pega um pixel da tela da posição [i,j]
+			r = (BYTE)(255-GetRValue(cCur));	//Para fazer a inversão, o cálculo a ser realizado p/ cada cor é de 255-cor
+			g = (BYTE)(255-GetGValue(cCur));	
+			b = (BYTE)(255-GetBValue(cCur));	
+			PointColor(j,i,RGB(b,g,r));		//reescreve na tela o pixel com os valores RGB modificados na posição [i,j]
+		}
+	}
+}
+
+
+
 // nothing beats good old fashioned Bresenham
 void CSurface::Line(const CPoint &p1, const CPoint &p2, COLORREF c)
 {

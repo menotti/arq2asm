@@ -69,6 +69,10 @@ public:
     void Line(const CPoint &p1, const CPoint &p2, COLORREF c);
     void RandomLine(COLORREF c);
 
+	//Grupo 14
+	virtual void Invert();
+
+
 	// These methods compensate for m_kDelta
     void PointColor(int x, int y, COLORREF c);
 	
