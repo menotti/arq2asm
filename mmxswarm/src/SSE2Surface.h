@@ -18,6 +18,7 @@ public:
     virtual void AdjustWidth(int *pWidth);
     virtual void BlurBits(); // this is where the MMX action is
 	virtual void GrayScale();
+	virtual void Posterize();	// Grupo 9
 protected:
 	virtual void OnCreated();
 private:
@@ -30,6 +31,7 @@ class CSSE2Surface24Intrinsic : public CSurface
 public:
     virtual void AdjustWidth(int *pWidth);
     virtual void BlurBits(); // this is where the MMX action is
+	virtual void Posterize();	// Grupo 9
 protected:
 	virtual void OnCreated();
 private:
@@ -43,6 +45,7 @@ class CSSE2Surface16Intrinsic : public CSurface
 public:
     virtual void AdjustWidth(int *pWidth);
     virtual void BlurBits(); // this is where the MMX action is
+	virtual void Posterize();	// Grupo 9
 protected:
 	virtual void OnCreated();
 private:

@@ -106,3 +106,11 @@ void CSSE2Surface16Intrinsic::BlurBits()
 		} while (--width > 0);
 	} while (--height > 0);
 }
+
+// GRUPO 9 - Filtro Posterize
+//sobrescreve o Posterize do Surface
+void CSSE2Surface16Intrinsic::Posterize()
+{
+	//Stub
+}
+

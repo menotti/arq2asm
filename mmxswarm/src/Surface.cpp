@@ -377,13 +377,20 @@ void CSurface::Posterize()
             //r = (BYTE)((int)GetRValue(cCur)/2);
             //g = (BYTE)((int)GetGValue(cCur)/2);
             //b = (BYTE)((int)GetBValue(cCur)/2);
-			r = (BYTE)(nivel[(int)GetRValue(cCur)]);
-			g = (BYTE)(nivel[(int)GetGValue(cCur)]);
-			b = (BYTE)(nivel[(int)GetBValue(cCur)]);
+
+			//r = (BYTE)(nivel[(int)GetRValue(cCur)]);
+			//g = (BYTE)(nivel[(int)GetGValue(cCur)]);
+			//b = (BYTE)(nivel[(int)GetBValue(cCur)]);
+
+			r = (BYTE)( (int)GetRValue(cCur) & 0xC0 );
+			g = (BYTE)( (int)GetGValue(cCur) & 0xC0 );
+			b = (BYTE)( (int)GetBValue(cCur) & 0xC0 );
+
             PointColor(j, i, RGB(b,g,r)); // RGBs are physically inverted
         }
     }
 }
+
 void CSurface::setNivel(int n)
 {
 	if(n>0){
