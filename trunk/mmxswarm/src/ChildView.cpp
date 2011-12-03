@@ -374,13 +374,6 @@ BOOL CChildView::OnIdle(LONG /*lCount*/)
 		bContinue = TRUE;
 	}
 
-	if (bContinue) {
-		m_nFrameCounter++;
-		if (!m_bPauseBlit) {
-			m_pSurface->BlitBits();
-		}
-	}
-
 	//Grupo 14
 	if (m_bUseInvert) {
 		m_pSurface->Invert();
@@ -391,6 +384,13 @@ BOOL CChildView::OnIdle(LONG /*lCount*/)
 	if (m_bUseMask) {
 		m_pSurface->Mask();
 		bContinue = TRUE;
+	}
+
+	if (bContinue) {
+		m_nFrameCounter++;
+		if (!m_bPauseBlit) {
+			m_pSurface->BlitBits();
+		}
 	}
 
 	::GdiFlush();
