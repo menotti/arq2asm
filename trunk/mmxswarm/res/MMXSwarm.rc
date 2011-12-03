@@ -146,6 +146,7 @@ BEGIN
 		MENUITEM "Use &Sobel\tAlt+S",			ID_VIEW_USE_SOBEL //Grupo 5
 		MENUITEM "Use &Posterize\tP",			ID_VIEW_USE_POSTERIZE //Grupo 9
 		MENUITEM "Use &Gray\tR",				ID_VIEW_USE_GRAYF //Grupo 12
+		MENUITEM "Use &Invert\tI",				ID_VIEW_USE_INVERT//Grupo 14
     END
     POPUP "&Help"
     BEGIN
@@ -181,6 +182,7 @@ BEGIN
 	"S",            ID_VIEW_USE_SOBEL,		VIRTKEY, ALT, NOINVERT//Grupo 5
 	"P",            ID_VIEW_USE_POSTERIZE,	VIRTKEY, NOINVERT//Grupo 9
 	"R",            ID_VIEW_USE_GRAYF,		VIRTKEY, NOINVERT//Grupo 12
+	"I",			ID_VIEW_USE_INVERT,		VIRTKEY, NOINVERT//Grupo 14
 END
 
 
