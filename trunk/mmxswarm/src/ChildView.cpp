@@ -41,6 +41,7 @@ BEGIN_MESSAGE_MAP(CChildView, CWnd)
 	ON_COMMAND(ID_VIEW_USE_POSTERIZE, OnViewUsePosterize)//Grupo 9
 	ON_COMMAND(ID_VIEW_USE_GRAYF, OnViewUseGrayF)	//Grupo 12
 	ON_COMMAND(ID_VIEW_USE_INVERT, OnViewUseInvert)	//Grupo 14
+	ON_COMMAND(ID_VIEW_USE_MASK, OnViewUseMask)	//Grupo 15
 	ON_UPDATE_COMMAND_UI(ID_VIEW_PAUSE_BLUR, OnUpdatePauseBlur)
 	ON_UPDATE_COMMAND_UI(ID_VIEW_PAUSE_SWARM, OnUpdatePauseSwarm)
 	ON_UPDATE_COMMAND_UI(ID_VIEW_PAUSE_BLIT, OnUpdatePauseBlit)
@@ -50,6 +51,7 @@ BEGIN_MESSAGE_MAP(CChildView, CWnd)
 	ON_UPDATE_COMMAND_UI(ID_VIEW_USE_POSTERIZE, OnUpdateUsePosterize)//Grupo 9
 	ON_UPDATE_COMMAND_UI(ID_VIEW_USE_GRAYF, OnUpdateUseGrayF)	//Grupo 12
 	ON_UPDATE_COMMAND_UI(ID_VIEW_USE_INVERT, OnUpdateUseInvert)	//Grupo 14
+	ON_UPDATE_COMMAND_UI(ID_VIEW_USE_MASK, OnUpdateUseMask)	//Grupo 15
 	ON_UPDATE_COMMAND_UI(ID_INDICATOR_PAUSE_BLUR, OnUpdatePauseBlur)
 	ON_UPDATE_COMMAND_UI(ID_INDICATOR_PAUSE_SWARM, OnUpdatePauseSwarm)
 	ON_UPDATE_COMMAND_UI(ID_INDICATOR_PAUSE_BLIT, OnUpdatePauseBlit)
@@ -58,6 +60,7 @@ BEGIN_MESSAGE_MAP(CChildView, CWnd)
 	ON_UPDATE_COMMAND_UI(ID_INDICATOR_USE_SOBEL, OnUpdateUseSobel) //Grupo 5
 	ON_UPDATE_COMMAND_UI(ID_INDICATOR_USE_GRAYF, OnUpdateUseGrayF)	//Grupo 12
 	ON_UPDATE_COMMAND_UI(ID_INDICATOR_USE_INVERT, OnUpdateUseInvert)//Grupo 14
+	ON_UPDATE_COMMAND_UI(ID_INDICATOR_USE_MASK, OnUpdateUseMask)//Grupo 15
 	ON_UPDATE_COMMAND_UI(ID_INDICATOR_USE_POSTERIZE, OnUpdateUsePosterize)//Grupo 9
 	ON_UPDATE_COMMAND_UI(ID_INDICATOR_FPS, OnUpdateFPS)
 	ON_UPDATE_COMMAND_UI(ID_INDICATOR_RESOLUTION, OnUpdateResolution)
@@ -83,6 +86,7 @@ CChildView::CChildView()
 	m_bUseSobel = false;	//Grupo 5
 	m_bUseGrayF = false;	//Grupo 12
 	m_bUseInvert = false;	//Grupo 14
+	m_bUseMask = false;	//Grupo 15
 	m_bUsePosterize = false; //Grupo 9
 	m_bTimerPopped = false;
 	m_eSurf = eNone;
@@ -162,6 +166,7 @@ void CChildView::OnFileOpen()
 		m_bUseGray = false;
 		m_bPauseFade = false;
 		m_bUseInvert = false;
+		m_bUseMask = false;
 	}
 }
 
@@ -284,6 +289,12 @@ void CChildView::OnViewUseInvert()
 	m_bUseInvert = !m_bUseInvert;
 }
 
+//Grupo 15
+void CChildView::OnViewUseMask()
+{
+	m_bUseMask = !m_bUseMask;
+}
+
 void CChildView::OnPaint() 
 {
 	CPaintDC dc(this); // device context for painting
@@ -376,7 +387,11 @@ BOOL CChildView::OnIdle(LONG /*lCount*/)
 		bContinue = TRUE;
 	}
 
-
+	//Grupo 15
+	if (m_bUseMask) {
+		m_pSurface->Mask();
+		bContinue = TRUE;
+	}
 
 	::GdiFlush();
     return(bContinue);
@@ -648,6 +663,19 @@ void CChildView::OnUpdateUseInvert(CCmdUI* pCmdUI)
 	else {
 		ASSERT(pCmdUI->m_nID == ID_VIEW_USE_INVERT);
 		pCmdUI->SetCheck(m_bUseInvert ? 1 : 0);
+		pCmdUI->Enable(TRUE);
+	}
+}
+
+//Grupo 15
+void CChildView::OnUpdateUseMask(CCmdUI* pCmdUI)
+{
+	if (pCmdUI->m_nID == ID_INDICATOR_USE_MASK) {
+		pCmdUI->Enable(m_bUseMask ? FALSE : TRUE);
+	}
+	else {
+		ASSERT(pCmdUI->m_nID == ID_VIEW_USE_MASK);
+		pCmdUI->SetCheck(m_bUseMask ? 1 : 0);
 		pCmdUI->Enable(TRUE);
 	}
 }

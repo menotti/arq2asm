@@ -301,6 +301,23 @@ void CSurface::Invert()
 	}
 }
 
+//Grupo 15
+void CSurface::Mask()
+{
+	COLORREF cCur;		
+	BYTE r, g, b;
+
+	for (int i = 0; i < m_wndHeight; i++) {
+		for (int j = 0; j < m_wndWidth; j++) {
+			cCur = PointColor(j,i);
+			//r = (BYTE)(GetRValue(cCur));
+			g = (BYTE)(GetGValue(cCur));	
+			b = (BYTE)(GetBValue(cCur));	
+			PointColor(j,i,RGB(b,g,0));		//Esse filtro apenas zera o canal vermelho. Tadaaa
+		}
+	}
+}
+
 
 
 // nothing beats good old fashioned Bresenham
