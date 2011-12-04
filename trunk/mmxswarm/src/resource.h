@@ -37,7 +37,6 @@
 #define ID_INDICATOR_USE_INVERT			59152 //Grupo 14
 #define ID_INDICATOR_USE_MASK			59153 //Grupo 15
 #define ID_INDICATOR_USE_MANDEL			59154 //Grupo 6
-#define ID_INDICATOR_USE_THRESHOLD		59155 //Grupo 6
 #define ID_VIEW_PAUSE_SWARM             59394
 #define ID_VIEW_PAUSE_BLUR              59395
 #define ID_VIEW_PAUSE_BLIT              59396
@@ -49,7 +48,6 @@
 #define ID_VIEW_USE_INVERT				59402 //Grupo 14
 #define ID_VIEW_USE_MASK				59403 //Grupo 15
 #define ID_VIEW_USE_MANDEL				59404 //Grupo 6
-#define ID_VIEW_USE_THRESHOLD			59405 //Grupo 6
 
 // Next default values for new objects
 // 
