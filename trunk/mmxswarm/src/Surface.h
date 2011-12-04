@@ -15,6 +15,12 @@
 
 template<class T> T ABS(T x) { return(x < 0 ? -x : x); }
 
+//Grupo 6
+typedef struct{
+	float real;
+	float imag;
+}Complex;
+
 class CSurface
 {
 public:
@@ -75,6 +81,10 @@ public:
 	//Grupo 15
 	virtual void Mask();
 
+	//Grupo 6
+	int CAL_PIXEL(Complex);
+	virtual void MandelBrot();
+	virtual void Threshold();
 
 	// These methods compensate for m_kDelta
     void PointColor(int x, int y, COLORREF c);

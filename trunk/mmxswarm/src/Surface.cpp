@@ -305,7 +305,7 @@ void CSurface::Invert()
 void CSurface::Mask()
 {
 	COLORREF cCur;		
-	BYTE r, g, b;
+	BYTE g, b;
 
 	for (int i = 0; i < m_wndHeight; i++) {
 		for (int j = 0; j < m_wndWidth; j++) {
@@ -314,6 +314,88 @@ void CSurface::Mask()
 			g = (BYTE)(GetGValue(cCur));	
 			b = (BYTE)(GetBValue(cCur));	
 			PointColor(j,i,RGB(b,g,0));		//Esse filtro apenas zera o canal vermelho. Tadaaa
+		}
+	}
+}
+
+//Grupo 6
+int CSurface::CAL_PIXEL(Complex c)
+{
+	int count, max;
+	Complex z;
+	float temp, lengthsq;
+	max = 256;
+	z.real = 0;
+	z.imag = 0;
+	count = 0;
+	
+	do
+	{
+		temp = z.real * z.real - z.imag * z.imag + c.real;
+		z.imag = 2 * z.real * z.imag + c.imag;
+		z.real = temp;
+		lengthsq = z.real * z.real + z.imag * z.imag;
+		count++;
+	}
+	while((lengthsq < 4.0) && (count < max));
+	return count;
+}
+
+void CSurface::MandelBrot()
+{
+	BYTE r,g,b;
+	Complex c1;
+	float real_min = -2, real_max = 2;
+	float imag_min = -2, imag_max = 2;
+	int disp_width = m_wndWidth, disp_heigth = m_wndHeight;
+	int x = 1 ,y = 1;
+	int color1;
+	float scale_real, scale_imag;
+	
+	c1.real = real_min + x * (real_max - real_min)/disp_width;
+	c1.imag = imag_min + y * (imag_max - imag_min)/disp_heigth;
+	
+	scale_real = (real_max - real_min)/disp_width;
+	scale_imag = (imag_max - imag_min)/disp_heigth;
+	
+	for(x = 0; x < disp_width; x++)
+	{
+		for(y = 0; y < disp_heigth; y++)
+		{
+			c1.real = real_min + ((float) x * scale_real);
+			c1.imag = imag_min + ((float) y * scale_imag);
+			color1 = CAL_PIXEL(c1);
+			r = (BYTE)((color1));
+			g = (BYTE)((color1)); 
+			b = (BYTE)((color1));
+			PointColor(x,y,RGB(r,g,b));
+		}
+	}
+}
+
+void CSurface::Threshold()
+{
+	COLORREF cCur;		//declara um dword
+	BYTE r, g, b;		//variáveis tipo byte que receberão os valores RGB
+
+
+	//realiza um loop dentro do outro para percorrer a tela inteira
+	for (int i = 0; i < m_wndHeight; i++) {
+		for (int j = 0; j < m_wndWidth; j++) {
+			cCur = PointColor(j,i);					//pega o pixel de posição [i,j] na tela
+			//Quando qualquer valor R,G ou B for maior que 123, converte a cor para branca(255)
+			if(GetRValue(cCur) > 123 || GetRValue(cCur) > 123 || GetBValue(cCur) > 123){
+				r = (BYTE)((255));
+				g = (BYTE)((255));
+				b = (BYTE)((255));
+			}
+			else //Converte para preto quando os 3(r,g e b) forem menor que 123.
+			{
+				r = (BYTE)((0));
+				g = (BYTE)((0));
+				b = (BYTE)((0));
+			}
+			PointColor(j,i,RGB(b,g,r));				//reescreve na tela o pixel do valores RGB modificados na posição [i,j]
 		}
 	}
 }
