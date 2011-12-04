@@ -43,7 +43,6 @@ BEGIN_MESSAGE_MAP(CChildView, CWnd)
 	ON_COMMAND(ID_VIEW_USE_INVERT, OnViewUseInvert)	//Grupo 14
 	ON_COMMAND(ID_VIEW_USE_MASK, OnViewUseMask)	//Grupo 15
 	ON_COMMAND(ID_VIEW_USE_MANDEL, OnViewUseMandel)	//Grupo 6
-	ON_COMMAND(ID_VIEW_USE_THRESHOLD, OnViewUseThreshold)	//Grupo 6
 	ON_UPDATE_COMMAND_UI(ID_VIEW_PAUSE_BLUR, OnUpdatePauseBlur)
 	ON_UPDATE_COMMAND_UI(ID_VIEW_PAUSE_SWARM, OnUpdatePauseSwarm)
 	ON_UPDATE_COMMAND_UI(ID_VIEW_PAUSE_BLIT, OnUpdatePauseBlit)
@@ -65,7 +64,6 @@ BEGIN_MESSAGE_MAP(CChildView, CWnd)
 	ON_UPDATE_COMMAND_UI(ID_INDICATOR_USE_MASK, OnUpdateUseMask)//Grupo 15
 	ON_UPDATE_COMMAND_UI(ID_INDICATOR_USE_POSTERIZE, OnUpdateUsePosterize)//Grupo 9
 	ON_UPDATE_COMMAND_UI(ID_INDICATOR_USE_MANDEL, OnUpdateUseMandel)//Grupo 6
-	ON_UPDATE_COMMAND_UI(ID_INDICATOR_USE_THRESHOLD, OnUpdateUseThreshold)//Grupo 6
 	ON_UPDATE_COMMAND_UI(ID_INDICATOR_FPS, OnUpdateFPS)
 	ON_UPDATE_COMMAND_UI(ID_INDICATOR_RESOLUTION, OnUpdateResolution)
 	ON_COMMAND_RANGE(IDD_16BIT_MMXINTRINSICS, IDD_32BIT_GENERICCBLUR, OnImageFormats)
@@ -93,7 +91,6 @@ CChildView::CChildView()
 	m_bUseMask = false;	//Grupo 15
 	m_bUsePosterize = false; //Grupo 9
 	m_bUseMandel = false;	//Grupo 6
-	m_bUseThreshold = false; //Grupo 6
 	m_bTimerPopped = false;
 	m_eSurf = eNone;
 	execSobel = false; //Grupo 5
@@ -174,7 +171,6 @@ void CChildView::OnFileOpen()
 		m_bUseInvert = false;
 		m_bUseMask = false;
 		m_bUseMandel = false;
-		m_bUseThreshold = false;
 		m_bUsePosterize = false;
 		m_bUseSobel = false;
 		m_bUseGray = false;
@@ -313,11 +309,6 @@ void CChildView::OnViewUseMandel()
 	m_bUseMandel = !m_bUseMandel;
 }
 
-void CChildView::OnViewUseThreshold()
-{
-	m_bUseThreshold = !m_bUseThreshold;
-}
-
 void CChildView::OnPaint() 
 {
 	CPaintDC dc(this); // device context for painting
@@ -415,10 +406,6 @@ BOOL CChildView::OnIdle(LONG /*lCount*/)
 		bContinue = TRUE;
 	}
 	
-	if (m_bUseThreshold) {
-		m_pSurface->Threshold();
-		bContinue = TRUE;
-	}
 
 	if (bContinue) {
 		m_nFrameCounter++;
@@ -723,18 +710,6 @@ void CChildView::OnUpdateUseMandel(CCmdUI* pCmdUI)
 	else {
 		ASSERT(pCmdUI->m_nID == ID_VIEW_USE_MANDEL);
 		pCmdUI->SetCheck(m_bUseMandel ? 1 : 0);
-		pCmdUI->Enable(TRUE);
-	}
-}
-
-void CChildView::OnUpdateUseThreshold(CCmdUI* pCmdUI)
-{
-	if (pCmdUI->m_nID == ID_INDICATOR_USE_THRESHOLD) {
-		pCmdUI->Enable(m_bUseThreshold ? FALSE : TRUE);
-	}
-	else {
-		ASSERT(pCmdUI->m_nID == ID_VIEW_USE_THRESHOLD);
-		pCmdUI->SetCheck(m_bUseThreshold ? 1 : 0);
 		pCmdUI->Enable(TRUE);
 	}
 }

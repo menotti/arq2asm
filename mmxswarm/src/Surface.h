@@ -84,7 +84,6 @@ public:
 	//Grupo 6
 	int CAL_PIXEL(Complex);
 	virtual void MandelBrot();
-	virtual void Threshold();
 
 	// These methods compensate for m_kDelta
     void PointColor(int x, int y, COLORREF c);

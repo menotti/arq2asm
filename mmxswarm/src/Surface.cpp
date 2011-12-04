@@ -375,33 +375,6 @@ void CSurface::MandelBrot()
 	}
 }
 
-void CSurface::Threshold()
-{
-	COLORREF cCur;		//declara um dword
-	BYTE r, g, b;		//variáveis tipo byte que receberão os valores RGB
-
-
-	//realiza um loop dentro do outro para percorrer a tela inteira
-	for (int i = 0; i < m_wndHeight; i++) {
-		for (int j = 0; j < m_wndWidth; j++) {
-			cCur = PointColor(j,i);					//pega o pixel de posição [i,j] na tela
-			//Quando qualquer valor R,G ou B for maior que 123, converte a cor para branca(255)
-			if(GetRValue(cCur) > 123 || GetRValue(cCur) > 123 || GetBValue(cCur) > 123){
-				r = (BYTE)((255));
-				g = (BYTE)((255));
-				b = (BYTE)((255));
-			}
-			else //Converte para preto quando os 3(r,g e b) forem menor que 123.
-			{
-				r = (BYTE)((0));
-				g = (BYTE)((0));
-				b = (BYTE)((0));
-			}
-			PointColor(j,i,RGB(b,g,r));				//reescreve na tela o pixel do valores RGB modificados na posição [i,j]
-		}
-	}
-}
-
 // nothing beats good old fashioned Bresenham
 void CSurface::Line(const CPoint &p1, const CPoint &p2, COLORREF c)
 {
