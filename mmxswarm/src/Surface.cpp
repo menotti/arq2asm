@@ -500,3 +500,25 @@ void CSurface::inicializar()
 		for (int i = 0; i < 256; i++)
 			nivel[i] = 255 * (numNivel*i / 256) / (numNivel-1);
 }
+
+// GRUPO 18 - Filtro Solarize
+void CSurface::Solarize() {
+	COLORREF cCur = PointColor(0,0);
+    BYTE r, g, b;
+	//double rgb, a, b, c;
+    for (int i = 0; i < m_wndHeight; i++) {
+        for (int j = 0; j < m_wndWidth; j++) {
+			cCur = PointColor(j,i);
+            r = (BYTE)(Sol(GetRValue(cCur)/255.0)*0xFF);
+            g = (BYTE)(Sol(GetGValue(cCur)/255.0)*0xFF);
+            b = (BYTE)(Sol(GetBValue(cCur)/255.0)*0xFF);
+			//rgb = GetRValue(cCur) + GetGValue(cCur) + GetBValue(cCur);
+			//Sol(rgb);
+            PointColor(j, i, RGB(b,g,r)); // RGBs are physically inverted
+        }
+    }
+}
+
+double CSurface::Sol(double v) {
+	return (v > 0.5) ? (2*(v-0.5)) : (2*(0.5-v));
+}
