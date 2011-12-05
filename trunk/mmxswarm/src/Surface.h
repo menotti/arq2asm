@@ -104,6 +104,9 @@ public:
 	virtual void Posterize();	//aplicar filtro
 	void inicializar();			//inicializacao de vetor
 
+	// GRUPO 18 - Filtro Solarize
+	void Solarize();
+	double Sol(double v);
 
 	BYTE *GetPixelAddress(int x, int y) const
 	{ return((BYTE*)m_image.GetPixelAddress(x, y+m_kDeltaY)); }
