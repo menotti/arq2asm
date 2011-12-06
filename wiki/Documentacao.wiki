@@ -897,17 +897,17 @@ A implementação deste filtro foi feita de forma simples. Ele foi implementado 
 Armazena o valor de cada cor em uma variável diferente. ( r <- redvalue; b <- bluevalue; g <- greenvalue)
 
 Armazena o valor da mascara que se deseja aplicar. Esse valor não pode conter 0 entre 1’s, pois assim gerará um buraco entre as cores, assim como nº 2 do exemplo a seguir. Ex aplicando a operação AND: 
-ex1||ex2||ex3||ex4||ex5||ex6
-001||010||011||100||101||111
-101||101||101||101||101||101
-001||000||001||100||101||101
+ex1||ex2||ex3||ex4||ex5||ex6||
+001||010||011||100||101||111||
+101||101||101||101||101||101||
+001||000||001||100||101||101||
 
 Agora basta aplicar a mascara para cada cor, armazenar os valores nas variáveis de suas devidas cores e mandar exibir o novo pixel.
 Com a aplicação do posterize na tela inicial do programa, que está em movimento, podemos ver a sua influência no processamento da imagem. Ficou assim:
-Tipo||Sem Efeito||Com Efeito
-NAIVE||74 fps||49 fps
-MMX||65 fps||63 fps
-SSE2||87 fps||84 fps
+Tipo||Sem Efeito||Com Efeito||
+NAIVE||74 fps||49 fps||
+MMX||65 fps||63 fps||
+SSE2||87 fps||84 fps||
 
 Ps: Os testes foram feitos nas versão 32 bits.
 
