@@ -874,7 +874,7 @@ void CSurface::Sobel()
 }
 }}}
 
-== PosterizeFilter ==
+== Posterize Filter ==
 
 <wiki:comment>
 Grupo 9
@@ -910,8 +910,8 @@ Ps: Os testes foram feitos nas versão 32 bits.
 Na implementação mostrada a seguir a mascara adotada para cada cor foi C0 hexa ou 11000000 em bits. Sendo assim, considerando somente as cores(Vermelho, Verde e Azul), teremos 64 cores diferentes disponíveis para descrever a imagem.
 
 
-== Naive ==
-
+== _Naive_ ==
+{{{
 void CSurface::Posterize()
 {
 	if (!inicializado) {
@@ -931,10 +931,10 @@ void CSurface::Posterize()
         }
     }
 }
-
+}}}
 
 === MMX ===
-
+{{{
 void CMMXSurface32Intrinsic::Posterize()
 {
 	int height = GetVisibleHeight();
@@ -960,10 +960,10 @@ void CMMXSurface32Intrinsic::Posterize()
 		} while (--width > 0);
 	} while (--height > 0);
 }
-
+}}}
 
 === SSE(n) ===
-
+{{{
 void CSSE2Surface32Intrinsic::Posterize()
 {
 	int height = GetVisibleHeight();
@@ -997,7 +997,7 @@ void CSSE2Surface32Intrinsic::Posterize()
 		} while (--width > 0);
 	} while (--height > 0);
 }
-
+}}}
 
 
 Posterize Filter
