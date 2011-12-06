@@ -293,9 +293,9 @@ void CSurface::RGBAdjust()
 	for (int i = 0; i < m_wndHeight; i++) {
 		for (int j = 0; j < m_wndWidth; j++) {
 			cCur = PointColor(j,i);		//pega um pixel da tela da posição [i,j]
-			r = (BYTE)(GetRValue(cCur)+15);	//Para fazer a inversão, o cálculo a ser realizado p/ cada cor é de 255-cor
-			g = (BYTE)(GetGValue(cCur)-30);	
-			b = (BYTE)(GetBValue(cCur)+60);	
+			r = (BYTE)(GetRValue(cCur)*0.89);	//Para fazer a inversão, o cálculo a ser realizado p/ cada cor é de 255-cor
+			g = (BYTE)(GetGValue(cCur)*0.74);
+			b = (BYTE)(GetBValue(cCur)*0.81);
 			PointColor(j,i,RGB(b,g,r));		//reescreve na tela o pixel com os valores RGB modificados na posição [i,j]
 		}
 	}

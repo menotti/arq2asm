@@ -419,6 +419,7 @@ BOOL CChildView::OnIdle(LONG /*lCount*/)
 	if (m_bUseRGBAdjust) {
 		m_pSurface->RGBAdjust();
 		bContinue = TRUE;
+		m_bUseRGBAdjust = false;
 	}
 
 	//Grupo 15
