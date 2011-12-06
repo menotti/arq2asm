@@ -21,6 +21,7 @@ public:
 	virtual void Sobel();		// Grupo 5
 	virtual void Posterize();	// Grupo 9
 	//virtual void Mask();		// Grupo 15
+    virtual void Threshold();    //grupo 13
 protected:
 	virtual void OnCreated();
 private:
