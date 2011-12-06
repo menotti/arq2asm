@@ -910,7 +910,7 @@ Com a aplicação do posterize na tela inicial do programa, que está em movimen
 ||MMX||65 fps||63 fps||
 ||SSE2||87 fps||84 fps||
 
-Ps: Os testes foram feitos nas versão 32 bits.
+Ps: Os testes foram feitos nas versões de 32 bits.
 
 Na implementação mostrada a seguir a mascara adotada para cada cor foi C0 hexa ou 11000000 em bits. Sendo assim, considerando somente as cores(Vermelho, Verde e Azul), teremos 64 cores diferentes disponíveis para descrever a imagem.
 
