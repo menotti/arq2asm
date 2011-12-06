@@ -96,15 +96,15 @@ void CSSE2Surface32Intrinsic::BlurBits()
 //Grupo 4
 void CSSE2Surface32Intrinsic::GrayScale()
 {
-    int height = GetVisibleHeight()*2;				//aumenta a altura em 2 pois são processados 2 pixels de 32-bits de uma só vez em variáveis de 128 bits	
-    DWORD *pCur  = (DWORD *)GetPixelAddress(0,0);	//ponteiro para posição atual da tela
+    int height = GetVisibleHeight()*2;				//aumenta a altura em 2 pois sÃ£o processados 2 pixels de 32-bits de uma sÃ³ vez em variÃ¡veis de 128 bits	
+    DWORD *pCur  = (DWORD *)GetPixelAddress(0,0);	//ponteiro para posiÃ§Ã£o atual da tela
 	
-	ULONGLONG mascara = 0xFF;						//máscara para selecionar um byte por vez
-	ULONGLONG pixel1, pixel2;						//variaveis de 64 bits que receberão valores de dois pixels consecutivos
-	ULONGLONG next1, next2;							//variéveis que guardam a próximas posições de pixel1 e pixel2
+	ULONGLONG mascara = 0xFF;						//mÃ¡scara para selecionar um byte por vez
+	ULONGLONG pixel1, pixel2;						//variaveis de 64 bits que receberÃ£o valores de dois pixels consecutivos
+	ULONGLONG next1, next2;							//variÃ©veis que guardam a prÃ³ximas posiÃ§Ãµes de pixel1 e pixel2
 	ULONGLONG media1, media2;						//medias RGB de pixel1 e pixel2 respectivamente
 
-	pixel1 = *(ULONGLONG *) pCur;					//pixel1 recebe pixel que está sendo apontado no inicio (0,0) 
+	pixel1 = *(ULONGLONG *) pCur;					//pixel1 recebe pixel que estÃ¡ sendo apontado no inicio (0,0) 
 	pixel2 = *(ULONGLONG *) (pCur+1);				//pixel2 recebe pixel consecutivo (0,1)
 	
 	//loops para percorrer toda a tela
@@ -112,17 +112,17 @@ void CSSE2Surface32Intrinsic::GrayScale()
 		int width = m_width;
 		do {
 			
-			next1 = *(ULONGLONG *) (pCur+2);		//guarda próximo valor para pixel1	
-			next2 = *(ULONGLONG *) (pCur+3);		//guarda próximo valor para pixel2	
+			next1 = *(ULONGLONG *) (pCur+2);		//guarda prÃ³ximo valor para pixel1	
+			next2 = *(ULONGLONG *) (pCur+3);		//guarda prÃ³ximo valor para pixel2	
 			
 			__asm{
 				movq xmm0, pixel1					//move pixel1 para os 64 bits menos significativos de xmm0 (128 bits)
 				movhpd xmm0, pixel2					//move pixel2 para os 64 bits mais significativos de xmm0
-				movq xmm1, mascara					//xmm1 fará o papel de seletor de bytes especificos de xmm0
+				movq xmm1, mascara					//xmm1 farÃ¡ o papel de seletor de bytes especificos de xmm0
 				pand xmm1,xmm0						//seleciona primeiro byte de xmm0 e guarda em xmm1
-				movq xmm2,xmm1						//xmm2 receberá a soma dos bytes selecionados
+				movq xmm2,xmm1						//xmm2 receberÃ¡ a soma dos bytes selecionados
 				movq xmm1,mascara					
-				psrldq xmm0,1						//desloca em 1 para direita xmm0 (como são registradores 128 bits, na verdade ocorre um deslocamento de 2 unidades)
+				psrldq xmm0,1						//desloca em 1 para direita xmm0 (como sÃ£o registradores 128 bits, na verdade ocorre um deslocamento de 2 unidades)
 				pand xmm1,xmm0
 				paddq xmm2,xmm1
 				movq xmm1,mascara
@@ -145,30 +145,30 @@ void CSSE2Surface32Intrinsic::GrayScale()
 				movq media2,xmm2					//salva a soma dos valores RGB de pixel2 em media2
 			}
 
-			media1 /= 3;							//realiza média efetiva dos pixels
+			media1 /= 3;							//realiza mÃ©dia efetiva dos pixels
 			media2 /= 3;
 
 			__asm{
-				movq xmm0,media1					//xmm0 receberá as medias byte a byte 
+				movq xmm0,media1					//xmm0 receberÃ¡ as medias byte a byte 
 				movq xmm1,xmm0
 				pslldq xmm0,1
 				paddq xmm0,xmm1
 				pslldq xmm0,1
 				paddq xmm0,xmm1
-				movq pixel1,xmm0					//atualiza o valor de pixel1, com xmm0 que contém a média nos seus valores RGB 
+				movq pixel1,xmm0					//atualiza o valor de pixel1, com xmm0 que contÃ©m a mÃ©dia nos seus valores RGB 
 				movq xmm0,media2
 				movq xmm1,xmm0
 				pslldq xmm0,1
 				paddq xmm0,xmm1
 				pslldq xmm0,1
 				paddq xmm0,xmm1
-				movq pixel2,xmm0					//atualiza o valor de pixel2, com xmm0 que contém a média nos seus valores RGB
+				movq pixel2,xmm0					//atualiza o valor de pixel2, com xmm0 que contÃ©m a mÃ©dia nos seus valores RGB
 			}
 
 			*(ULONGLONG *)pCur = pixel1;			//joga o valor calculado de pixel1 de volta na tela
 			*(ULONGLONG *)(pCur+1) = pixel2;		//joga o valor calculado de pixel2 de volta na tela
-			pixel1 = next1;							//pixel1 recebe o próximo pixel 
-			pixel2 = next2;							//pixel2 recebe o próximo pixel
+			pixel1 = next1;							//pixel1 recebe o prÃ³ximo pixel 
+			pixel2 = next2;							//pixel2 recebe o prÃ³ximo pixel
 			pCur += 2;								//aumenta o ponteiro da tela em 2 (calcula 2 pixels por vez)
 		} while (--width > 0);
 	} while (--height > 0);
@@ -209,3 +209,82 @@ void CSSE2Surface32Intrinsic::Posterize()
 		} while (--width > 0);
 	} while (--height > 0);
 }
+
+
+//grupo 13
+void CSSE2Surface32Intrinsic::Threshold(){
+	int height = GetVisibleHeight()*2;				//aumenta a altura em 2 pois sÃ£o processados 2 pixels de 32-bits de uma sÃ³ vez em variÃ¡veis de 128 bits	
+	DWORD *pCur  = (DWORD *)GetPixelAddress(0,0);	//ponteiro para posiÃ§Ã£o atual da tela
+	
+	ULONGLONG mascara = 0xFF;						//mÃ¡scara para selecionar um byte por vez
+	ULONGLONG pixel1, pixel2;						//variaveis de 64 bits que receberÃ£o valores de dois pixels consecutivos
+	ULONGLONG next1, next2;							//variÃ©veis que guardam a prÃ³ximas posiÃ§Ãµes de pixel1 e pixel2
+	ULONGLONG media1, media2;						//medias RGB de pixel1 e pixel2 respectivamente
+
+	ULONGLONG limiar = 120;
+
+	pixel1 = *(ULONGLONG *) pCur;					//pixel1 recebe pixel que estÃ¡ sendo apontado no inicio (0,0) 
+	pixel2 = *(ULONGLONG *) (pCur+1);				//pixel2 recebe pixel consecutivo (0,1)
+	
+	//loops para percorrer toda a tela
+	do {
+		int width = m_width;
+		do {
+			
+			next1 = *(ULONGLONG *) (pCur+2);		//guarda prÃ³ximo valor para pixel1	
+			next2 = *(ULONGLONG *) (pCur+3);		//guarda prÃ³ximo valor para pixel2	
+			
+			__asm{
+				movq xmm0, pixel1					//move pixel1 para os 64 bits menos significativos de xmm0 (128 bits)
+				movhpd xmm0, pixel2					//move pixel2 para os 64 bits mais significativos de xmm0
+				movq xmm1, mascara					//xmm1 farÃ¡ o papel de seletor de bytes especificos de xmm0
+				pand xmm1,xmm0						//seleciona primeiro byte de xmm0 e guarda em xmm1
+				movq xmm2,xmm1						//xmm2 receberÃ¡ a soma dos bytes selecionados
+				movq xmm1,mascara					
+				psrldq xmm0,1						//desloca em 1 para direita xmm0 (como sÃ£o registradores 128 bits, na verdade ocorre um deslocamento de 2 unidades)
+				pand xmm1,xmm0
+				paddq xmm2,xmm1
+				movq xmm1,mascara
+				psrldq xmm0,1
+				pand xmm1,xmm0
+				paddq xmm2,xmm1
+				movq media1,xmm2					//recebe a soma dos valores RGB de pixel1 (parte menos significativa de xmm0)
+				movq xmm1,mascara
+				psrldq xmm0,2						//desloca em 2 para direita xmm0, para selecionar agora sua metade mais significativa (pixel2)
+				pand xmm1,xmm0
+				movq xmm2,xmm1
+				movq xmm1,mascara
+				psrldq xmm0,1
+				pand xmm1,xmm0
+				paddq xmm2,xmm1
+				movq xmm1,mascara
+				psrldq xmm0,1
+				pand xmm1,xmm0
+				paddq xmm2,xmm1
+				movq media2,xmm2					//salva a soma dos valores RGB de pixel2 em media2
+			}
+
+			media1 /= 3;							//realiza mÃ©dia efetiva dos pixels
+			media2 /= 3;
+
+			if (media1>limiar){
+				pixel1 = 0xFFFFFF;
+			}else{
+				pixel1 = 0x000000;
+			}
+
+			if (media2>limiar){
+				pixel2 = 0xFFFFFF;
+			}else{
+				pixel2 = 0x000000;
+			}
+
+			*(ULONGLONG *)pCur = pixel1;			//joga o valor calculado de pixel1 de volta na tela
+			*(ULONGLONG *)(pCur+1) = pixel2;		//joga o valor calculado de pixel2 de volta na tela
+			pixel1 = next1;							//pixel1 recebe o prÃ³ximo pixel 
+			pixel2 = next2;							//pixel2 recebe o prÃ³ximo pixel
+			pCur += 2;								//aumenta o ponteiro da tela em 2 (calcula 2 pixels por vez)
+		} while (--width > 0);
+	} while (--height > 0);
+}
+
