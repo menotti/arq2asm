@@ -346,7 +346,7 @@ void CMMXSurface32Intrinsic::BlurBits()
 
 === SSE(n) ===
 
-16 bits: Nesta implementação, como o buffer é de 16 bits e os registradores MMX são de 128 bits, os dados podem ser alinhados, sendo possível manipular 8 pixels, acelerando o processo de desempacotamento e de leitura de dados. Os valores dos vizinhos são calculados com um valor base e uma máscara que contém que possuem que ativa os 5 primeiros bits a cada 16, e são realizadas 3 iterações para calcular a média do pixel com base nos valores vizinhos (esquerdo, direito, inferior e superior). Essa etapa é efetuada em cada pixel.
+16 bits: Nesta implementação, como o buffer é de 16 bits e os registradores SSE são de 128 bits, os dados podem ser alinhados, sendo possível manipular 8 pixels, acelerando o processo de desempacotamento e de leitura de dados. Os valores dos vizinhos são calculados com um valor base e uma máscara que contém que possuem que ativa os 5 primeiros bits a cada 16, e são realizadas 3 iterações para calcular a média do pixel com base nos valores vizinhos (esquerdo, direito, inferior e superior). Essa etapa é efetuada em cada pixel.
 
 {{{
 void CSSE2Surface16Intrinsic::BlurBits()
@@ -412,7 +412,7 @@ void CSSE2Surface16Intrinsic::BlurBits()
 }
 }}}
 
-24 bits: Nesta implementação , como o buffer é de 24 bits e os registradores MMX são de 128 bits, os dados não podem ser corretamente alinhados, não havendo grande vantagem em utilizar MMX na versão 24 bits, em comparação às outras. O valor de cada pixel é multiplicado por 4 (GetRValue(cCur) << 2), somado aos 4 vizinhos (esquerdo, direito, inferior e superior) (cDown+cUp+cLeft+cRight), dividido por 8 (>> 3) e atribuído ao pixel superior (cUp). O CMMX cFader é usado para acelerar o processo de clareamento (com TRIPPY: cUp += cFader) ou escurecimento (com FAST_FADE: cUp -= cFader).
+24 bits: Nesta implementação , como o buffer é de 24 bits e os registradores SSE são de 128 bits, os dados não podem ser corretamente alinhados, não havendo grande vantagem em utilizar SSE na versão 24 bits, em comparação às outras. O valor de cada pixel é multiplicado por 4 (GetRValue(cCur) << 2), somado aos 4 vizinhos (esquerdo, direito, inferior e superior) (cDown+cUp+cLeft+cRight), dividido por 8 (>> 3) e atribuído ao pixel superior (cUp). O CMMX cFader é usado para acelerar o processo de clareamento (com TRIPPY: cUp += cFader) ou escurecimento (com FAST_FADE: cUp -= cFader).
 
 {{{
 void CSSE2Surface24Intrinsic::BlurBits()
@@ -470,7 +470,7 @@ void CSSE2Surface24Intrinsic::BlurBits()
 }
 }}}
 
-32 bits: Nesta implementação, como o buffer é de 32 bits e os registradores MMX são 128 bits, os dados podem ser alinhados, sendo possível manipular 4 pixels, acelerando o processo de desempacotamento e de leitura de dados. O valor de cada pixel é multiplicado por 4 (GetRValue(cCur) << 2), somado aos 4 vizinhos (esquerdo, direito, inferior e superior) (cDown+cUp+cLeft+cRight), dividido por 8 (>> 3) e atribuído ao pixel superior (cUp), e o pixel seguinte também é calculado, mustiplicando-o por 4 (), soamando aos vizinhos mais distantes (cDownRight+cUpRight+cCur+cRightRight), dividido por 8 (>> 3) e atribuído ao pixel inferior (cDown).O CMMX cFader é usado para acelerar o processo de  clareamento (com TRIPPY: cUp += cFader) ou escurecimento (com FAST_FADE: cUp -= cFader).
+32 bits: Nesta implementação, como o buffer é de 32 bits e os registradores SSE são 128 bits, os dados podem ser alinhados, sendo possível manipular 4 pixels, acelerando o processo de desempacotamento e de leitura de dados. O valor de cada pixel é multiplicado por 4 (GetRValue(cCur) << 2), somado aos 4 vizinhos (esquerdo, direito, inferior e superior) (cDown+cUp+cLeft+cRight), dividido por 8 (>> 3) e atribuído ao pixel superior (cUp), e o pixel seguinte também é calculado, mustiplicando-o por 4 (), soamando aos vizinhos mais distantes (cDownRight+cUpRight+cCur+cRightRight), dividido por 8 (>> 3) e atribuído ao pixel inferior (cDown).O CMMX cFader é usado para acelerar o processo de  clareamento (com TRIPPY: cUp += cFader) ou escurecimento (com FAST_FADE: cUp -= cFader).
 
 {{{
 void CSSE2Surface32Intrinsic::BlurBits()
