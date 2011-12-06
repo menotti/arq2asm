@@ -65,6 +65,9 @@ public:
 
 	//Grupo 4
 	virtual void GrayScale();
+   
+	//grupo 13
+	virtual void Threshold();
 	
 	//Grupo 5
 	virtual void Sobel(); // neste método está a implementação do Sobel
