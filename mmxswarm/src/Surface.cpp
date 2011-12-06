@@ -119,7 +119,7 @@ void CSurface::StripeBits()
 
 }
 
-//Grupo5 - FunÁ„o para fazer cÛpia de uma imagem
+//Grupo5 - Fun√ß√£o para fazer c√≥pia de uma imagem
 void CSurface::Copy(const CImage &image){
 	image.BitBlt(m_image.GetDC(), 0, m_kDeltaY, 
 		GetVisibleWidth(), GetVisibleHeight(), 0, 0);
@@ -197,16 +197,16 @@ void CSurface::FadeInOut()
 void CSurface::GrayScale()
 {
 	COLORREF cCur;		//declara um dword
-	BYTE r, g, b;		//vari·veis tipo byte que receber„o os valores RGB
+	BYTE r, g, b;		//vari√°veis tipo byte que receber√£o os valores RGB
 
 	//realiza um loop dentro do outro para percorrer a tela inteira
 	for (int i = 0; i < m_wndHeight; i++) {
 		for (int j = 0; j < m_wndWidth; j++) {
-			cCur = PointColor(j,i);		//pega um pixel da tela da posiÁ„o [i,j]
-			r = (BYTE)((GetRValue(cCur)+GetGValue(cCur)+GetBValue(cCur))/3);	//realiza mÈdia entre valores RGB e atualiza valor R
-			g = r;	//atualiza valor de G com mÈdia ja calculada em R
-			b = r;	//atualiza valor de B com mÈdia ja calculada em R
-			PointColor(j,i,RGB(b,g,r));		//reescreve na tela o pixel do valores RGB modificados na posiÁ„o [i,j]
+			cCur = PointColor(j,i);		//pega um pixel da tela da posi√ß√£o [i,j]
+			r = (BYTE)((GetRValue(cCur)+GetGValue(cCur)+GetBValue(cCur))/3);	//realiza m√©dia entre valores RGB e atualiza valor R
+			g = r;	//atualiza valor de G com m√©dia ja calculada em R
+			b = r;	//atualiza valor de B com m√©dia ja calculada em R
+			PointColor(j,i,RGB(b,g,r));		//reescreve na tela o pixel do valores RGB modificados na posi√ß√£o [i,j]
 		}
 	}
 }
@@ -268,17 +268,17 @@ void CSurface::Sobel()
 void CSurface::GrayFilter()
 {
 	COLORREF cCur;		//declara um dword
-	BYTE r, g, b;		//vari·veis tipo byte que receber„o os valores RGB
+	BYTE r, g, b;		//vari√°veis tipo byte que receber√£o os valores RGB
 
 
 	//realiza um loop dentro do outro para percorrer a tela inteira
 	for (int i = 0; i < m_wndHeight; i++) {
 		for (int j = 0; j < m_wndWidth; j++) {
-			cCur = PointColor(j,i);					//pega o pixel de posiÁ„o [i,j] na tela
-			r = (BYTE)((GetRValue(cCur)+255)/2);	//realiza mÈdia do canal R com o branco e atualiza
-			g = (BYTE)((GetGValue(cCur)+255)/2);	//realiza mÈdia do canal G com o branco e atualiza
-			b = (BYTE)((GetBValue(cCur)+255)/2);	//realiza mÈdia do canal B com o branco e atualiza
-			PointColor(j,i,RGB(b,g,r));				//reescreve na tela o pixel do valores RGB modificados na posiÁ„o [i,j]
+			cCur = PointColor(j,i);					//pega o pixel de posi√ß√£o [i,j] na tela
+			r = (BYTE)((GetRValue(cCur)+255)/2);	//realiza m√©dia do canal R com o branco e atualiza
+			g = (BYTE)((GetGValue(cCur)+255)/2);	//realiza m√©dia do canal G com o branco e atualiza
+			b = (BYTE)((GetBValue(cCur)+255)/2);	//realiza m√©dia do canal B com o branco e atualiza
+			PointColor(j,i,RGB(b,g,r));				//reescreve na tela o pixel do valores RGB modificados na posi√ß√£o [i,j]
 		}
 	}
 }
@@ -287,16 +287,16 @@ void CSurface::GrayFilter()
 void CSurface::Invert()
 {
 	COLORREF cCur;		
-	BYTE r, g, b;		//Vari·veis que receber„o os valores RGB
+	BYTE r, g, b;		//Vari√°veis que receber√£o os valores RGB
 
 	//Loop para acessar todos os pixels da imagem
 	for (int i = 0; i < m_wndHeight; i++) {
 		for (int j = 0; j < m_wndWidth; j++) {
-			cCur = PointColor(j,i);		//pega um pixel da tela da posiÁ„o [i,j]
-			r = (BYTE)(255-GetRValue(cCur));	//Para fazer a invers„o, o c·lculo a ser realizado p/ cada cor È de 255-cor
+			cCur = PointColor(j,i);		//pega um pixel da tela da posi√ß√£o [i,j]
+			r = (BYTE)(255-GetRValue(cCur));	//Para fazer a invers√£o, o c√°lculo a ser realizado p/ cada cor √© de 255-cor
 			g = (BYTE)(255-GetGValue(cCur));	
 			b = (BYTE)(255-GetBValue(cCur));	
-			PointColor(j,i,RGB(b,g,r));		//reescreve na tela o pixel com os valores RGB modificados na posiÁ„o [i,j]
+			PointColor(j,i,RGB(b,g,r));		//reescreve na tela o pixel com os valores RGB modificados na posi√ß√£o [i,j]
 		}
 	}
 }
@@ -518,6 +518,33 @@ void CSurface::Solarize() {
         }
     }
 }
+
+
+//grupo 13
+void CSurface::Threshold()
+{
+	COLORREF cCur;	//declara um dword
+	BYTE r, g, b, limiar, media;
+	limiar = 120;
+	//percorre a tela em cada ponto
+	for (int l = 0; l < m_wndHeight; l++) {
+		for (int m = 0; m < m_wndWidth; m++) {
+			cCur = PointColor(m,l);
+			media = (BYTE)((GetRValue(cCur)+GetGValue(cCur)+GetBValue(cCur))/3); //calcula a media do rgb do pixel corrente
+			if (media > limiar) {
+				r = 255;	
+				g = 255;	
+				b = 255;	
+			}else{
+				r = 0;	
+				g = 0;	
+				b = 0;
+			}
+			PointColor(m,l,RGB(b,g,r)); //reatribui o valor alterado no ponto
+		}
+	}
+}
+
 
 double CSurface::Sol(double v) {
 	return (v > 0.5) ? (2*(v-0.5)) : (2*(0.5-v));
