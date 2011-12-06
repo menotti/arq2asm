@@ -121,6 +121,7 @@ private:
     bool    m_bUseThreshold; //grupo 13
 	bool    m_bTimerPopped;
 	bool	execSobel;//Grupo 5 - Verifica se executou o Sobel alguma vez quando fadeIn estEoff
+	bool	execGray; //grupo 12
 
 	static const UINT_PTR m_kTimerID = 31;
 	static const UINT m_kTimerDelay = 1500;
