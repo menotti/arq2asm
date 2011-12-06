@@ -101,6 +101,7 @@ CChildView::CChildView()
 	m_bTimerPopped = false;
 	m_eSurf = eNone;
 	execSobel = false; //Grupo 5
+	execGray = false; //grupo 12
 	m_bUseSolarize = false; // Grupo 18
 }
 
@@ -299,6 +300,7 @@ void CChildView::OnViewUsePosterize(){
 void CChildView::OnViewUseGrayF()	
 {
 	m_bUseGrayF = !m_bUseGrayF;
+	execGray = false;
 }
 
 //Grupo 14
@@ -405,7 +407,10 @@ BOOL CChildView::OnIdle(LONG /*lCount*/)
 	}
 
 	//Grupo 12
-	if (m_bUseGrayF) {
+	if (m_bUseGrayF && !execGray) {
+		if(m_bPauseSwarm){
+			execGray = true;
+		}
 		m_pSurface->GrayFilter();
 		bContinue = TRUE;
 	}
