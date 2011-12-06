@@ -50,6 +50,7 @@ BEGIN_MESSAGE_MAP(CChildView, CWnd)
 	ON_UPDATE_COMMAND_UI(ID_VIEW_PAUSE_BLIT, OnUpdatePauseBlit)
 	ON_UPDATE_COMMAND_UI(ID_VIEW_USE_FADE, OnUpdateUseFade)
 	ON_UPDATE_COMMAND_UI(ID_VIEW_USE_GRAY, OnUpdateUseGray)	//Grupo 4
+  ON_UPDATE_COMMAND_UI(ID_VIEW_USE_THRESHOLD, OnUpdateUseThreshold) //grupo 13
 	ON_UPDATE_COMMAND_UI(ID_VIEW_USE_SOBEL, OnUpdateUseSobel)//Grupo 5
 	ON_UPDATE_COMMAND_UI(ID_VIEW_USE_POSTERIZE, OnUpdateUsePosterize)//Grupo 9
 	ON_UPDATE_COMMAND_UI(ID_VIEW_USE_GRAYF, OnUpdateUseGrayF)	//Grupo 12
@@ -61,6 +62,7 @@ BEGIN_MESSAGE_MAP(CChildView, CWnd)
 	ON_UPDATE_COMMAND_UI(ID_INDICATOR_PAUSE_BLIT, OnUpdatePauseBlit)
 	ON_UPDATE_COMMAND_UI(ID_INDICATOR_USE_FADE, OnUpdateUseFade)
 	ON_UPDATE_COMMAND_UI(ID_INDICATOR_USE_GRAY, OnUpdateUseGray)	//Grupo 4
+  ON_UPDATE_COMMAND_UI(ID_INDICATOR_USE_THRESHOLD, OnUpdateUseThreshold) //grupo 13
 	ON_UPDATE_COMMAND_UI(ID_INDICATOR_USE_SOBEL, OnUpdateUseSobel) //Grupo 5
 	ON_UPDATE_COMMAND_UI(ID_INDICATOR_USE_GRAYF, OnUpdateUseGrayF)	//Grupo 12
 	ON_UPDATE_COMMAND_UI(ID_INDICATOR_USE_INVERT, OnUpdateUseInvert)//Grupo 14
@@ -89,6 +91,7 @@ CChildView::CChildView()
 	m_bPauseBlit = false;
 	m_bPauseFade = false;
 	m_bUseGray = false;	//Grupo 4
+  m_bUseThreshold = false; //grupo 13
 	m_bUseSobel = false;	//Grupo 5
 	m_bUseGrayF = false;	//Grupo 12
 	m_bUseInvert = false;	//Grupo 14
@@ -181,6 +184,7 @@ void CChildView::OnFileOpen()
 		m_bUseGray = false;
 		m_bUseGrayF = false;
 		m_bUseSolarize = false;
+    m_bUseThreshold = false;
 	}
 }
 
@@ -320,6 +324,13 @@ void CChildView::OnViewUseSolarize(){
 	m_bUseSolarize = !m_bUseSolarize;
 }
 
+//grupo 13
+void CChildView::OnViewUseThreshold()
+{
+	m_bUseThreshold = !m_bUseThreshold;
+}
+
+
 void CChildView::OnPaint() 
 {
 	CPaintDC dc(this); // device context for painting
@@ -423,6 +434,12 @@ BOOL CChildView::OnIdle(LONG /*lCount*/)
 		bContinue = TRUE;
 		if(!m_bPauseFade)
 			m_bUseSolarize = false;
+	}
+  
+  //grupo 13
+	if (m_bUseThreshold) {
+		m_pSurface->Threshold();
+		bContinue = TRUE;
 	}
 
 	if (bContinue) {
@@ -741,6 +758,19 @@ void CChildView::OnUpdateUseSolarize(CCmdUI *pCmdUI)
 	else {
 		ASSERT(pCmdUI->m_nID == ID_VIEW_USE_SOLARIZE);
 		pCmdUI->SetCheck(m_bUseSolarize ? 1 : 0);
+		pCmdUI->Enable(TRUE);
+	}
+}
+
+//Grupo 13
+void CChildView::OnUpdateUseThreshold(CCmdUI* pCmdUI)
+{
+	if (pCmdUI->m_nID == ID_INDICATOR_USE_THRESHOLD) {
+		pCmdUI->Enable(m_bUseThreshold ? FALSE : TRUE);
+	}
+	else {
+		ASSERT(pCmdUI->m_nID == ID_VIEW_USE_THRESHOLD);
+		pCmdUI->SetCheck(m_bUseThreshold ? 1 : 0);
 		pCmdUI->Enable(TRUE);
 	}
 }
