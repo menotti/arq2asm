@@ -59,6 +59,7 @@ protected:
 	afx_msg void OnUpdateUseMask(CCmdUI* pCmdUI);	//Grupo 15
 	afx_msg void OnUpdateUseMandel(CCmdUI* pCmdUI);	//Grupo 6
 	afx_msg void OnUpdateUseSolarize(CCmdUI* pCmdUI);//Grupo 18
+    afx_msg void OnUpdateUseThreshold(CCmdUI* pCmdUI); //grupo 13
 	afx_msg void OnUpdateResolution(CCmdUI* pCmdUI);
 	afx_msg void OnUpdateImageFormats(CCmdUI* pCmdUI);
 	afx_msg void OnFileOpen();
@@ -75,6 +76,7 @@ protected:
 	afx_msg void OnViewUseMask(); //Grupo 15
 	afx_msg void OnViewUseMandel(); //Grupo 6
 	afx_msg void OnViewUseSolarize();//Grupo 18
+    afx_msg void OnViewUseThreshold(); //grupo 13
 	afx_msg void OnImageFormats(UINT nID);
 	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
 	//}}AFX_MSG
@@ -116,8 +118,9 @@ private:
 	bool	m_bUseMask; //Grupo 15
 	bool	m_bUseMandel; //Grupo 6
 	bool	m_bUseSolarize;//Grupo 18
+    bool    m_bUseThreshold; //grupo 13
 	bool    m_bTimerPopped;
-	bool	execSobel;//Grupo 5 - Verifica se executou o Sobel alguma vez quando fadeIn estÅEoff
+	bool	execSobel;//Grupo 5 - Verifica se executou o Sobel alguma vez quando fadeIn est¬ÅEoff
 
 	static const UINT_PTR m_kTimerID = 31;
 	static const UINT m_kTimerDelay = 1500;
