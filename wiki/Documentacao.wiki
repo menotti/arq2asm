@@ -893,12 +893,15 @@ http://infutilidades.files.wordpress.com/2011/11/dream_big_02.jpg?w=590
 Fig 2: Encaixando os cubos para a confecção da imagem.
 
 A implementação deste filtro foi feita de forma simples. Ele foi implementado por meio de mascara de bit. A mascara de bit informa quais os bits que serão interpretados na variável,  pois sera feita a operação AND e dessa forma só será interpretado os bits que na mascara estiverem setados como 1. 
-	Armazena o valor de cada cor em uma variável diferente. ( r <- redvalue; b <- bluevalue; g <- greenvalue)
-	Armazena o valor da mascara que se deseja aplicar. Esse valor não pode conter 0 entre 1’s, pois assim gerará um buraco entre as cores, assim como nº 2 do exemplo a seguir. Ex aplicando a operação AND: 
+
+Armazena o valor de cada cor em uma variável diferente. ( r <- redvalue; b <- bluevalue; g <- greenvalue)
+
+Armazena o valor da mascara que se deseja aplicar. Esse valor não pode conter 0 entre 1’s, pois assim gerará um buraco entre as cores, assim como nº 2 do exemplo a seguir. Ex aplicando a operação AND: 
 1)001	2)  010	3)  011	4)  100	5)  101	6)  111
   101       101	    101	    101	    101	    101
   001	    000	    001	    100	    101	    101
-	Agora basta aplicar a mascara para cada cor, armazenar os valores nas variáveis de suas devidas cores e mandar exibir o novo pixel.
+
+Agora basta aplicar a mascara para cada cor, armazenar os valores nas variáveis de suas devidas cores e mandar exibir o novo pixel.
 Com a aplicação do posterize na tela inicial do programa, que está em movimento, podemos ver a sua influência no processamento da imagem. Ficou assim:
               Sem Efeito	      Com Efeito
 NAIVE		74 fps			49 fps
