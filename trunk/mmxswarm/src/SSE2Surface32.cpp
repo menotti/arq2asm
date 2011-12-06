@@ -317,46 +317,46 @@ void CSSE2Surface32Intrinsic::GrayFilter()
 				pand xmm1,xmm0						
 				movq xmm2,xmm1                      //isola o canal B de pixel1 em xmm2
 				paddq xmm2, mascara					//adiciona 255 ao canal B
-				psrldq xmm2,1                       //dividindo por 2
+				psrld xmm2,1                       //dividindo por 2
 
 				movq xmm1,mascara					
 				psrldq xmm0,1						//desloca em 1 para direita xmm0 (como são registradores 128 bits, na verdade ocorre um deslocamento de 2 unidades)
 				pand xmm1,xmm0
 				movq xmm3,xmm1						//isola o canal G de pixel1 em xmm3
-				paddq xmm3, mascara					//adiciona 255 ao canal G
-				psrldq xmm3,1                       //dividindo por 2
+				paddq xmm3, mascara				//adiciona 255 ao canal G
+				psrld xmm3,1                       //dividindo por 2
 				
 				movq xmm1,mascara
 				psrldq xmm0,1						//desloca em 1 para direita xmm0 (como são registradores 128 bits, na verdade ocorre um deslocamento de 2 unidades)
 				pand xmm1,xmm0
 				movq xmm4,xmm1						//isola o canal R de pixel1 em xmm4
-				paddq xmm4, mascara					//adiciona 255 ao canal R
-				psrldq xmm4,1                       //dividindo por 2
-				
+				paddq xmm4, mascara				//adiciona 255 ao canal R
+				psrld xmm4,1                       //dividindo por 2
 				
 				psrldq xmm0,2						//desloca em 2 (pula o alpha) para direita xmm0, para selecionar agora sua metade mais significativa (pixel2)
 				
 				movq xmm1,mascara
 				pand xmm1,xmm0
 				movq xmm5,xmm1						//isola o canal B de pixel2 em xmm5
-				paddq xmm5, mascara					//adiciona 255 ao canal B
-				psrldq xmm5,1                       //dividindo por 2
+				paddq xmm5, mascara				//adiciona 255 ao canal B
+				psrld xmm5,1                       //dividindo por 2
 
 				movq xmm1,mascara
 				psrldq xmm0,1
 				pand xmm1,xmm0
 				movq xmm6,xmm1						//isola o canal G de pixel2 em xmm6
-				paddq xmm6, mascara					//adiciona 255 ao canal G
-				psrldq xmm6,1                       //dividindo por 2
+				paddq xmm6, mascara				//adiciona 255 ao canal G
+				psrld xmm6,1                       //dividindo por 2
 
 				movq xmm1,mascara
 				psrldq xmm0,1
 				pand xmm1,xmm0
 				movq xmm7,xmm1						//isola o canal R de pixel2 em xmm7
-				paddq xmm7, mascara					//adiciona 255 ao canal R
-				psrldq xmm7,1                       //dividindo por 2
+				paddq xmm7, mascara				//adiciona 255 ao canal R
+				psrld xmm7,1                       //dividindo por 2
 
 				pxor xmm0,xmm0					// zera o registrador que vai receber os resultados
+
 				paddq xmm0,xmm4					// R de pixel1
 				pslldq xmm0,1					// proxima posição
 				paddq xmm0,xmm3					// G de pixel1
@@ -365,6 +365,7 @@ void CSSE2Surface32Intrinsic::GrayFilter()
 				movq pixel1,xmm0				// atualiza o valor de pixel1
 				
 				pxor xmm0,xmm0					// zera o registrador que vai receber os resultados
+
 				paddq xmm0,xmm7					// R de pixel2
 				pslldq xmm0,1					// proxima posição
 				paddq xmm0,xmm6					// G de pixel2

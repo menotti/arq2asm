@@ -345,13 +345,13 @@ void CMMXSurface32Intrinsic::GrayFilter(){
 				psrlq mm3, 24       // mm3 <- canal alpha
 
 				pxor mm4, mm4       //garante que o registrador mm4 esta vazio
-				paddd mm4, mm3
-				psllq mm4, 8
-				paddd mm4, mm2      //copia o canal R (mm2) para mm3
+				paddd mm4, mm3      //adiciona o canal alpha ao mm4
+				psllq mm4, 8        //shift para o proximo byte
+				paddd mm4, mm2      //copia o canal R (mm2) para mm4
 				psllq mm4, 8		//um shift para esquerda em 1 byte
-				paddd mm4, mm1		//copia o canal G (mm1) para mm3
+				paddd mm4, mm1		//copia o canal G (mm1) para mm4
 				psllq mm4, 8		//novamente um shift para esquerda em 1 byte
-				paddd mm4, mm0		//copia o canal B (mm0) para mm3
+				paddd mm4, mm0		//copia o canal B (mm0) para mm4
 
 				movq pixel, mm4     //retorna para a variavel alto nivel os novos valores do pixel
 			}
