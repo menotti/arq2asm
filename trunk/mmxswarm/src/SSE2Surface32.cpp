@@ -288,3 +288,96 @@ void CSSE2Surface32Intrinsic::Threshold(){
 	} while (--height > 0);
 }
 
+//Grupo 12
+void CSSE2Surface32Intrinsic::GrayFilter()
+{
+    int height = GetVisibleHeight()*2;				//aumenta a altura em 2 pois são processados 2 pixels de 32-bits de uma só vez em variáveis de 128 bits	
+    DWORD *pCur  = (DWORD *)GetPixelAddress(0,0);	//ponteiro para posição atual da tela
+	
+	ULONGLONG mascara = 0xFF;						//máscara para selecionar um byte por vez
+	ULONGLONG pixel1, pixel2;						//variaveis de 64 bits que receberão valores de dois pixels consecutivos
+	ULONGLONG next1, next2;							//variáveis que guardam a próximas posições de pixel1 e pixel2
+
+	pixel1 = *(ULONGLONG *) pCur;					//pixel1 recebe pixel que está sendo apontado no inicio (0,0) 
+	pixel2 = *(ULONGLONG *) (pCur+1);				//pixel2 recebe pixel consecutivo (0,1)
+	
+	//loops para percorrer toda a tela
+	do {
+		int width = m_width;
+		do {
+			
+			next1 = *(ULONGLONG *) (pCur+2);		//guarda próximo valor para pixel1	
+			next2 = *(ULONGLONG *) (pCur+3);		//guarda próximo valor para pixel2	
+			
+			__asm{
+				movq xmm0, pixel1					//move pixel1 para os 64 bits menos significativos de xmm0 (128 bits)
+				movhpd xmm0, pixel2					//move pixel2 para os 64 bits mais significativos de xmm0
+
+				movq xmm1, mascara					//xmm1 fará o papel de seletor de bytes especificos de xmm0
+				pand xmm1,xmm0						
+				movq xmm2,xmm1                      //isola o canal B de pixel1 em xmm2
+				paddq xmm2, mascara					//adiciona 255 ao canal B
+				psrldq xmm2,1                       //dividindo por 2
+
+				movq xmm1,mascara					
+				psrldq xmm0,1						//desloca em 1 para direita xmm0 (como são registradores 128 bits, na verdade ocorre um deslocamento de 2 unidades)
+				pand xmm1,xmm0
+				movq xmm3,xmm1						//isola o canal G de pixel1 em xmm3
+				paddq xmm3, mascara					//adiciona 255 ao canal G
+				psrldq xmm3,1                       //dividindo por 2
+				
+				movq xmm1,mascara
+				psrldq xmm0,1						//desloca em 1 para direita xmm0 (como são registradores 128 bits, na verdade ocorre um deslocamento de 2 unidades)
+				pand xmm1,xmm0
+				movq xmm4,xmm1						//isola o canal R de pixel1 em xmm4
+				paddq xmm4, mascara					//adiciona 255 ao canal R
+				psrldq xmm4,1                       //dividindo por 2
+				
+				
+				psrldq xmm0,2						//desloca em 2 (pula o alpha) para direita xmm0, para selecionar agora sua metade mais significativa (pixel2)
+				
+				movq xmm1,mascara
+				pand xmm1,xmm0
+				movq xmm5,xmm1						//isola o canal B de pixel2 em xmm5
+				paddq xmm5, mascara					//adiciona 255 ao canal B
+				psrldq xmm5,1                       //dividindo por 2
+
+				movq xmm1,mascara
+				psrldq xmm0,1
+				pand xmm1,xmm0
+				movq xmm6,xmm1						//isola o canal G de pixel2 em xmm6
+				paddq xmm6, mascara					//adiciona 255 ao canal G
+				psrldq xmm6,1                       //dividindo por 2
+
+				movq xmm1,mascara
+				psrldq xmm0,1
+				pand xmm1,xmm0
+				movq xmm7,xmm1						//isola o canal R de pixel2 em xmm7
+				paddq xmm7, mascara					//adiciona 255 ao canal R
+				psrldq xmm7,1                       //dividindo por 2
+
+				pxor xmm0,xmm0					// zera o registrador que vai receber os resultados
+				paddq xmm0,xmm4					// R de pixel1
+				pslldq xmm0,1					// proxima posição
+				paddq xmm0,xmm3					// G de pixel1
+				pslldq xmm0,1					// proxima posição
+				paddq xmm0,xmm2					// B de pixel1
+				movq pixel1,xmm0				// atualiza o valor de pixel1
+				
+				pxor xmm0,xmm0					// zera o registrador que vai receber os resultados
+				paddq xmm0,xmm7					// R de pixel2
+				pslldq xmm0,1					// proxima posição
+				paddq xmm0,xmm6					// G de pixel2
+				pslldq xmm0,1					// proxima posição
+				paddq xmm0,xmm5					// B de pixel2
+				movq pixel2,xmm0				// atualiza o valor de pixel2
+			}
+
+			*(ULONGLONG *)pCur = pixel1;			//joga o valor calculado de pixel1 de volta na tela
+			*(ULONGLONG *)(pCur+1) = pixel2;		//joga o valor calculado de pixel2 de volta na tela
+			pixel1 = next1;							//pixel1 recebe o próximo pixel 
+			pixel2 = next2;							//pixel2 recebe o próximo pixel
+			pCur += 2;								//aumenta o ponteiro da tela em 2 (calcula 2 pixels por vez)
+		} while (--width > 0);
+	} while (--height > 0); 
+}

@@ -301,3 +301,59 @@ void CMMXSurface32Intrinsic::Threshold()
 		} while (--width > 0);
 	} while (--height > 0);
 }
+
+// Grupo 12 - Gray Filter
+void CMMXSurface32Intrinsic::GrayFilter(){
+
+    int height = GetVisibleHeight()*2;	//altura multiplicada por 2 pois são pixels de 32 bits em variáveis de64 bits (2x maior)
+    DWORD *pCur  = (DWORD *)GetPixelAddress(0,0);	// cada pixel tem 32bits, 1byte para cada canal de cor: alfa, red, green, blue
+
+	// Variaveis do tipo unsigned long long, de 64 bits
+	ULONGLONG mascara = 0xFF;	//seleciona um byte de alguma variável (utilizada para pegar valores individuais de RGB)
+	ULONGLONG pixel;	//recebe os valores referentes a um ponto da tela
+	ULONGLONG next;		//recebe os valores do próximo ponto a partir de pixel 
+	
+	pixel = *(ULONGLONG *)pCur;	//faz um casting 64 bits dos dados do ponto atual na variável pixel
+	
+	//loops para percorrer toda a tela
+	do {
+		int width = m_width;
+		do {
+			
+			next = *(ULONGLONG *)(pCur+1);	//próximo ponto recebe o ponteiro que aponta para um ponto na tela + 1
+			
+			//utilização dos registradores mmx 64 bits com inline assembly 
+			__asm{
+				movq mm0, pixel		//registrador mm0 recebe o valor do pixel atual
+				pand mm0, mascara	//valor de mm0 recebe uma mascara para selecionar seu 1 byte menos significativo (B)
+				paddd mm0, mascara //acresce 255d a B
+				psrlq mm0, 1        //1 shift para a direita (divide por 2, sem precisão)
+
+				movq mm1, pixel		//registrador mm1 recebe o valor do pixel atual
+				psrlq mm1, 8		//realiza um shift lógico para direita para pegar o 2 byte
+				pand mm1, mascara	//valor de mm1 recebe uma mascara para selecionar seu 2 byte menos significativo (G)
+				paddd mm1, mascara //acresce 255d a G
+				psrlq mm1, 1        //1 shift para a direita (divide por 2, sem precisão)
+
+				movq mm2, pixel		//registrador mm2 recebe o valor do pixel atual
+				psrlq mm2, 16		//realiza um shift lógico para direita para pegar o 3 byte
+				pand mm2, mascara	//valor de mm2 recebe uma mascara para selecionar seu 1 byte menos significativo (R)
+				paddd mm2, mascara //acresce 255d a R
+				psrlq mm2, 1        //1 shift para a direita (divide por 2, sem precisão)
+
+				pxor mm3, mm3       //garante que o registrador mm3 esta vazio
+				paddd mm3, mm2      //copia o canal R (mm2) para mm3
+				psllq mm0, 8		//um shift para esquerda em 1 byte
+				paddd mm3, mm1		//copia o canal G (mm1) para mm3
+				psllq mm0, 8		//novamente um shift para esquerda em 1 byte
+				paddd mm3, mm0		//copia o canal B (mm0) para mm3
+
+				movq pixel, mm3     //retorna para a variavel alto nivel os novos valores do pixel
+			}
+
+			*(ULONGLONG *)pCur = pixel;		//joga o resultado no ponto apontado da tela
+			pixel = next;					//recebe o próximo pixel a ser processado
+			pCur++;							//avança o ponteiro sobre a tela
+		} while (--width > 0);
+	} while (--height > 0);
+}

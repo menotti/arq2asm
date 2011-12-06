@@ -19,6 +19,7 @@ public:
     virtual void BlurBits(); // this is where the MMX action is
 	virtual void GrayScale();
 	virtual void Posterize();	// Grupo 9
+	virtual void GrayFilter();  // Grupo 12
     virtual void Threshold(); //grupo 13
 protected:
 	virtual void OnCreated();
