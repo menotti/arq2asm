@@ -41,7 +41,7 @@ BEGIN_MESSAGE_MAP(CChildView, CWnd)
 	ON_COMMAND(ID_VIEW_USE_SOBEL, OnViewUseSobel)//Grupo 5
 	ON_COMMAND(ID_VIEW_USE_POSTERIZE, OnViewUsePosterize)//Grupo 9
 	ON_COMMAND(ID_VIEW_USE_GRAYF, OnViewUseGrayF)	//Grupo 12
-	ON_COMMAND(ID_VIEW_USE_INVERT, OnViewUseInvert)	//Grupo 14
+	ON_COMMAND(ID_VIEW_USE_RGBADJUST, OnViewUseRGBAdjust)	//Grupo 14
 	ON_COMMAND(ID_VIEW_USE_MASK, OnViewUseMask)	//Grupo 15
 	ON_COMMAND(ID_VIEW_USE_MANDEL, OnViewUseMandel)	//Grupo 6
 	ON_COMMAND(ID_VIEW_USE_SOLARIZE, OnViewUseSolarize)//Grupo 18
@@ -54,7 +54,7 @@ BEGIN_MESSAGE_MAP(CChildView, CWnd)
 	ON_UPDATE_COMMAND_UI(ID_VIEW_USE_SOBEL, OnUpdateUseSobel)//Grupo 5
 	ON_UPDATE_COMMAND_UI(ID_VIEW_USE_POSTERIZE, OnUpdateUsePosterize)//Grupo 9
 	ON_UPDATE_COMMAND_UI(ID_VIEW_USE_GRAYF, OnUpdateUseGrayF)	//Grupo 12
-	ON_UPDATE_COMMAND_UI(ID_VIEW_USE_INVERT, OnUpdateUseInvert)	//Grupo 14
+	ON_UPDATE_COMMAND_UI(ID_VIEW_USE_RGBADJUST, OnUpdateUseRGBAdjust)	//Grupo 14
 	ON_UPDATE_COMMAND_UI(ID_VIEW_USE_MASK, OnUpdateUseMask)	//Grupo 15
 	ON_UPDATE_COMMAND_UI(ID_VIEW_USE_SOLARIZE, OnUpdateUseSolarize)//Grupo 18
 	ON_UPDATE_COMMAND_UI(ID_INDICATOR_PAUSE_BLUR, OnUpdatePauseBlur)
@@ -65,7 +65,7 @@ BEGIN_MESSAGE_MAP(CChildView, CWnd)
     ON_UPDATE_COMMAND_UI(ID_INDICATOR_USE_THRESHOLD, OnUpdateUseThreshold) //grupo 13
 	ON_UPDATE_COMMAND_UI(ID_INDICATOR_USE_SOBEL, OnUpdateUseSobel) //Grupo 5
 	ON_UPDATE_COMMAND_UI(ID_INDICATOR_USE_GRAYF, OnUpdateUseGrayF)	//Grupo 12
-	ON_UPDATE_COMMAND_UI(ID_INDICATOR_USE_INVERT, OnUpdateUseInvert)//Grupo 14
+	ON_UPDATE_COMMAND_UI(ID_INDICATOR_USE_RGBADJUST, OnUpdateUseRGBAdjust)//Grupo 14
 	ON_UPDATE_COMMAND_UI(ID_INDICATOR_USE_MASK, OnUpdateUseMask)//Grupo 15
 	ON_UPDATE_COMMAND_UI(ID_INDICATOR_USE_POSTERIZE, OnUpdateUsePosterize)//Grupo 9
 	ON_UPDATE_COMMAND_UI(ID_INDICATOR_USE_MANDEL, OnUpdateUseMandel)//Grupo 6
@@ -94,7 +94,7 @@ CChildView::CChildView()
     m_bUseThreshold = false; //grupo 13
 	m_bUseSobel = false;	//Grupo 5
 	m_bUseGrayF = false;	//Grupo 12
-	m_bUseInvert = false;	//Grupo 14
+	m_bUseRGBAdjust = false;	//Grupo 14
 	m_bUseMask = false;	//Grupo 15
 	m_bUsePosterize = false; //Grupo 9
 	m_bUseMandel = false;	//Grupo 6
@@ -176,7 +176,7 @@ void CChildView::OnFileOpen()
 		m_bPauseSwarm = true;
 		m_bUseGray = false;
 		m_bPauseFade = false;
-		m_bUseInvert = false;
+		m_bUseRGBAdjust = false;
 		m_bUseMask = false;
 		m_bUseMandel = false;
 		m_bUsePosterize = false;
@@ -302,9 +302,9 @@ void CChildView::OnViewUseGrayF()
 }
 
 //Grupo 14
-void CChildView::OnViewUseInvert()
+void CChildView::OnViewUseRGBAdjust()
 {
-	m_bUseInvert = !m_bUseInvert;
+	m_bUseRGBAdjust = !m_bUseRGBAdjust;
 }
 
 //Grupo 15
@@ -411,8 +411,8 @@ BOOL CChildView::OnIdle(LONG /*lCount*/)
 	}
 
 	//Grupo 14
-	if (m_bUseInvert) {
-		m_pSurface->Invert();
+	if (m_bUseRGBAdjust) {
+		m_pSurface->RGBAdjust();
 		bContinue = TRUE;
 	}
 
@@ -711,14 +711,14 @@ void CChildView::OnUpdateUseGrayF(CCmdUI* pCmdUI)
 }
 
 //Grupo 14
-void CChildView::OnUpdateUseInvert(CCmdUI* pCmdUI)
+void CChildView::OnUpdateUseRGBAdjust(CCmdUI* pCmdUI)
 {
-	if (pCmdUI->m_nID == ID_INDICATOR_USE_INVERT) {
-		pCmdUI->Enable(m_bUseInvert ? FALSE : TRUE);
+	if (pCmdUI->m_nID == ID_INDICATOR_USE_RGBADJUST) {
+		pCmdUI->Enable(m_bUseRGBAdjust ? FALSE : TRUE);
 	}
 	else {
-		ASSERT(pCmdUI->m_nID == ID_VIEW_USE_INVERT);
-		pCmdUI->SetCheck(m_bUseInvert ? 1 : 0);
+		ASSERT(pCmdUI->m_nID == ID_VIEW_USE_RGBADJUST);
+		pCmdUI->SetCheck(m_bUseRGBAdjust ? 1 : 0);
 		pCmdUI->Enable(TRUE);
 	}
 }
