@@ -79,7 +79,7 @@ public:
     void RandomLine(COLORREF c);
 
 	//Grupo 14
-	virtual void Invert();
+	virtual void RGBAdjust();
 
 	//Grupo 15
 	virtual void Mask();

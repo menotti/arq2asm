@@ -284,7 +284,7 @@ void CSurface::GrayFilter()
 }
 
 //Grupo 14
-void CSurface::Invert()
+void CSurface::RGBAdjust()
 {
 	COLORREF cCur;		
 	BYTE r, g, b;		//Variáveis que receberão os valores RGB
@@ -293,9 +293,9 @@ void CSurface::Invert()
 	for (int i = 0; i < m_wndHeight; i++) {
 		for (int j = 0; j < m_wndWidth; j++) {
 			cCur = PointColor(j,i);		//pega um pixel da tela da posição [i,j]
-			r = (BYTE)(255-GetRValue(cCur));	//Para fazer a inversão, o cálculo a ser realizado p/ cada cor é de 255-cor
-			g = (BYTE)(255-GetGValue(cCur));	
-			b = (BYTE)(255-GetBValue(cCur));	
+			r = (BYTE)(GetRValue(cCur)+15);	//Para fazer a inversão, o cálculo a ser realizado p/ cada cor é de 255-cor
+			g = (BYTE)(GetGValue(cCur)-30);	
+			b = (BYTE)(GetBValue(cCur)+60);	
 			PointColor(j,i,RGB(b,g,r));		//reescreve na tela o pixel com os valores RGB modificados na posição [i,j]
 		}
 	}

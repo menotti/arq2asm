@@ -55,7 +55,7 @@ protected:
 	afx_msg void OnUpdateUseSobel(CCmdUI* pCmdUI);//Grupo 5
 	afx_msg void OnUpdateUsePosterize(CCmdUI* pCmdUI);//Grupo 9
 	afx_msg void OnUpdateUseGrayF(CCmdUI* pCmdUI);	//Grupo 12
-	afx_msg void OnUpdateUseInvert(CCmdUI* pCmdUI);	//Grupo 14
+	afx_msg void OnUpdateUseRGBAdjust(CCmdUI* pCmdUI);	//Grupo 14
 	afx_msg void OnUpdateUseMask(CCmdUI* pCmdUI);	//Grupo 15
 	afx_msg void OnUpdateUseMandel(CCmdUI* pCmdUI);	//Grupo 6
 	afx_msg void OnUpdateUseSolarize(CCmdUI* pCmdUI);//Grupo 18
@@ -72,7 +72,7 @@ protected:
 	afx_msg void OnViewUseSobel();//Grupo 5
 	afx_msg void OnViewUsePosterize();	//Grupo 9
 	afx_msg void OnViewUseGrayF();	//Grupo 12
-	afx_msg void OnViewUseInvert(); //Grupo 14
+	afx_msg void OnViewUseRGBAdjust(); //Grupo 14
 	afx_msg void OnViewUseMask(); //Grupo 15
 	afx_msg void OnViewUseMandel(); //Grupo 6
 	afx_msg void OnViewUseSolarize();//Grupo 18
@@ -114,7 +114,7 @@ private:
 	bool	m_bUseSobel;//Grupo 5
 	bool	m_bUsePosterize;//Grupo 9
 	bool	m_bUseGrayF;  //Grupo 12
-	bool	m_bUseInvert; //Grupo 14
+	bool	m_bUseRGBAdjust; //Grupo 14
 	bool	m_bUseMask; //Grupo 15
 	bool	m_bUseMandel; //Grupo 6
 	bool	m_bUseSolarize;//Grupo 18
