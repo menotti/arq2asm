@@ -896,7 +896,8 @@ A implementação deste filtro foi feita de forma simples. Ele foi implementado 
 
 Armazena o valor de cada cor em uma variável diferente. ( r <- redvalue; b <- bluevalue; g <- greenvalue)
 
-Armazena o valor da mascara que se deseja aplicar. Esse valor não pode conter 0 entre 1’s, pois assim gerará um buraco entre as cores, assim como nº 2 do exemplo a seguir. Ex aplicando a operação AND: 
+Armazena o valor da mascara que se deseja aplicar. Esse valor não pode conter 0 entre 1’s, pois assim gerará um buraco entre as cores, assim como nº 2 do exemplo a seguir. 
+Ex aplicando a operação AND: 
 ||ex1||ex2||ex3||ex4||ex5||ex6||
 ||001||010||011||100||101||111||
 ||101||101||101||101||101||101||
