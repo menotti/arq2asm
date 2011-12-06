@@ -150,6 +150,7 @@ BEGIN
 		MENUITEM "Use &Mask\tM",				ID_VIEW_USE_MASK//Grupo 15
 		MENUITEM "Use &MandelBrot\tAlt+M",		ID_VIEW_USE_MANDEL//Grupo 6
 		MENUITEM "Use &Solarize\tL",		    ID_VIEW_USE_SOLARIZE //Grupo 18
+      MENUITEM "Use &Threshold\tK",            ID_VIEW_USE_THRESHOLD //grupo 13
     END
     POPUP "&Help"
     BEGIN
@@ -189,6 +190,7 @@ BEGIN
 	"M",			ID_VIEW_USE_MASK,		VIRTKEY, NOINVERT//Grupo 15
 	"M",			ID_VIEW_USE_MANDEL,		VIRTKEY, ALT, NOINVERT//Grupo 6
 	"L",            ID_VIEW_USE_SOLARIZE,	VIRTKEY, NOINVERT//Grupo 18
+    "K",            ID_VIEW_USE_THRESHOLD,    VIRTKEY, NOINVERT//grupo 13
 END
 
 
