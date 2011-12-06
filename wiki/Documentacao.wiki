@@ -874,6 +874,135 @@ void CSurface::Sobel()
 }
 }}}
 
+== PosterizeFilter ==
+
+<wiki:comment>
+Grupo 9
+Implementar e descrever algum filtro do site http://www.jhlabs.com/ip/filters/as nas versões Normal, MMX e SSE.
+</wiki:comment>
+
+
+O filtro Posterize reduz a quantidade de possiveis váriações das cores na imagem, fazendo com que uma imagem digital que contém uma variação de 0 a 16777215(FFFFFF em hexadecimal) de cores, passaria a ter uma variação de 0 a 256, ou até de 0 a 64 de cores. Esse efeito pode ser uma alternativa quando não se tem uma grande paleta de cores pra se descrever uma imagem. Um exemplo de quando não se pode descrever uma imagem com várias cores é essa imagem  feita de Martin Luther King Jr. com milhares de cubos mágicos:
+
+(Imagens tiradas:  http://infutilidades.wordpress.com/2011/11/09/martin-luther-king-e-milhares-de-cubos-magicos/ )
+ 
+http://infutilidades.files.wordpress.com/2011/11/dream_big_01.jpg?w=590
+Fig 1 : Imagem feita a partir de vários cubos mágicos.
+
+http://infutilidades.files.wordpress.com/2011/11/dream_big_02.jpg?w=590 
+Fig 2: Encaixando os cubos para a confecção da imagem.
+
+A implementação deste filtro foi feita de forma simples. Ele foi implementado por meio de mascara de bit. A mascara de bit informa quais os bits que serão interpretados na variável,  pois sera feita a operação AND e dessa forma só será interpretado os bits que na mascara estiverem setados como 1. 
+	Armazena o valor de cada cor em uma variável diferente. ( r <- redvalue; b <- bluevalue; g <- greenvalue)
+	Armazena o valor da mascara que se deseja aplicar. Esse valor não pode conter 0 entre 1’s, pois assim gerará um buraco entre as cores, assim como nº 2 do exemplo a seguir. Ex aplicando a operação AND: 
+1)001	2)  010	3)  011	4)  100	5)  101	6)  111
+  101       101	    101	    101	    101	    101
+  001	    000	    001	    100	    101	    101
+	Agora basta aplicar a mascara para cada cor, armazenar os valores nas variáveis de suas devidas cores e mandar exibir o novo pixel.
+Com a aplicação do posterize na tela inicial do programa, que está em movimento, podemos ver a sua influência no processamento da imagem. Ficou assim:
+              Sem Efeito	      Com Efeito
+NAIVE		74 fps			49 fps
+MMX		65 fps			63 fps
+SSE2		87 fps			84 fps
+
+Ps: Os testes foram feitos nas versão 32 bits.
+
+Na implementação mostrada a seguir a mascara adotada para cada cor foi C0 hexa ou 11000000 em bits. Sendo assim, considerando somente as cores(Vermelho, Verde e Azul), teremos 64 cores diferentes disponíveis para descrever a imagem.
+
+
+== Naive ==
+
+void CSurface::Posterize()
+{
+	if (!inicializado) {
+		inicializar();
+		inicializado = true;
+	}
+	COLORREF cCur = PointColor(0,0);
+    BYTE r, g, b;
+    for (int i = 0; i < m_wndHeight; i++) {
+        for (int j = 0; j < m_wndWidth; j++) {
+			cCur = PointColor(j,i);
+			r = (BYTE)( (int)GetRValue(cCur) & 0xC0 );
+			g = (BYTE)( (int)GetGValue(cCur) & 0xC0 );
+			b = (BYTE)( (int)GetBValue(cCur) & 0xC0 );
+
+            PointColor(j, i, RGB(b,g,r)); // RGBs are physically inverted
+        }
+    }
+}
+
+
+=== MMX ===
+
+void CMMXSurface32Intrinsic::Posterize()
+{
+	int height = GetVisibleHeight();
+    DWORD *pCur  = (DWORD *)GetPixelAddress(0,0);	// cada pixel tem 32bits, 1byte para cada canal de cor: alfa, red, green, blue
+
+	// Variaveis do tipo unsigned long long, de 64 bits
+	ULONGLONG mascara = 0xC0C0C0C0C0C0C0C0;		//0xC = 1100, preservar dois MSD de cada byte.
+	ULONGLONG pixel;
+
+	/* Iteracao principal, processa 2 pixeis em cada iteracao */
+	do {
+		int width = m_width;
+		do {
+			pixel = *(ULONGLONG *)pCur;
+			// inline assembly
+			__asm{
+				movq mm0, pixel;	// ler pixeis atuais para registrador
+				pand mm0, mascara	// aplicar mascara para descardar bits menos significativos
+				movq pixel, mm0;
+			}
+			*(ULONGLONG *)pCur = pixel;
+			pCur+= 2;
+		} while (--width > 0);
+	} while (--height > 0);
+}
+
+
+=== SSE(n) ===
+
+void CSSE2Surface32Intrinsic::Posterize()
+{
+	int height = GetVisibleHeight();
+    DWORD *pCur  = (DWORD *) GetPixelAddress(0,0);	// cada pixel tem 32bits, 1byte para cada canal de cor: alfa, red, green, blue
+
+	// Variaveis do tipo unsigned long long, de 64 bits
+	ULONGLONG mascara = 0x00C0C0C000C0C0C0;		//0xC = 1100, preservar dois MSD de cada byte.
+	ULONGLONG pixel1, pixel2;
+
+	/* Iteracao principal, processa 2 pixels em cada iteracao */
+	do {
+		int width = m_width;
+		do {
+			pixel1 = *(ULONGLONG *)pCur;
+			pixel2 = *(ULONGLONG *)(pCur+2);
+			// inline assembly
+			__asm{
+				movq xmm0, pixel1	// ler pixels atuais para registrador
+				movhpd xmm0, pixel2
+				movq xmm1, mascara
+				movhpd xmm1, mascara
+
+				pand xmm0, xmm1	// aplicar mascara para descartar bits menos significativos
+
+				movhpd pixel2, xmm0
+				movq pixel1, xmm0
+			}
+			*(ULONGLONG *)pCur = pixel1;
+			*(ULONGLONG *)(pCur+2) = pixel2;
+			pCur+= 4;
+		} while (--width > 0);
+	} while (--height > 0);
+}
+
+
+
+Posterize Filter
+
+
 === MMX ===
 
 TODO: descrever aqui
