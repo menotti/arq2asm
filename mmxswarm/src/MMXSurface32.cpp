@@ -341,14 +341,19 @@ void CMMXSurface32Intrinsic::GrayFilter(){
 				paddd mm2, mascara //acresce 255d a R
 				psrlq mm2, 1        //1 shift para a direita (divide por 2, sem precisão)
 
-				pxor mm3, mm3       //garante que o registrador mm3 esta vazio
-				paddd mm3, mm2      //copia o canal R (mm2) para mm3
-				psllq mm0, 8		//um shift para esquerda em 1 byte
-				paddd mm3, mm1		//copia o canal G (mm1) para mm3
-				psllq mm0, 8		//novamente um shift para esquerda em 1 byte
-				paddd mm3, mm0		//copia o canal B (mm0) para mm3
+				movq mm3, pixel     // mm3 <- pixel atual
+				psrlq mm3, 24       // mm3 <- canal alpha
 
-				movq pixel, mm3     //retorna para a variavel alto nivel os novos valores do pixel
+				pxor mm4, mm4       //garante que o registrador mm4 esta vazio
+				paddd mm4, mm3
+				psllq mm4, 8
+				paddd mm4, mm2      //copia o canal R (mm2) para mm3
+				psllq mm4, 8		//um shift para esquerda em 1 byte
+				paddd mm4, mm1		//copia o canal G (mm1) para mm3
+				psllq mm4, 8		//novamente um shift para esquerda em 1 byte
+				paddd mm4, mm0		//copia o canal B (mm0) para mm3
+
+				movq pixel, mm4     //retorna para a variavel alto nivel os novos valores do pixel
 			}
 
 			*(ULONGLONG *)pCur = pixel;		//joga o resultado no ponto apontado da tela
