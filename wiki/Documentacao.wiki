@@ -1234,7 +1234,7 @@ void CSSE2Surface32Intrinsic::Threshold(){
 
 Para avaliação do  desempenho, foram consideradas uma imagem de 320x240 pixel. O desempenho melhor foi nas implementações de 32 bits para Naive, SSE e MMX.
 Com a aplicação do threshold filter na tela inicial do programa, podemos ver a influência no processamento da imagem da seguinte forma:
-||Tipo||original||Threshold||
+||Tipo||Original||Threshold||
 ||NAIVE||30 fps||20 fps||
 ||MMX||18 fps||17 fps||
 ||SSE2||34 fps||32 fps||
