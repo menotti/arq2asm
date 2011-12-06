@@ -37,7 +37,7 @@ BEGIN_MESSAGE_MAP(CChildView, CWnd)
     ON_COMMAND(ID_VIEW_PAUSE_BLIT, OnViewPauseBlit)
     ON_COMMAND(ID_VIEW_USE_FADE, OnViewUseFade)
 	ON_COMMAND(ID_VIEW_USE_GRAY, OnViewUseGray)	//Grupo 4
-  ON_COMMAND(ID_VIEW_USE_THRESHOLD, OnViewUseThreshold) //grupo 13
+    ON_COMMAND(ID_VIEW_USE_THRESHOLD, OnViewUseThreshold) //grupo 13
 	ON_COMMAND(ID_VIEW_USE_SOBEL, OnViewUseSobel)//Grupo 5
 	ON_COMMAND(ID_VIEW_USE_POSTERIZE, OnViewUsePosterize)//Grupo 9
 	ON_COMMAND(ID_VIEW_USE_GRAYF, OnViewUseGrayF)	//Grupo 12
@@ -50,7 +50,7 @@ BEGIN_MESSAGE_MAP(CChildView, CWnd)
 	ON_UPDATE_COMMAND_UI(ID_VIEW_PAUSE_BLIT, OnUpdatePauseBlit)
 	ON_UPDATE_COMMAND_UI(ID_VIEW_USE_FADE, OnUpdateUseFade)
 	ON_UPDATE_COMMAND_UI(ID_VIEW_USE_GRAY, OnUpdateUseGray)	//Grupo 4
-  ON_UPDATE_COMMAND_UI(ID_VIEW_USE_THRESHOLD, OnUpdateUseThreshold) //grupo 13
+    ON_UPDATE_COMMAND_UI(ID_VIEW_USE_THRESHOLD, OnUpdateUseThreshold) //grupo 13
 	ON_UPDATE_COMMAND_UI(ID_VIEW_USE_SOBEL, OnUpdateUseSobel)//Grupo 5
 	ON_UPDATE_COMMAND_UI(ID_VIEW_USE_POSTERIZE, OnUpdateUsePosterize)//Grupo 9
 	ON_UPDATE_COMMAND_UI(ID_VIEW_USE_GRAYF, OnUpdateUseGrayF)	//Grupo 12
@@ -62,7 +62,7 @@ BEGIN_MESSAGE_MAP(CChildView, CWnd)
 	ON_UPDATE_COMMAND_UI(ID_INDICATOR_PAUSE_BLIT, OnUpdatePauseBlit)
 	ON_UPDATE_COMMAND_UI(ID_INDICATOR_USE_FADE, OnUpdateUseFade)
 	ON_UPDATE_COMMAND_UI(ID_INDICATOR_USE_GRAY, OnUpdateUseGray)	//Grupo 4
-  ON_UPDATE_COMMAND_UI(ID_INDICATOR_USE_THRESHOLD, OnUpdateUseThreshold) //grupo 13
+    ON_UPDATE_COMMAND_UI(ID_INDICATOR_USE_THRESHOLD, OnUpdateUseThreshold) //grupo 13
 	ON_UPDATE_COMMAND_UI(ID_INDICATOR_USE_SOBEL, OnUpdateUseSobel) //Grupo 5
 	ON_UPDATE_COMMAND_UI(ID_INDICATOR_USE_GRAYF, OnUpdateUseGrayF)	//Grupo 12
 	ON_UPDATE_COMMAND_UI(ID_INDICATOR_USE_INVERT, OnUpdateUseInvert)//Grupo 14
@@ -91,7 +91,7 @@ CChildView::CChildView()
 	m_bPauseBlit = false;
 	m_bPauseFade = false;
 	m_bUseGray = false;	//Grupo 4
-  m_bUseThreshold = false; //grupo 13
+    m_bUseThreshold = false; //grupo 13
 	m_bUseSobel = false;	//Grupo 5
 	m_bUseGrayF = false;	//Grupo 12
 	m_bUseInvert = false;	//Grupo 14
@@ -436,7 +436,7 @@ BOOL CChildView::OnIdle(LONG /*lCount*/)
 			m_bUseSolarize = false;
 	}
   
-  //grupo 13
+    //grupo 13
 	if (m_bUseThreshold) {
 		m_pSurface->Threshold();
 		bContinue = TRUE;
