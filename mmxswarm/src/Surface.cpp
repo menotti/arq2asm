@@ -549,3 +549,21 @@ void CSurface::Threshold()
 double CSurface::Sol(double v) {
 	return (v > 0.5) ? (2*(v-0.5)) : (2*(0.5-v));
 }
+
+
+//Grupo 7
+void CSurface::Invert(){
+	COLORREF cCur;		//declara um dword
+	BYTE r, g, b;		//variáveis tipo byte que receberão os valores RGB
+	
+	//realiza um loop dentro do outro para percorrer a tela inteira
+	for (int i = 0; i < m_wndHeight; i++) {
+		for (int j = 0; j < m_wndWidth; j++) {
+			cCur = PointColor(j,i);					//pega o pixel de posição [i,j] na tela
+			r = (BYTE)(255 - GetRValue(cCur));	
+			g = (BYTE)(255 - GetGValue(cCur));
+			b = (BYTE)(255 - GetBValue(cCur));
+			PointColor(j,i,RGB(b,g,r));				//reescreve na tela o pixel do valores RGB modificados na posição [i,j]
+		}
+	}
+}

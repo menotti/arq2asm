@@ -88,6 +88,9 @@ public:
 	int CAL_PIXEL(Complex);
 	virtual void MandelBrot();
 
+	//GRUPO 7
+	virtual void Invert();
+
 	// These methods compensate for m_kDelta
     void PointColor(int x, int y, COLORREF c);
 	

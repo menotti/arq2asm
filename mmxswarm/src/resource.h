@@ -24,6 +24,7 @@
 #define IDS_WARNING_DEBUG               174
 #define IDS_ERROR_SAVE                  175
 #define IDS_ALL_IMAGES                  176
+#define ID_STATIC_MODE				177  //STATIC MODE grupo 7
 #define ID_INDICATOR_FPS                59142
 #define ID_INDICATOR_RESOLUTION         59143
 #define ID_INDICATOR_PAUSE_SWARM        59144
@@ -39,6 +40,7 @@
 #define ID_INDICATOR_USE_MANDEL			59154 //Grupo 6
 #define ID_INDICATOR_USE_SOLARIZE       59155 //Grupo 18
 #define ID_INDICATOR_USE_THRESHOLD        59156 //grupo 13
+#define ID_INDICATOR_USE_INVERT        59157 //grupo 7
 #define ID_VIEW_PAUSE_SWARM             59394
 #define ID_VIEW_PAUSE_BLUR              59395
 #define ID_VIEW_PAUSE_BLIT              59396
@@ -52,6 +54,7 @@
 #define ID_VIEW_USE_MANDEL				59404 //Grupo 6
 #define ID_VIEW_USE_SOLARIZE	        59405 //Grupo 18
 #define ID_VIEW_USE_THRESHOLD            59406 //grupo 13
+#define ID_VIEW_USE_INVERT            59407 //grupo 7
 
 // Next default values for new objects
 // 
