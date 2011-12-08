@@ -25,6 +25,7 @@ public:
 	//virtual void Mask();		// Grupo 15
     virtual void Threshold();    //grupo 13
     virtual void Invert();   //GRUPO 7
+	virtual void Solarize();	// Grupo 18
 protected:
 	virtual void OnCreated();
 private:

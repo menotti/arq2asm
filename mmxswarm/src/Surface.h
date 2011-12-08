@@ -111,7 +111,7 @@ public:
 	void inicializar();			//inicializacao de vetor
 
 	// GRUPO 18 - Filtro Solarize
-	void Solarize();
+	virtual void Solarize();
 	double Sol(double v);
 
 	BYTE *GetPixelAddress(int x, int y) const
