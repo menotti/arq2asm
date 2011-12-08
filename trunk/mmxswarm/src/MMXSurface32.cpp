@@ -1,4 +1,4 @@
-// MMXSurface32.cpp : implementation of the CMMXSurface32Intrinsic
+﻿// MMXSurface32.cpp : implementation of the CMMXSurface32Intrinsic
 // class
 //
 // This is a part of the Microsoft Foundation Classes C++ library.
@@ -478,4 +478,34 @@ void CMMXSurface32Intrinsic::Invert(){
 			pCur++;							//avança o ponteiro sobre a tela
 		} while (--width > 0);
 	} while (--height > 0);
+}
+
+// GRUPO 18 - Filtro Solarize
+void CMMXSurface32Intrinsic::Solarize()
+{
+	DWORD *pCur  = (DWORD *)GetPixelAddress(0,0);			// Ponteiro para o início dos pixels
+	int i, j;
+	int hei = GetVisibleHeight(), wid = GetVisibleWidth();
+	
+	for(i=0;i<hei;i++)
+		for(j=0;j<wid;j++) {
+			
+			// Inline assembly
+			__asm {
+				mov ecx, 3			// Move 3 para fazer loop nos 3 canais, RGB
+				mov esi, pCur
+			SOLARIZANDO:
+				mov al, BYTE ptr [esi]
+				sub al, 80h			// Subtrai o canal por 128 e modifica o flag de sinal (ou não)
+				jns POSITIVO		// Se for positivo, pula
+				neg al				// Senão, faz complemento de 2
+				inc al
+			POSITIVO:
+				add al, al			// Dobra o valor
+				mov [esi], al
+				inc esi
+				loop SOLARIZANDO
+			}
+			pCur++;
+		}
 }
