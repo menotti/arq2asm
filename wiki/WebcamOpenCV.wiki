@@ -2,7 +2,7 @@
 
 = Introdução =
 
-No último código (versão 118) adicionamos a funcionalidade de captura de imagem usando a webcam. No entanto, alguns passos adicionais são necessários para que tal funcionalidade seja usada corretamente. Os requisitos são:
+No último código (versão 120) adicionamos a funcionalidade de captura de imagem usando a webcam. No entanto, alguns passos adicionais são necessários para que tal funcionalidade seja usada corretamente. Os requisitos são:
 <ul>
            <li>Ter a biblioteca OpenCV instalada na sua máquina 
            <li>Configurar o projeto para incluir as bibliotecas do OpenCV
