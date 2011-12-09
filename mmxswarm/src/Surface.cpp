@@ -304,9 +304,12 @@ void CSurface::RGBAdjust()
 //Grupo 15
 void CSurface::Mask()
 {
+	//COLORREF mascara = RGB(0,256,256);
+	DWORD mascara = 0xff00ffff;
+
 	//COLORREF guarda a cor em RGB como 0x00bbggrr
 	COLORREF cor;
-	COLORREF mascara = RGB(128,128,128);
+
 
 	for (int i = 0; i < m_wndHeight; i++) {
 		for (int j = 0; j < m_wndWidth; j++) {
