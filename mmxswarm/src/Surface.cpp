@@ -312,7 +312,7 @@ void CSurface::Mask()
 		for (int j = 0; j < m_wndWidth; j++) {
 			cor = PointColor(j,i) & mascara;
 
-			//PointColor se comporta de forma muito estranha
+			//Deixa na forma 0x00rrggbb para usar o PointColor
 			cor = (cor & 0xff) << 16 | ((cor >> 8) & 0xff) << 8 | (cor >> 16) & 0xff;
 
 			PointColor(j,i,cor);

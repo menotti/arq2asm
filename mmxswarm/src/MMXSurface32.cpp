@@ -101,7 +101,7 @@ void CMMXSurface32Intrinsic::BlurBits()
 //Grupo 4
 void CMMXSurface32Intrinsic::GrayScale()
 {
-    int height = GetVisibleHeight()*2;	//altura multiplicada por 2 pois são pixels de 32 bits em variáveis de64 bits (2x maior)
+    int height = GetVisibleHeight()*2;	//altura multiplicada por 2 pois são pixels de 32 bits em variáveis de 64 bits (2x maior)
     DWORD *pCur  = (DWORD *)GetPixelAddress(0,0);	// cada pixel tem 32bits, 1byte para cada canal de cor: alfa, red, green, blue
 
 	// Variaveis do tipo unsigned long long, de 64 bits
@@ -168,7 +168,7 @@ void CMMXSurface32Intrinsic::Sobel() {
 			sumX = 0;
 			sumY = 0;
 
-			//Se for boada, atribui o valor 0(preto)
+			//Se for borda, atribui o valor 0(preto)
 			if((y==0) || (y == (GetVisibleHeight() - 1))){
 				SUM = 0;
 			}
@@ -230,14 +230,14 @@ void CMMXSurface32Intrinsic::Posterize()
 	ULONGLONG mascara = 0xC0C0C0C0C0C0C0C0;		//0xC = 1100, preservar dois MSD de cada byte.
 	ULONGLONG pixel;
 
-	/* Iteracao principal, processa 2 pixeis em cada iteracao */
+	/* Iteracao principal, processa 2 pixels em cada iteracao */
 	do {
 		int width = m_width;
 		do {
 			pixel = *(ULONGLONG *)pCur;
 			// inline assembly
 			__asm{
-				movq mm0, pixel;	// ler pixeis atuais para registrador
+				movq mm0, pixel;	// ler pixels atuais para registrador
 				pand mm0, mascara	// aplicar mascara para descardar bits menos significativos
 				movq pixel, mm0;
 			}
@@ -362,6 +362,37 @@ void CMMXSurface32Intrinsic::RGBAdjust()
 
 }
 */
+
+// GRUPO 15
+void CMMXSurface32Intrinsic::Mask()
+{
+    DWORD *pCur  = (DWORD *)GetPixelAddress(0,0);
+
+	ULONGLONG mascara = 0xFF00FFFFFF00FFFF; // Remove componente vermelha = 00ggbb
+	ULONGLONG pixels;
+
+	// TODO: verificar o que acontece com imagens com quantidade impar de pixels
+	int height = GetVisibleHeight();
+	while (height--)
+	{
+		int width = m_width;
+		while(width--)
+		{
+			pixels = *(ULONGLONG *)pCur;
+			
+			__asm
+			{
+				movq mm0, pixels	// registrador mm0 recebe 2 pixels
+				pand mm0, mascara	// aplica mascara
+				movq pixels, mm0
+			}
+
+			*(ULONGLONG *)pCur = pixels;	// Joga dois pixels na tela
+
+			pCur += 2;
+		}
+	}
+}
 
 // Grupo 12 - Gray Filter
 void CMMXSurface32Intrinsic::GrayFilter(){
