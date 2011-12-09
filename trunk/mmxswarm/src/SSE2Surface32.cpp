@@ -210,7 +210,6 @@ void CSSE2Surface32Intrinsic::Posterize()
 	} while (--height > 0);
 }
 
-
 //grupo 13
 void CSSE2Surface32Intrinsic::Threshold(){
 	int height = GetVisibleHeight()*2;				//aumenta a altura em 2 pois são processados 2 pixels de 32-bits de uma só vez em variáveis de 128 bits	
@@ -471,4 +470,45 @@ void CSSE2Surface32Intrinsic::Invert()
 			pCur += 2;								//aumenta o ponteiro da tela em 2 (calcula 2 pixels por vez)
 		} while (--width > 0);
 	} while (--height > 0); 
+}
+
+// GRUPO 15
+void CSSE2Surface32Intrinsic::Mask()
+{
+	ULONGLONG mascara = 0xFF00FFFFFF00FFFF; // Remove componente vermelha = 00ggbb
+
+	DWORD *pCur  = (DWORD *)GetPixelAddress(0,0);
+	ULONGLONG pixels12, pixels34;
+
+
+	int height = GetVisibleHeight();
+	while (height--)
+	{
+		int width = m_width;
+		while(width--)
+		{
+			pixels12 = *(ULONGLONG *)pCur;
+			pixels34 = *(ULONGLONG *)(pCur+2);
+			
+			__asm
+			{
+				movq xmm0, pixels12	// registrador xmm0 recebe 2 pixels
+				movhpd xmm0, pixels34
+
+				movq  xmm1, mascara
+				movhpd xmm1, mascara
+
+				pand xmm0, xmm1	// aplica mascara
+
+				movq pixels12, xmm0
+				movhpd pixels34, xmm0
+			}
+
+			// Joga quatro pixels na tela
+			*(ULONGLONG *)pCur = pixels12;
+			*(ULONGLONG *)(pCur+2) = pixels34;
+
+			pCur += 4;
+		}
+	}
 }

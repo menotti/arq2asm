@@ -364,18 +364,18 @@ void CMMXSurface32Intrinsic::RGBAdjust()
 */
 
 // GRUPO 15
+// TODO: verificar o que acontece com imagens com quantidade impar de pixels
 void CMMXSurface32Intrinsic::Mask()
 {
-    DWORD *pCur  = (DWORD *)GetPixelAddress(0,0);
-
 	ULONGLONG mascara = 0xFF00FFFFFF00FFFF; // Remove componente vermelha = 00ggbb
+
+    DWORD *pCur  = (DWORD *)GetPixelAddress(0,0);
 	ULONGLONG pixels;
 
-	// TODO: verificar o que acontece com imagens com quantidade impar de pixels
 	int height = GetVisibleHeight();
 	while (height--)
 	{
-		int width = m_width;
+		int width = m_width;	//m_width = (width+1)/2; pois editamos 2 pixels por iteracao
 		while(width--)
 		{
 			pixels = *(ULONGLONG *)pCur;
