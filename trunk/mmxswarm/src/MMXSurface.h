@@ -22,7 +22,7 @@ public:
 	virtual void Posterize();	// Grupo 9
 	virtual void GrayFilter();  // Grupo 12
 	//virtual void RGBAdjust();	//Grupo 14
-	//virtual void Mask();		// Grupo 15
+	virtual void Mask();		// Grupo 15
     virtual void Threshold();    //grupo 13
     virtual void Invert();   //GRUPO 7
 	virtual void Solarize();	// Grupo 18
@@ -39,7 +39,6 @@ public:
     virtual void BlurBits(); // this is where the MMX action is	
 	virtual void Sobel();	//Grupo 5
 	virtual void Posterize();	// Grupo 9
-	//virtual void Mask();	//Grupo 15
 protected:
 	virtual void OnCreated();
 private:
@@ -55,7 +54,6 @@ public:
     virtual void BlurBits(); // this is where the MMX action is	
 	virtual void Sobel();	// Grupo 5	
 	virtual void Posterize();	// Grupo 9
-	//virtual void Mask();	// Grupo 15
 protected:
 	virtual void OnCreated();
 private:
