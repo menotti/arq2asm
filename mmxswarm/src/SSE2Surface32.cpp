@@ -492,19 +492,18 @@ void CSSE2Surface32Intrinsic::Mask()
 			
 			__asm
 			{
-				movq xmm0, pixels12	// registrador xmm0 recebe 2 pixels
-				movhpd xmm0, pixels34
+				movq xmm0, pixels12		// xmm0 recebe 2 pixels em sua metade inferior
+				movhpd xmm0, pixels34	// xmm0 recebe 2 pixels em sua metade superior
 
-				movq  xmm1, mascara
-				movhpd xmm1, mascara
+				movddup xmm1, mascara	// xmm1 recebe a mascara a ser aplicada em 4 pixels simultaneamente
 
-				pand xmm0, xmm1	// aplica mascara
+				pand xmm0, xmm1			// aplica mascara
 
 				movq pixels12, xmm0
 				movhpd pixels34, xmm0
 			}
 
-			// Joga quatro pixels na tela
+			// Imprime quatro pixels na tela
 			*(ULONGLONG *)pCur = pixels12;
 			*(ULONGLONG *)(pCur+2) = pixels34;
 
