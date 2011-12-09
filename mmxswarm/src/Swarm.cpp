@@ -17,7 +17,7 @@ COLORREF CBrightLeader::m_sColorTable[256] = { 0 };
 ///////////////////////////////////////////////////////////////////////
 // Swarm
 CSwarm::CSwarm() :
-	m_pSurf(NULL)
+m_pSurf(NULL)
 {
 
 }
@@ -113,8 +113,8 @@ void CSwarm::Tick()
 void CLlama::Init(CSwarm *pSwarm)
 {
 	p1.x = p2.x = Random(max(1, (pSwarm->GetWidth())));
-    p1.y = p2.y = Random(max(1, (pSwarm->GetHeight())));
-    dx = dy = 0;
+	p1.y = p2.y = Random(max(1, (pSwarm->GetHeight())));
+	dx = dy = 0;
 	m_idxLeader = (size_t)-1;
 }
 
@@ -127,22 +127,22 @@ void CLlama::Kick()
 void CLlama::Tick(CSwarm *pSwarm, const CLeaderArray &leaders)
 {
 	CPoint ptClosestDelta;
-    int nClosestDist = INT_MAX;
+	int nClosestDist = INT_MAX;
 	size_t nLeaders = leaders.GetCount();
 	size_t idxClosest = 0;
 
-    p2 = p1;
-    for (size_t i = 0; i < nLeaders; i++) {
-        CPoint leader(leaders[i]->p2); // pos of leader
-        int nDist;
+	p2 = p1;
+	for (size_t i = 0; i < nLeaders; i++) {
+		CPoint leader(leaders[i]->p2); // pos of leader
+		int nDist;
 		CPoint ptRel(leader.x - p2.x, leader.y - p2.y);
-        nDist = max(1, ABS(ptRel.x) + ABS(ptRel.y)); // approximation
-        if (nDist < nClosestDist) {
+		nDist = max(1, ABS(ptRel.x) + ABS(ptRel.y)); // approximation
+		if (nDist < nClosestDist) {
 			nClosestDist = nDist;
 			idxClosest = i;
 			ptClosestDelta = ptRel;
-        }
-    }
+		}
+	}
 
 	CLeader *pClosest = leaders[idxClosest];
 	// Did we switch leaders?
@@ -151,23 +151,23 @@ void CLlama::Tick(CSwarm *pSwarm, const CLeaderArray &leaders)
 		m_color = pClosest->GetInitialLlamaColor();
 	}
 
-    // Accelerate
+	// Accelerate
 	int acc = pClosest->GetLlamaAcc();
-    dx += (ptClosestDelta.x * acc) / (nClosestDist*2);
-    dy += (ptClosestDelta.y * acc) / (nClosestDist*2);
+	dx += (ptClosestDelta.x * acc) / (nClosestDist*2);
+	dy += (ptClosestDelta.y * acc) / (nClosestDist*2);
 
-    // Speed Limit Checks
+	// Speed Limit Checks
 	int vel = pClosest->GetLlamaVel();
-    dx = max(min(dx, vel), -vel);
-    dy = max(min(dy, vel), -vel);
+	dx = max(min(dx, vel), -vel);
+	dy = max(min(dy, vel), -vel);
 
-    // Move and bound check
-    p1.x += dx;
-    p1.y += dy;
+	// Move and bound check
+	p1.x += dx;
+	p1.y += dy;
 
-    Bounce(p1.x, 0, pSwarm->GetWidth(), dx);
-    Bounce(p1.y, 0, pSwarm->GetHeight(), dy);
-    m_color = pClosest->GetLlamaColor(m_color);
+	Bounce(p1.x, 0, pSwarm->GetWidth(), dx);
+	Bounce(p1.y, 0, pSwarm->GetHeight(), dy);
+	m_color = pClosest->GetLlamaColor(m_color);
 
 	// Draw
 	pSwarm->GetSurface()->Line(p1, p2, m_color);
@@ -188,8 +188,8 @@ void CLeader::SetSwarm(CSwarm *pSwarm)
 	m_pSwarm = pSwarm;
 	int nBorder = m_pSwarm->GetBorder();
 	p1.x = p2.x = nBorder + Random(max(1, (m_pSwarm->GetWidth() - 2*nBorder)));
-    p1.y = p2.y = nBorder + Random(max(1, (m_pSwarm->GetHeight() - 2*nBorder)));
-    dx = dy = 0;
+	p1.y = p2.y = nBorder + Random(max(1, (m_pSwarm->GetHeight() - 2*nBorder)));
+	dx = dy = 0;
 }
 
 void CLeader::Import(const CLeader *pRHS)
@@ -203,26 +203,26 @@ void CLeader::Import(const CLeader *pRHS)
 
 void CLeader::Tick()
 {
-    p2 = p1;
+	p2 = p1;
 
-    // accelerate the leader
-    dx += DeltaRandom(m_nMyAcc);
-    dy += DeltaRandom(m_nMyAcc);
+	// accelerate the leader
+	dx += DeltaRandom(m_nMyAcc);
+	dy += DeltaRandom(m_nMyAcc);
 
-    // Speed Limit Checks
-    dx = max(min(dx, m_nMyVel), -m_nMyVel);
-    dy = max(min(dy, m_nMyVel), -m_nMyVel);
+	// Speed Limit Checks
+	dx = max(min(dx, m_nMyVel), -m_nMyVel);
+	dy = max(min(dy, m_nMyVel), -m_nMyVel);
 
-    // Move
-    p1.x += dx;
-    p1.y += dy;
+	// Move
+	p1.x += dx;
+	p1.y += dy;
 
-    // Bounce Checks
+	// Bounce Checks
 	int nBorder = m_pSwarm->GetBorder();
 	int nHeight = m_pSwarm->GetHeight();
 	int nWidth = m_pSwarm->GetWidth();
-    Bounce(p1.x, nBorder, nWidth-nBorder-1, dx);
-    Bounce(p1.y, nBorder, nHeight-nBorder-1, dy);
+	Bounce(p1.x, nBorder, nWidth-nBorder-1, dx);
+	Bounce(p1.y, nBorder, nHeight-nBorder-1, dy);
 
 	// Draw
 	m_pSwarm->GetSurface()->Line(p1, p2, RGB(255,255,255));
@@ -230,32 +230,32 @@ void CLeader::Tick()
 
 COLORREF CLeader::HSB(BYTE H, BYTE S, BYTE B)
 {
-    unsigned char p, q, t;
+	unsigned char p, q, t;
 
-    int i = (int) H * 6 / 256;
-    float s = ((float) S) / (float) 255.0;
-    float f = ((float) (H * 6 - i * 256)) / (float) 255.0;
-    p = (BYTE) (B * (1.0 - s));
-    q = (BYTE) (B * (1.0 - (s * f)));
-    t = (BYTE) (B * (1.0 - (s * (1.0 - f))));
-    switch (i) {
-    case 0:
-        return RGB(B, t, p);
-    case 1:
-        return RGB(q, B, p);
-    case 2:
-        return RGB(p, B, t);
-    case 3:
-        return RGB(p, q, B);
-    case 4:
-        return RGB(t, p, B);
-    case 5:
-        return RGB(B, p, q);
-    }
+	int i = (int) H * 6 / 256;
+	float s = ((float) S) / (float) 255.0;
+	float f = ((float) (H * 6 - i * 256)) / (float) 255.0;
+	p = (BYTE) (B * (1.0 - s));
+	q = (BYTE) (B * (1.0 - (s * f)));
+	t = (BYTE) (B * (1.0 - (s * (1.0 - f))));
+	switch (i) {
+	case 0:
+		return RGB(B, t, p);
+	case 1:
+		return RGB(q, B, p);
+	case 2:
+		return RGB(p, B, t);
+	case 3:
+		return RGB(p, q, B);
+	case 4:
+		return RGB(t, p, B);
+	case 5:
+		return RGB(B, p, q);
+	}
 
-    // should never reach here
-    ASSERT(FALSE);
-    return RGB(255, 255, 255);
+	// should never reach here
+	ASSERT(FALSE);
+	return RGB(255, 255, 255);
 }
 
 ///////////////////////////////////////////////////////////////////////
@@ -264,7 +264,7 @@ CBrightLeader::CBrightLeader()
 {
 	if (m_sColorTable[0] == 0) { // 1 time init
 		for (int i = 0; i <= 255; i++) {
-		    m_sColorTable[i] = HSB((BYTE)i, 255, 255);
+			m_sColorTable[i] = HSB((BYTE)i, 255, 255);
 		}
 	}
 	m_nColorCounter = Random(256);
@@ -292,14 +292,14 @@ COLORREF CBrightLeader::GetInitialLlamaColor()
 CHueLeader::CHueLeader()
 {
 	BYTE hue = (BYTE)Random(256);
-    for (int i = 0; i <= 127; i++) {
+	for (int i = 0; i <= 127; i++) {
 		int j = min(i+32, 127);
-        m_ColorTable[i] = HSB(hue, 255, (BYTE)j*2);
-    }
-    for (int i = 128; i <= 255; i++) {
+		m_ColorTable[i] = HSB(hue, 255, (BYTE)j*2);
+	}
+	for (int i = 128; i <= 255; i++) {
 		int j = max(i-32, 128);
-        m_ColorTable[i] = HSB(hue, 255, (BYTE)(511-j*2));
-    }
+		m_ColorTable[i] = HSB(hue, 255, (BYTE)(511-j*2));
+	}
 	m_nColorCounter = Random(256);
 }
 

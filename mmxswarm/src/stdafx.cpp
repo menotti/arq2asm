@@ -43,36 +43,36 @@ static bool _IsFeature(DWORD dwRequestFeature)
 	// with	register eax set to	1
 	DWORD dwFeature	= 0;
 	__try {
-			_asm {
-				mov	eax,1
+		_asm {
+			mov	eax,1
 				cpuid
 				mov	dwFeature,edx
-			}
+		}
 	} __except ( EXCEPTION_EXECUTE_HANDLER)	{
-			return false;
+		return false;
 	}
 	if ((dwRequestFeature == _MMX_FEATURE_BIT) &&
 		(dwFeature & _MMX_FEATURE_BIT)) {
-		__try {
-			__asm {
-				pxor mm0, mm0
-				emms
+			__try {
+				__asm {
+					pxor mm0, mm0
+						emms
+				}
+			} __except (EXCEPTION_EXECUTE_HANDLER) {
+				return (0);
 			}
-		} __except (EXCEPTION_EXECUTE_HANDLER) {
-			return (0);
-		}
-		return(true);
+			return(true);
 	}
 	else if ((dwRequestFeature == _SSE2_FEATURE_BIT) &&
 		(dwFeature & _SSE2_FEATURE_BIT)) {
-		__try {
-			__asm {
-				xorpd xmm0, xmm0
+			__try {
+				__asm {
+					xorpd xmm0, xmm0
+				}
+			} __except (EXCEPTION_EXECUTE_HANDLER) {
+				return (0);
 			}
-		} __except (EXCEPTION_EXECUTE_HANDLER) {
-			return (0);
-		}
-		return(true);
+			return(true);
 	}
 
 	return false;

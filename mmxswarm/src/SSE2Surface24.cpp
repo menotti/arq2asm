@@ -42,15 +42,15 @@ void CSSE2Surface24Intrinsic::OnCreated()
 	ASSERT(sizeof(RGBTRIPLE) == 3);
 
 	int width = GetVisibleWidth();
-    m_qwpl  = GetPitch()/8; // qwords Per Line
-    m_width = (width*3+15)/16;// (+7/8) // m_qwpl/2 without processing off-screen bits;
+	m_qwpl  = GetPitch()/8; // qwords Per Line
+	m_width = (width*3+15)/16;// (+7/8) // m_qwpl/2 without processing off-screen bits;
 	m_delta = m_qwpl - m_width*2;
 }
 
 void CSSE2Surface24Intrinsic::BlurBits()
 {
-    int height = GetVisibleHeight();
-    ULONGLONG *pCur  = (ULONGLONG*)GetPixelAddress(0,0);
+	int height = GetVisibleHeight();
+	ULONGLONG *pCur  = (ULONGLONG*)GetPixelAddress(0,0);
 
 	CSSE2 cFader;
 	CSSE2 cRight, cLeft;

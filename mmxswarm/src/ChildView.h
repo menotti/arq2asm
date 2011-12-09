@@ -18,24 +18,24 @@
 
 class CChildView : public CWnd
 {
-// Construction
+	// Construction
 public:
 	CChildView();
 
-// Attributes
+	// Attributes
 public:
 
-// Operations
+	// Operations
 public:
 	BOOL OnIdle(LONG lCount);
 	CSurface *GetSurface() const
 	{ return(m_pSurface); }
 
-// Overrides
+	// Overrides
 protected:
 	virtual BOOL PreCreateWindow(CREATESTRUCT& cs);
 
-// Implementation
+	// Implementation
 public:
 	virtual ~CChildView();
 
@@ -59,8 +59,9 @@ protected:
 	afx_msg void OnUpdateUseMask(CCmdUI* pCmdUI);	//Grupo 15
 	afx_msg void OnUpdateUseMandel(CCmdUI* pCmdUI);	//Grupo 6
 	afx_msg void OnUpdateUseSolarize(CCmdUI* pCmdUI);//Grupo 18
-     afx_msg void OnUpdateUseThreshold(CCmdUI* pCmdUI); //grupo 13
-     afx_msg void OnUpdateUseInvert(CCmdUI* pCmdUI); //grupo 7
+	afx_msg void OnUpdateUseThreshold(CCmdUI* pCmdUI); //grupo 13
+	afx_msg void OnUpdateUseInvert(CCmdUI* pCmdUI); //grupo 7
+	afx_msg void OnUpdateModeWebcam(CCmdUI* pCmdUI); //grupo 16
 	afx_msg void OnUpdateResolution(CCmdUI* pCmdUI);
 	afx_msg void OnUpdateImageFormats(CCmdUI* pCmdUI);
 	afx_msg void OnFileOpen();
@@ -77,8 +78,9 @@ protected:
 	afx_msg void OnViewUseMask(); //Grupo 15
 	afx_msg void OnViewUseMandel(); //Grupo 6
 	afx_msg void OnViewUseSolarize();//Grupo 18
-     afx_msg void OnViewUseThreshold(); //grupo 13
+	afx_msg void OnViewUseThreshold(); //grupo 13
 	afx_msg void OnViewUseInvert(); //grupo 7
+	afx_msg void OnModeWebcam();	//grupo 16
 	afx_msg void OnImageFormats(UINT nID);
 	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
 	//}}AFX_MSG
@@ -121,11 +123,12 @@ private:
 	bool	m_bUseMandel; //Grupo 6
 	bool	m_bUseSolarize;//Grupo 18
 	bool m_bUseThreshold; //grupo 13
-     bool m_bUseInvert; //grupo 7
+	bool m_bUseInvert; //grupo 7
 	bool m_bTimerPopped;
 	bool	execSobel;//Grupo 5 - Verifica se executou o Sobel alguma vez quando fadeIn estEoff
 	bool	execGray; //grupo 12
 	bool m_bUseStatic; //STATIC MODE - grupo 7
+	bool m_bUseWebcam;	// Grupo 16
 
 	static const UINT_PTR m_kTimerID = 31;
 	static const UINT m_kTimerDelay = 1500;

@@ -34,8 +34,8 @@ void CMMXSurface16Intrinsic::OnCreated()
 	ASSERT(GetVisibleWidth() && GetVisibleHeight());
 
 	int width = GetVisibleWidth();
-    m_qwpl  = GetPitch()/8; // qwords Per Line
-    m_width = (width+3)/4; // 4 pixels at a time
+	m_qwpl  = GetPitch()/8; // qwords Per Line
+	m_width = (width+3)/4; // 4 pixels at a time
 }
 
 // Note: It's still faster than the brute force approach,
@@ -44,8 +44,8 @@ void CMMXSurface16Intrinsic::OnCreated()
 // doesn't work out well.
 void CMMXSurface16Intrinsic::BlurBits()
 {
-    int height = GetVisibleHeight();
-    ULONGLONG *pCur  = (ULONGLONG *)GetPixelAddress(0,0);
+	int height = GetVisibleHeight();
+	ULONGLONG *pCur  = (ULONGLONG *)GetPixelAddress(0,0);
 
 	CMMX cUpBase, cDownBase, cCurBase, cLeftBase, cRightBase;
 	CMMX cUp, cDown, cCur, cLeft, cRight;
@@ -113,8 +113,8 @@ void CMMXSurface16Intrinsic::Sobel() {
 	SUM = 0;
 	//WORD *pwCur = (WORD *)pCur;
 	//Percorre toda imagem
-    for (y = 0; y < GetVisibleHeight(); y++) {
-        for (x = 0; x < GetVisibleWidth(); x++) {
+	for (y = 0; y < GetVisibleHeight(); y++) {
+		for (x = 0; x < GetVisibleWidth(); x++) {
 			sumX = 0;
 			sumY = 0;
 
@@ -158,10 +158,10 @@ void CMMXSurface16Intrinsic::Sobel() {
 			if(SUM<0)
 				SUM=0;
 			newPixel = (255-(unsigned char)(SUM));
-			
+
 			PointColorT(x,y,RGB(newPixel,newPixel,newPixel));
-        }
-    }
+		}
+	}
 
 	//Quando terminar, copia o resultado para a imagem corrente
 	Copy(t_image);
