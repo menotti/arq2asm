@@ -316,26 +316,26 @@ void CSSE2Surface32Intrinsic::RGBAdjust()
 					movq xmm1, mascara					//xmm1 fará o papel de seletor de bytes especificos de xmm0
 					pand xmm1,xmm0						
 					movq xmm2,xmm1                      //isola o canal B de pixel1 em xmm2
-					psrld xmm2,1                       //dividindo por 2
+					psrld xmm2,2                      //dividindo por 4
 
 					movq xmm1,mascara					
 					psrldq xmm0,1						//desloca em 1 para direita xmm0 (como são registradores 128 bits, na verdade ocorre um deslocamento de 2 unidades)
 					pand xmm1,xmm0
 					movq xmm3,xmm1						//isola o canal G de pixel1 em xmm3
-					psrld xmm3,1                       //dividindo por 2
+					psrld xmm3,1                      //dividindo por 2
 
 					movq xmm1,mascara
 					psrldq xmm0,1						//desloca em 1 para direita xmm0 (como são registradores 128 bits, na verdade ocorre um deslocamento de 2 unidades)
 					pand xmm1,xmm0
 					movq xmm4,xmm1						//isola o canal R de pixel1 em xmm4
-					psrld xmm4,1                       //dividindo por 2
+					psrld xmm4,0                       //dividindo por 1
 
 					psrldq xmm0,2						//desloca em 2 (pula o alpha) para direita xmm0, para selecionar agora sua metade mais significativa (pixel2)
 
 					movq xmm1,mascara
 					pand xmm1,xmm0
 					movq xmm5,xmm1						//isola o canal B de pixel2 em xmm5
-					psrld xmm5,1                       //dividindo por 2
+					psrld xmm5,2                      //dividindo por 4
 
 					movq xmm1,mascara
 					psrldq xmm0,1
@@ -347,7 +347,7 @@ void CSSE2Surface32Intrinsic::RGBAdjust()
 					psrldq xmm0,1
 					pand xmm1,xmm0
 					movq xmm7,xmm1						//isola o canal R de pixel2 em xmm7
-					psrld xmm7,1                       //dividindo por 2
+					psrld xmm7,0                       //dividindo por 1
 
 					pxor xmm0,xmm0					// zera o registrador que vai receber os resultados
 

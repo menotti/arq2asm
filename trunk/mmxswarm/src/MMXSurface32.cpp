@@ -324,17 +324,17 @@ void CMMXSurface32Intrinsic::RGBAdjust()
 				movq mm0, pixel	//mm0 = pixel atual
 				pand mm0, mascara	//mm0 = a componente 'B'
 				pxor mm5, mm5
-				psrlq mm0, 1		//1 shift para a direita (divide por 2, sem precisão)
+				psrlq mm0, 2		//1 shift para a direita (divide por 4, sem precisão)
 
 				movq mm1, pixel	//mm0 = pixel, novamente
 				psrlq mm1, 8		//shift à direita para pegar a componente 'G' do pixel
 				pand mm1, mascara
-				psrlq mm1, 1		//1 shift para a direita (divide por 2, sem precisão) 
+				psrlq mm1, 1	//1 shift para a direita (divide por 2, sem precisão) 
 
 				movq mm2, pixel
-				psrlq mm2, 16
+				psrlq mm2, 16  //mm0 = a componente 'R'
 				pand mm2, mascara
-				psrlq mm2, 1		//1 shift para a direita (divide por 2, sem precisão)
+				psrlq mm2, 0		//1 shift para a direita (divide por 1, sem precisão)
 
 				movq mm3, pixel	//mm3 = pixel
 
