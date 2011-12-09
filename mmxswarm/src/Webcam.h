@@ -2,6 +2,7 @@
 
 #ifndef WEBCAM_H
 #define WEBCAM_H
+#ifdef USE_OPENCV
 
 #include "Surface.h"
 
@@ -23,4 +24,5 @@ public:
 	inline static bool CaptureIsNull() { return capture == NULL; }
 };
 
+#endif
 #endif

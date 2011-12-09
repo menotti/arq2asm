@@ -1,5 +1,5 @@
 // Grupo 16
-
+#ifdef USE_OPENCV
 #include "stdafx.h"
 #include "Webcam.h"
 
@@ -69,3 +69,4 @@ void CWebcam::Release()
 	// Libera a memória
 	cvReleaseCapture(&capture);
 }
+#endif
