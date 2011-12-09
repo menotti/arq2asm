@@ -495,7 +495,11 @@ void CSSE2Surface32Intrinsic::Mask()
 				movq xmm0, pixels12		// xmm0 recebe 2 pixels em sua metade inferior
 				movhpd xmm0, pixels34	// xmm0 recebe 2 pixels em sua metade superior
 
-				movddup xmm1, mascara	// xmm1 recebe a mascara a ser aplicada em 4 pixels simultaneamente
+				// xmm1 recebe a mascara a ser aplicada em 4 pixels simultaneamente
+				// Essa instrucao e do SSE3, se nao puder usar, descomentar linhas abaixo
+				movddup xmm1, mascara
+				;movq  xmm1, mascara
+				;movhpd xmm1, mascara
 
 				pand xmm0, xmm1			// aplica mascara
 
