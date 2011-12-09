@@ -364,7 +364,6 @@ void CMMXSurface32Intrinsic::RGBAdjust()
 */
 
 // GRUPO 15
-// TODO: verificar o que acontece com imagens com quantidade impar de pixels
 void CMMXSurface32Intrinsic::Mask()
 {
 	ULONGLONG mascara = 0xFF00FFFFFF00FFFF; // Remove componente vermelha = 00ggbb
@@ -387,7 +386,8 @@ void CMMXSurface32Intrinsic::Mask()
 				movq pixels, mm0
 			}
 
-			*(ULONGLONG *)pCur = pixels;	// Joga dois pixels na tela
+			// Imprime dois pixels na tela
+			*(ULONGLONG *)pCur = pixels;
 
 			pCur += 2;
 		}
