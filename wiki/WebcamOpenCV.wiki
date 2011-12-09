@@ -15,5 +15,5 @@ Escolha a versão para Windows e, ao baixar, escolha OpenCV-2.3.1-win-superpack.
 <li>Extraia o conteúdo do arquivo baixado para alguma pasta de sua preferência.
 <li>Siga os passos do seguinte tutorial para configuração do OpenCV em sua máquina: http://bit.ly/vdQd31
 <br>
-*Nota*: se você usa x86, siga o tutorial atentando-se para mudar onde houver "x64" para "x86" na especificação dos caminhos mostrados no tutorial. É importante ainda lembrar que não é necessário mudar a forma de compilação para Active x64 nesse caso. Basta deixar como está.
+*Nota*: independentemente de seu SO ser x64 ou x86, siga o tutorial atentando-se para mudar onde houver "x64" para "x86" na especificação dos caminhos mostrados no tutorial. E *não* é necessário mudar o tipo de compilação para Active(x64). Basta deixar como está.
 <li>Descomentar a linha 18 do header stdafx.h e pronto! Quando selecionar a opção de Webcam no menu Mode, a captura terá início, sendo possível ainda aplicar as transformações feitas pelos outros grupos até o momento.
