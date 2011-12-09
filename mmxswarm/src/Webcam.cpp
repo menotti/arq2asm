@@ -1,12 +1,15 @@
 // Grupo 16
-#ifdef USE_OPENCV
 #include "stdafx.h"
 #include "Webcam.h"
 
+#ifdef USE_OPENCV
 CvCapture * CWebcam::capture = NULL;
+#endif
 
 void CWebcam::Capture(CSurface * surf)
 {
+	#ifdef USE_OPENCV
+
 	IplImage * frame = NULL;
 	CImage img;
 
@@ -61,12 +64,14 @@ void CWebcam::Capture(CSurface * surf)
 		// Copia img para a surface
 		surf->Copy(img);
 	}
+	#endif
 }
 
 
 void CWebcam::Release()
 {
+	#ifdef USE_OPENCV
 	// Libera a memória
 	cvReleaseCapture(&capture);
+	#endif
 }
-#endif
