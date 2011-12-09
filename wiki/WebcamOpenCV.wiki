@@ -1,0 +1,19 @@
+#summary Como usar a webcam no novo código postado
+
+= Introdução =
+
+No último código (versão 117) adicionamos a funcionalidade de captura de imagem usando a webcam. No entanto, alguns passos adicionais são necessários para que tal funcionalidade seja usada corretamente. Os requisitos são:
+<ul>
+           <li>Ter a biblioteca OpenCV instalada na sua máquina 
+           <li>Configurar o projeto para incluir as bibliotecas do OpenCV
+           <li>Descomentar a linha 18 de stdafx.h
+
+= Detalhes =
+<ol>
+<li>Para baixar a biblioteca OpenCV, visite o link http://opencv.willowgarage.com/wiki/InstallGuide 
+Escolha a versão para Windows e, ao baixar, escolha OpenCV-2.3.1-win-superpack.exe
+<li>Extraia o conteúdo do arquivo baixado para alguma pasta de sua preferência.
+<li>Siga os passos do seguinte tutorial para configuração do OpenCV em sua máquina: http://bit.ly/vdQd31
+<br>
+*Nota*: se você usa x86, siga o tutorial atentando-se para mudar onde houver "x64" para "x86" na especificação dos caminhos mostrados no tutorial. É importante ainda lembrar que não é necessário mudar a forma de compilação para Active x64 nesse caso. Basta deixar como está.
+<li>Descomentar a linha 18 do header stdafx.h e pronto! Quando selecionar a opção de Webcam no menu Mode, a captura terá início, sendo possível ainda aplicar as transformações feitas pelos outros grupos até o momento.
