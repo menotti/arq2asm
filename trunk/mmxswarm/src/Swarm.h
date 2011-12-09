@@ -32,7 +32,7 @@ public:
 	int GetWidth() const		{ return(m_nWidth); }
 	int GetBorder() const		{ return(m_nBorder); }
 	int GetAge() const 			{ return(m_nAge); }
- 
+
 	size_t GetLlamaCount() const	{ return(m_LlamaArr.GetCount()); }
 	size_t GetLeaderCount() const	{ return(m_LeaderArr.GetCount()); }
 	CSurface *GetSurface() const	{ return(m_pSurf); }
@@ -128,12 +128,12 @@ private:
 ///////////////////////////////////////////////////////////////////////
 inline void CRoamer::Bounce(long &value, const int lower, const int upper, int &vel)
 {
-    if (value < lower) {
-        vel *= -1;
-        value = lower;
-    }
-    else if (value >= upper) {
-        vel *= -1;
-        value = upper-1;
-    }
+	if (value < lower) {
+		vel *= -1;
+		value = lower;
+	}
+	else if (value >= upper) {
+		vel *= -1;
+		value = upper-1;
+	}
 }

@@ -24,15 +24,15 @@ void CMMXSurface24Intrinsic::OnCreated()
 	ASSERT((GetPitch() & 0x3) == 0);
 
 	int width = GetVisibleWidth();
-    m_dwpl = GetPitch()/4; // DWORDs Per Line
-    m_width = (width+1)*3/4; // round up
-    m_delta = int((GetPixelAddress(0,1) - GetPixelAddress(width,0)) / 4);
+	m_dwpl = GetPitch()/4; // DWORDs Per Line
+	m_width = (width+1)*3/4; // round up
+	m_delta = int((GetPixelAddress(0,1) - GetPixelAddress(width,0)) / 4);
 }
 
 void CMMXSurface24Intrinsic::BlurBits()
 {
-    int height = GetVisibleHeight();
-    DWORD *pCur  = (DWORD*)GetPixelAddress(0,0);
+	int height = GetVisibleHeight();
+	DWORD *pCur  = (DWORD*)GetPixelAddress(0,0);
 
 	CMMX cFader;
 	CMMX cRight;
@@ -60,7 +60,7 @@ void CMMXSurface24Intrinsic::BlurBits()
 #if defined(TRIPPY)
 			cUp += cFader; // increase the fade to white
 #elif defined (FAST_FADE)
-    	    cUp -= cFader; // increase the fade to black
+			cUp -= cFader; // increase the fade to black
 #endif
 			// Reset the left before we write anything out.
 			// treating non-aligned data as dwords isn't generally a good idea
@@ -81,8 +81,8 @@ void CMMXSurface24Intrinsic::Sobel() {
 	SUM = 0;
 	//WORD *pwCur = (WORD *)pCur;
 	//Percorre toda imagem
-    for (y = 0; y < GetVisibleHeight(); y++) {
-        for (x = 0; x < GetVisibleWidth(); x++) {
+	for (y = 0; y < GetVisibleHeight(); y++) {
+		for (x = 0; x < GetVisibleWidth(); x++) {
 			sumX = 0;
 			sumY = 0;
 
@@ -126,10 +126,10 @@ void CMMXSurface24Intrinsic::Sobel() {
 			if(SUM<=127)
 				SUM=0;
 			newPixel = (255-(unsigned char)(SUM));
-			
+
 			PointColorT(x,y,RGB(newPixel,newPixel,newPixel));
-        }
-    }
+		}
+	}
 
 	//Quando terminar, copia o resultado para a imagem corrente
 	Copy(t_image);

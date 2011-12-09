@@ -19,19 +19,19 @@ public:
 protected: 
 	DECLARE_DYNAMIC(CMainFrame)
 
-// Attributes
+	// Attributes
 public:
 
-// Operations
+	// Operations
 public:
 	CChildView *GetView()
 	{ return(&m_wndView); }
 
-// Overrides
+	// Overrides
 public:
 	virtual BOOL PreCreateWindow(CREATESTRUCT& cs);
 	virtual BOOL OnCmdMsg(UINT nID, int nCode, void* pExtra, AFX_CMDHANDLERINFO* pHandlerInfo);
-// Implementation
+	// Implementation
 public:
 	virtual ~CMainFrame();
 
@@ -45,7 +45,7 @@ protected:  // control bar embedded members
 	CToolBar    m_wndToolBar;
 	CChildView  m_wndView;
 
-// Generated message map functions
+	// Generated message map functions
 protected:
 
 	//{{AFX_MSG(CMainFrame)

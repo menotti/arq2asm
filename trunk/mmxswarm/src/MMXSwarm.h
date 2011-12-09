@@ -12,7 +12,7 @@
 #pragma once
 
 #ifndef __AFXWIN_H__
-	#error include 'stdafx.h' before including this file for PCH
+#error include 'stdafx.h' before including this file for PCH
 #endif
 
 #include "resource.h"       // main symbols
@@ -29,12 +29,12 @@ class CMMXSwarmApp : public CWinApp
 public:
 	CMMXSwarmApp();
 
-// Overrides
+	// Overrides
 public:
 	virtual BOOL InitInstance();
 	virtual BOOL OnIdle(LONG lCount);
 
-// Implementation
+	// Implementation
 public:
 	afx_msg void OnAppAbout();
 	DECLARE_MESSAGE_MAP()

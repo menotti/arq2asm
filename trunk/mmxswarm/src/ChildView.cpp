@@ -9,7 +9,14 @@
 // See these sources for detailed information regarding the
 // Microsoft Foundation Classes product.
 //
+
 #include "stdafx.h"
+
+// Grupo 16
+#ifdef USE_OPENCV
+#include "Webcam.h"
+#endif
+
 #include "MMXSwarm.h"
 #include "ChildView.h"
 
@@ -30,14 +37,14 @@ BEGIN_MESSAGE_MAP(CChildView, CWnd)
 	ON_WM_SETCURSOR()
 	ON_WM_TIMER()
 	ON_WM_SIZE()
-    ON_COMMAND(ID_FILE_OPEN, OnFileOpen)
-    ON_COMMAND(ID_FILE_SAVE, OnFileSave)
-    ON_COMMAND(ID_VIEW_PAUSE_BLUR, OnViewPauseBlur)
-    ON_COMMAND(ID_VIEW_PAUSE_SWARM, OnViewPauseSwarm)
-    ON_COMMAND(ID_VIEW_PAUSE_BLIT, OnViewPauseBlit)
-    ON_COMMAND(ID_VIEW_USE_FADE, OnViewUseFade)
+	ON_COMMAND(ID_FILE_OPEN, OnFileOpen)
+	ON_COMMAND(ID_FILE_SAVE, OnFileSave)
+	ON_COMMAND(ID_VIEW_PAUSE_BLUR, OnViewPauseBlur)
+	ON_COMMAND(ID_VIEW_PAUSE_SWARM, OnViewPauseSwarm)
+	ON_COMMAND(ID_VIEW_PAUSE_BLIT, OnViewPauseBlit)
+	ON_COMMAND(ID_VIEW_USE_FADE, OnViewUseFade)
 	ON_COMMAND(ID_VIEW_USE_GRAY, OnViewUseGray)	//Grupo 4
-    ON_COMMAND(ID_VIEW_USE_THRESHOLD, OnViewUseThreshold) //grupo 13
+	ON_COMMAND(ID_VIEW_USE_THRESHOLD, OnViewUseThreshold) //grupo 13
 	ON_COMMAND(ID_VIEW_USE_SOBEL, OnViewUseSobel)//Grupo 5
 	ON_COMMAND(ID_VIEW_USE_POSTERIZE, OnViewUsePosterize)//Grupo 9
 	ON_COMMAND(ID_VIEW_USE_GRAYF, OnViewUseGrayF)	//Grupo 12
@@ -45,13 +52,16 @@ BEGIN_MESSAGE_MAP(CChildView, CWnd)
 	ON_COMMAND(ID_VIEW_USE_MASK, OnViewUseMask)	//Grupo 15
 	ON_COMMAND(ID_VIEW_USE_MANDEL, OnViewUseMandel)	//Grupo 6
 	ON_COMMAND(ID_VIEW_USE_SOLARIZE, OnViewUseSolarize)//Grupo 18
-     ON_COMMAND(ID_VIEW_USE_INVERT, OnViewUseInvert)//Grupo 7
+	ON_COMMAND(ID_VIEW_USE_INVERT, OnViewUseInvert)//Grupo 7
+	
+	ON_COMMAND(ID_MODE_WEBCAM, OnModeWebcam) // Grupo 16
+
 	ON_UPDATE_COMMAND_UI(ID_VIEW_PAUSE_BLUR, OnUpdatePauseBlur)
 	ON_UPDATE_COMMAND_UI(ID_VIEW_PAUSE_SWARM, OnUpdatePauseSwarm)
 	ON_UPDATE_COMMAND_UI(ID_VIEW_PAUSE_BLIT, OnUpdatePauseBlit)
 	ON_UPDATE_COMMAND_UI(ID_VIEW_USE_FADE, OnUpdateUseFade)
 	ON_UPDATE_COMMAND_UI(ID_VIEW_USE_GRAY, OnUpdateUseGray)	//Grupo 4
-    ON_UPDATE_COMMAND_UI(ID_VIEW_USE_THRESHOLD, OnUpdateUseThreshold) //grupo 13
+	ON_UPDATE_COMMAND_UI(ID_VIEW_USE_THRESHOLD, OnUpdateUseThreshold) //grupo 13
 	ON_UPDATE_COMMAND_UI(ID_VIEW_USE_SOBEL, OnUpdateUseSobel)//Grupo 5
 	ON_UPDATE_COMMAND_UI(ID_VIEW_USE_POSTERIZE, OnUpdateUsePosterize)//Grupo 9
 	ON_UPDATE_COMMAND_UI(ID_VIEW_USE_GRAYF, OnUpdateUseGrayF)	//Grupo 12
@@ -63,7 +73,7 @@ BEGIN_MESSAGE_MAP(CChildView, CWnd)
 	ON_UPDATE_COMMAND_UI(ID_INDICATOR_PAUSE_BLIT, OnUpdatePauseBlit)
 	ON_UPDATE_COMMAND_UI(ID_INDICATOR_USE_FADE, OnUpdateUseFade)
 	ON_UPDATE_COMMAND_UI(ID_INDICATOR_USE_GRAY, OnUpdateUseGray)	//Grupo 4
-    ON_UPDATE_COMMAND_UI(ID_INDICATOR_USE_THRESHOLD, OnUpdateUseThreshold) //grupo 13
+	ON_UPDATE_COMMAND_UI(ID_INDICATOR_USE_THRESHOLD, OnUpdateUseThreshold) //grupo 13
 	ON_UPDATE_COMMAND_UI(ID_INDICATOR_USE_SOBEL, OnUpdateUseSobel) //Grupo 5
 	ON_UPDATE_COMMAND_UI(ID_INDICATOR_USE_GRAYF, OnUpdateUseGrayF)	//Grupo 12
 	ON_UPDATE_COMMAND_UI(ID_INDICATOR_USE_RGBADJUST, OnUpdateUseRGBAdjust)//Grupo 14
@@ -74,6 +84,8 @@ BEGIN_MESSAGE_MAP(CChildView, CWnd)
 	ON_UPDATE_COMMAND_UI(ID_INDICATOR_USE_INVERT, OnUpdateUseInvert)//Grupo 7
 	ON_UPDATE_COMMAND_UI(ID_INDICATOR_FPS, OnUpdateFPS)
 	ON_UPDATE_COMMAND_UI(ID_INDICATOR_RESOLUTION, OnUpdateResolution)
+	ON_UPDATE_COMMAND_UI(ID_INDICATOR_USE_WEBCAM, OnUpdateModeWebcam) //Grupo 16
+
 	ON_COMMAND_RANGE(IDD_16BIT_MMXINTRINSICS, IDD_32BIT_GENERICCBLUR, OnImageFormats)
 	ON_UPDATE_COMMAND_UI_RANGE(IDD_16BIT_MMXINTRINSICS, IDD_32BIT_GENERICCBLUR, OnUpdateImageFormats)
 	ON_WM_ERASEBKGND()
@@ -93,7 +105,7 @@ CChildView::CChildView()
 	m_bPauseBlit = false;
 	m_bPauseFade = false;
 	m_bUseGray = false;	//Grupo 4
-    m_bUseThreshold = false; //grupo 13
+	m_bUseThreshold = false; //grupo 13
 	m_bUseSobel = false;	//Grupo 5
 	m_bUseGrayF = false;	//Grupo 12
 	m_bUseRGBAdjust = false;	//Grupo 14
@@ -106,6 +118,7 @@ CChildView::CChildView()
 	execGray = false; //grupo 12
 	m_bUseSolarize = false; // Grupo 18
 	m_bUseInvert = false;  //GRUPO 7
+	m_bUseWebcam = false;	// Grupo 16
 }
 
 CChildView::~CChildView()
@@ -164,7 +177,7 @@ void CChildView::OnFileOpen()
 
 		CFileDialog dlg2(TRUE, NULL, NULL, OFN_FILEMUSTEXIST, strFilter);
 		dlg2.m_ofn.nFilterIndex = m_nFilterLoad;
-	
+
 		nResult = dlg2.DoModal();
 
 		if(nResult != IDOK) {
@@ -189,7 +202,7 @@ void CChildView::OnFileOpen()
 		m_bUseGray = false;
 		m_bUseGrayF = false;
 		m_bUseSolarize = false;
-	     m_bUseThreshold = false;
+		m_bUseThreshold = false;
 	}
 }
 
@@ -341,6 +354,12 @@ void CChildView::OnViewUseThreshold()
 	m_bUseThreshold = !m_bUseThreshold;
 }
 
+// Grupo 16
+void CChildView::OnModeWebcam()
+{
+	m_bUseWebcam = !m_bUseWebcam;
+}
+
 
 void CChildView::OnPaint() 
 {
@@ -355,23 +374,23 @@ BOOL CChildView::OnIdle(LONG /*lCount*/)
 	BOOL bContinue = FALSE;
 	if (m_pSurface == NULL)
 		return(FALSE);
-	
+
 	// Debugging helper for blur
 	//m_pSurface->Line(CPoint(160, 120), CPoint(160, 0), RGB(255, 128, 128));
 	//m_pSurface->Line(CPoint(80, 60), CPoint(240, 60), RGB(128, 128, 255));
 
-    if (::GetAsyncKeyState(VK_SHIFT) & 0x8000) {
-        m_pSurface->RandomLine((int)Random() << 15 | Random());
+	if (::GetAsyncKeyState(VK_SHIFT) & 0x8000) {
+		m_pSurface->RandomLine((int)Random() << 15 | Random());
 		bContinue = TRUE;
-    }
-    if (::GetAsyncKeyState(VK_DELETE) & 0x8000) {
-        m_pSurface->ClearBits();
+	}
+	if (::GetAsyncKeyState(VK_DELETE) & 0x8000) {
+		m_pSurface->ClearBits();
 		bContinue = TRUE;
-    }
-    if (::GetAsyncKeyState(VK_SPACE) & 0x8000) {
-        m_pSurface->RandomBits();
+	}
+	if (::GetAsyncKeyState(VK_SPACE) & 0x8000) {
+		m_pSurface->RandomBits();
 		bContinue = TRUE;
-    }
+	}
 	if (::GetAsyncKeyState(VK_UP) & 0x8000) {
 		m_pSurface->ShiftBits();
 		bContinue = TRUE;
@@ -393,12 +412,22 @@ BOOL CChildView::OnIdle(LONG /*lCount*/)
 		bContinue = TRUE;
 	}
 
+		// Grupo 16
+#ifdef USE_OPENCV
+	if (m_bUseWebcam) {
+		CWebcam::Capture(m_pSurface);
+		bContinue = TRUE;
+	} else
+		if (!CWebcam::CaptureIsNull())
+			CWebcam::Release();
+#endif
+
 	//Grupo 4
 	if (m_bUseGray) {
 		m_pSurface->GrayScale();
 		bContinue = TRUE;
 	}
-	
+
 	//Grupo5
 	if (m_bUseSobel && !execSobel) {
 		//verifica os Filtros ativos, para executar 1 ou mais vezes o Sobel
@@ -447,7 +476,7 @@ BOOL CChildView::OnIdle(LONG /*lCount*/)
 		m_pSurface->MandelBrot();
 		bContinue = TRUE;
 	}
-	
+
 	//Grupo 18
 	if (m_bUseSolarize) {
 		m_pSurface->Solarize();
@@ -455,8 +484,8 @@ BOOL CChildView::OnIdle(LONG /*lCount*/)
 		if(!m_bPauseFade)
 			m_bUseSolarize = false;
 	}
-  
-    //grupo 13
+
+	//grupo 13
 	if (m_bUseThreshold) {
 		m_pSurface->Threshold();
 		bContinue = TRUE;
@@ -470,25 +499,26 @@ BOOL CChildView::OnIdle(LONG /*lCount*/)
 	}
 
 	::GdiFlush();
-    return(bContinue);
+	return(bContinue);
 }
+
 
 BOOL CChildView::OnSetCursor(CWnd* pWnd, UINT nHitTest, UINT message) 
 {
 	// Add your message handler code here and/or call default
-    if (nHitTest == HTCLIENT) {
-        SetCursor(LoadCursor(NULL, IDC_CROSS));
-        return(TRUE);
-    }
-	
+	if (nHitTest == HTCLIENT) {
+		SetCursor(LoadCursor(NULL, IDC_CROSS));
+		return(TRUE);
+	}
+
 	return CWnd::OnSetCursor(pWnd, nHitTest, message);
 }
 
 void CChildView::OnSize(UINT nType, int cx, int cy) 
 {
 	CWnd::OnSize(nType, cx, cy);
-    if (m_hWnd && cx && cy) {
-        TRACE("OnSize: width == %d, height == %d\n", cx, cy);
+	if (m_hWnd && cx && cy) {
+		TRACE("OnSize: width == %d, height == %d\n", cx, cy);
 
 		// Initialize screen format
 		// First time init with an hwnd
@@ -501,23 +531,23 @@ void CChildView::OnSize(UINT nType, int cx, int cy)
 			SetTimer(m_kTimerID, m_kTimerDelay, NULL);
 			pixels = dc.GetDeviceCaps(BITSPIXEL) * dc.GetDeviceCaps(PLANES);
 			switch (pixels) {
-				case 16:
-					m_eSurf = IsSSE2() ? e16BitSSE2Intrin :
-						IsMMX() ? e16BitMMXIntrin : e16BitGeneric;
-					break;
-				case 24:
-					m_eSurf =  IsSSE2() ? e24BitSSE2Intrin :
-						IsMMX() ? e24BitMMXIntrin : e24BitGeneric;
-					break;
-				case 32:
-					m_eSurf =  IsSSE2() ? e32BitSSE2Intrin :
-						IsMMX() ? e32BitMMXIntrin : e32BitGeneric;
-					break;
-				default:
-					bWarnDepth = true;
-					m_eSurf =  IsSSE2() ? e32BitSSE2Intrin :
-						IsMMX() ? e32BitMMXIntrin : e32BitGeneric;
-					break;
+			case 16:
+				m_eSurf = IsSSE2() ? e16BitSSE2Intrin :
+					IsMMX() ? e16BitMMXIntrin : e16BitGeneric;
+				break;
+			case 24:
+				m_eSurf =  IsSSE2() ? e24BitSSE2Intrin :
+					IsMMX() ? e24BitMMXIntrin : e24BitGeneric;
+				break;
+			case 32:
+				m_eSurf =  IsSSE2() ? e32BitSSE2Intrin :
+					IsMMX() ? e32BitMMXIntrin : e32BitGeneric;
+				break;
+			default:
+				bWarnDepth = true;
+				m_eSurf =  IsSSE2() ? e32BitSSE2Intrin :
+					IsMMX() ? e32BitMMXIntrin : e32BitGeneric;
+				break;
 			}
 #ifdef _DEBUG
 			bWarnDebug = true;
@@ -542,7 +572,7 @@ void CChildView::OnSize(UINT nType, int cx, int cy)
 
 		m_bSizeChanged = true;
 		CreateSurface();
-    }
+	}
 }
 
 void CChildView::CreateSurface()
@@ -553,50 +583,50 @@ void CChildView::CreateSurface()
 	m_pSurface = NULL;
 
 	switch (m_eSurf) {
-		case e16BitSSE2Intrin:
-			nBits = 16;
-			m_pSurface = new CSSE2Surface16Intrinsic();
-			break;
-		case e16BitMMXIntrin:
-			nBits = 16;
-			m_pSurface = new CMMXSurface16Intrinsic();
-			break;
-		case e16BitGeneric:
-			nBits = 16;
-			m_pSurface = new CSurface();
-			break;
-		case e24BitSSE2Intrin:
-			nBits = 24;
-			m_pSurface = new CSSE2Surface24Intrinsic();
-			break;
-		case e24BitMMXIntrin:
-			nBits = 24;
-			m_pSurface = new CMMXSurface24Intrinsic();
-			break;
-		case e24BitGeneric:
-			nBits = 24;
-			m_pSurface = new CSurface();
-			break;
-		case e32BitSSE2Intrin:
-			nBits = 32;
-			m_pSurface = new CSSE2Surface32Intrinsic();
-			break;
-		case e32BitMMXIntrin:
-			nBits = 32;
-			m_pSurface = new CMMXSurface32Intrinsic();
-			break;
-		case e32BitGeneric:
-			nBits = 32;
-			m_pSurface = new CSurface();
-			break;
-		default:
-			ASSERT(FALSE);
-			break;
+	case e16BitSSE2Intrin:
+		nBits = 16;
+		m_pSurface = new CSSE2Surface16Intrinsic();
+		break;
+	case e16BitMMXIntrin:
+		nBits = 16;
+		m_pSurface = new CMMXSurface16Intrinsic();
+		break;
+	case e16BitGeneric:
+		nBits = 16;
+		m_pSurface = new CSurface();
+		break;
+	case e24BitSSE2Intrin:
+		nBits = 24;
+		m_pSurface = new CSSE2Surface24Intrinsic();
+		break;
+	case e24BitMMXIntrin:
+		nBits = 24;
+		m_pSurface = new CMMXSurface24Intrinsic();
+		break;
+	case e24BitGeneric:
+		nBits = 24;
+		m_pSurface = new CSurface();
+		break;
+	case e32BitSSE2Intrin:
+		nBits = 32;
+		m_pSurface = new CSSE2Surface32Intrinsic();
+		break;
+	case e32BitMMXIntrin:
+		nBits = 32;
+		m_pSurface = new CMMXSurface32Intrinsic();
+		break;
+	case e32BitGeneric:
+		nBits = 32;
+		m_pSurface = new CSurface();
+		break;
+	default:
+		ASSERT(FALSE);
+		break;
 
 	}
 	ASSERT(m_pSurface != NULL);
 	m_pSurface->Create(this, nBits);
-    m_pSurface->ClearBits();
+	m_pSurface->ClearBits();
 
 	CRect cRect;
 	GetClientRect(&cRect);
@@ -618,13 +648,13 @@ void CChildView::OnUpdateFPS(CCmdUI* pCmdUI)
 	if (!m_bTimerPopped) // Only update on regular intervals
 		return;
 
-    DWORD dwStop = max(m_dwTickStart+1, ::GetTickCount());
-    CString fmt;
-    fmt.Format(_T("%d fps"), (m_nFrameCounter*1000L)/(dwStop-m_dwTickStart));
+	DWORD dwStop = max(m_dwTickStart+1, ::GetTickCount());
+	CString fmt;
+	fmt.Format(_T("%d fps"), (m_nFrameCounter*1000L)/(dwStop-m_dwTickStart));
 
 	m_nFrameCounter = 0;
 	m_bTimerPopped = false;
-    m_dwTickStart = dwStop;
+	m_dwTickStart = dwStop;
 
 	pCmdUI->SetText(fmt);
 	pCmdUI->Enable(TRUE);
@@ -806,6 +836,19 @@ void CChildView::OnUpdateUseThreshold(CCmdUI* pCmdUI)
 	}
 }
 
+//Grupo 16
+void CChildView::OnUpdateModeWebcam(CCmdUI* pCmdUI)
+{
+	if (pCmdUI->m_nID == ID_INDICATOR_USE_WEBCAM) {
+		pCmdUI->Enable(m_bUseWebcam ? FALSE : TRUE);
+	}
+	else {
+		ASSERT(pCmdUI->m_nID == ID_MODE_WEBCAM);
+		pCmdUI->SetCheck(m_bUseWebcam ? 1 : 0);
+		pCmdUI->Enable(TRUE);
+	}
+}
+
 void CChildView::OnUpdateResolution(CCmdUI* pCmdUI)
 {
 	if (m_bSizeChanged) {
@@ -822,18 +865,18 @@ void CChildView::OnUpdateImageFormats(CCmdUI* pCmdUI)
 	BOOL bEnable = TRUE;
 
 	switch (pCmdUI->m_nID) {
-		case IDD_16BIT_MMXINTRINSICS:
-		case IDD_24BIT_MMXINTRINSICS:
-		case IDD_32BIT_MMXINTRINSICS:
-			bEnable = IsMMX();
-			break;
-		case IDD_16BIT_SSE2INTRINSICS:
-		case IDD_24BIT_SSE2INTRINSICS:
-		case IDD_32BIT_SSE2INTRINSICS:
-			bEnable = IsSSE2();
-			break;
-		default:
-			break;
+	case IDD_16BIT_MMXINTRINSICS:
+	case IDD_24BIT_MMXINTRINSICS:
+	case IDD_32BIT_MMXINTRINSICS:
+		bEnable = IsMMX();
+		break;
+	case IDD_16BIT_SSE2INTRINSICS:
+	case IDD_24BIT_SSE2INTRINSICS:
+	case IDD_32BIT_SSE2INTRINSICS:
+		bEnable = IsSSE2();
+		break;
+	default:
+		break;
 	}
 	if (ESurface(pCmdUI->m_nID) == m_eSurf)
 		pCmdUI->SetCheck(1);

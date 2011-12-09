@@ -17,23 +17,23 @@ void CSurface::Create(CWnd *pWnd, int nBitDepth)
 	// no palettes
 	ASSERT(nBitDepth == 24 || nBitDepth == 16 || nBitDepth == 32);
 
-    CRect clientRect;
-    pWnd->GetClientRect(clientRect);
+	CRect clientRect;
+	pWnd->GetClientRect(clientRect);
 	int height = clientRect.Height();
-    int width = clientRect.Width();
+	int width = clientRect.Width();
 
 	if (!height || !width)
 		return;
 
-    Destroy();
+	Destroy();
 
 	m_nBitDepth = nBitDepth;
 	m_nByteDepth = nBitDepth/8;
 	m_wndHeight = height;
-    m_wndWidth = width;
+	m_wndWidth = width;
 	m_hDestDC = ::GetDC(pWnd->GetSafeHwnd());
 	m_pSrcWnd = pWnd;
-    ASSERT(m_hDestDC);
+	ASSERT(m_hDestDC);
 
 	width = m_wndWidth + m_kDeltaX; // not *2 because we don't need it on the left side.
 	// Allow derived classes a shot at updating if they need more alignment
@@ -103,19 +103,19 @@ void CSurface::Import(const CImage &image, const CImage &image2)
 
 void CSurface::ClearBits()
 {
-    int size = m_image.GetPitch() * m_image.GetHeight();
+	int size = m_image.GetPitch() * m_image.GetHeight();
 	memset(m_image.GetBits(), 0x00, size);
 }
 
 void CSurface::StripeBits()
 {
-    int count = 0x880000;
-    for (int i = 0; i < m_wndHeight; i++) {
-        COLORREF color = count++; // RAND();
-        for (int j = 0; j < m_wndWidth; j++) {
-            PointColor(j, i, color);
-        }
-    }
+	int count = 0x880000;
+	for (int i = 0; i < m_wndHeight; i++) {
+		COLORREF color = count++; // RAND();
+		for (int j = 0; j < m_wndWidth; j++) {
+			PointColor(j, i, color);
+		}
+	}
 
 }
 
@@ -128,11 +128,11 @@ void CSurface::Copy(const CImage &image){
 
 void CSurface::RandomBits()
 {
-    for (int i = 0; i < m_wndHeight; i++) {
-        for (int j = 0; j < m_wndWidth; j++) {
-            PointColor(j, i, RGB(Random(), Random(), Random()));
-        }
-    }
+	for (int i = 0; i < m_wndHeight; i++) {
+		for (int j = 0; j < m_wndWidth; j++) {
+			PointColor(j, i, RGB(Random(), Random(), Random()));
+		}
+	}
 }
 
 void CSurface::ShiftBits()
@@ -147,29 +147,29 @@ void CSurface::ShiftBits()
 
 void CSurface::BlurBits()
 {
-    COLORREF cLeft = 0, cCur = PointColor(0,0), cRight, cUp, cDown;
-    BYTE r, g, b;
-    for (int i = 0; i < m_wndHeight; i++) {
+	COLORREF cLeft = 0, cCur = PointColor(0,0), cRight, cUp, cDown;
+	BYTE r, g, b;
+	for (int i = 0; i < m_wndHeight; i++) {
 		cLeft = 0;
-        for (int j = 0; j < m_wndWidth; j++) {
-            cRight = PointColor(j+1, i);
-            cUp = PointColor(j, i-1);
-            cDown = PointColor(j, i+1);
-            r = (BYTE)(((int)(GetRValue(cCur) << 2) + GetRValue(cLeft) + GetRValue(cRight) + GetRValue(cUp) + GetRValue(cDown)) >> 3);
-            g = (BYTE)(((int)(GetGValue(cCur) << 2) + GetGValue(cLeft) + GetGValue(cRight) + GetGValue(cUp) + GetGValue(cDown)) >> 3);
-            b = (BYTE)(((int)(GetBValue(cCur) << 2) + GetBValue(cLeft) + GetBValue(cRight) + GetBValue(cUp) + GetBValue(cDown)) >> 3);
-            PointColor(j, i, RGB(b,g,r)); // RGBs are physically inverted
-            cLeft = cCur;
-            cCur = cRight;
-        }
-    }
+		for (int j = 0; j < m_wndWidth; j++) {
+			cRight = PointColor(j+1, i);
+			cUp = PointColor(j, i-1);
+			cDown = PointColor(j, i+1);
+			r = (BYTE)(((int)(GetRValue(cCur) << 2) + GetRValue(cLeft) + GetRValue(cRight) + GetRValue(cUp) + GetRValue(cDown)) >> 3);
+			g = (BYTE)(((int)(GetGValue(cCur) << 2) + GetGValue(cLeft) + GetGValue(cRight) + GetGValue(cUp) + GetGValue(cDown)) >> 3);
+			b = (BYTE)(((int)(GetBValue(cCur) << 2) + GetBValue(cLeft) + GetBValue(cRight) + GetBValue(cUp) + GetBValue(cDown)) >> 3);
+			PointColor(j, i, RGB(b,g,r)); // RGBs are physically inverted
+			cLeft = cCur;
+			cCur = cRight;
+		}
+	}
 }
 
 //menotti
 void CSurface::FadeInOut()
 {
-    COLORREF cD, cO;
-    BYTE r, g, b;
+	COLORREF cD, cO;
+	BYTE r, g, b;
 	if (alphadir > 0) {
 		alpha = (float)(alpha + 0.005);
 		if (alpha >= 1)
@@ -180,16 +180,16 @@ void CSurface::FadeInOut()
 		if (alpha <= 0)
 			alphadir = 1;
 	}
-    for (int i = 0; i < m_wndHeight; i++) {
-        for (int j = 0; j < m_wndWidth; j++) {
+	for (int i = 0; i < m_wndHeight; i++) {
+		for (int j = 0; j < m_wndWidth; j++) {
 			cD = PointColorD(j,i);
 			cO = PointColorO(j,i);
-            r = (BYTE)((GetRValue(cO)*alpha+GetRValue(cD)*(1.0-alpha)));
-            g = (BYTE)((GetGValue(cO)*alpha+GetGValue(cD)*(1.0-alpha)));
-            b = (BYTE)((GetBValue(cO)*alpha+GetBValue(cD)*(1.0-alpha)));
-            PointColor(j, i, RGB(b,g,r)); // RGBs are physically inverted
-        }
-    }
+			r = (BYTE)((GetRValue(cO)*alpha+GetRValue(cD)*(1.0-alpha)));
+			g = (BYTE)((GetGValue(cO)*alpha+GetGValue(cD)*(1.0-alpha)));
+			b = (BYTE)((GetBValue(cO)*alpha+GetBValue(cD)*(1.0-alpha)));
+			PointColor(j, i, RGB(b,g,r)); // RGBs are physically inverted
+		}
+	}
 }
 
 
@@ -255,7 +255,7 @@ void CSurface::Sobel()
 			if(SUM>255) SUM=255;
 			if(SUM<0) SUM=0;
 			newPixel = ((unsigned char)(SUM));
-			
+
 			PointColorT(x,y,RGB(newPixel,newPixel,newPixel));
 		}
 	}
@@ -333,7 +333,7 @@ int CSurface::CAL_PIXEL(Complex c)
 	z.real = 0;
 	z.imag = 0;
 	count = 0;
-	
+
 	do
 	{
 		temp = z.real * z.real - z.imag * z.imag + c.real;
@@ -356,13 +356,13 @@ void CSurface::MandelBrot()
 	int x = 1 ,y = 1;
 	int color1;
 	float scale_real, scale_imag;
-	
+
 	c1.real = real_min + x * (real_max - real_min)/disp_width;
 	c1.imag = imag_min + y * (imag_max - imag_min)/disp_heigth;
-	
+
 	scale_real = (real_max - real_min)/disp_width;
 	scale_imag = (imag_max - imag_min)/disp_heigth;
-	
+
 	for(x = 0; x < disp_width; x++)
 	{
 		for(y = 0; y < disp_heigth; y++)
@@ -381,22 +381,22 @@ void CSurface::MandelBrot()
 // nothing beats good old fashioned Bresenham
 void CSurface::Line(const CPoint &p1, const CPoint &p2, COLORREF c)
 {
-    int x1 = p1.x;
-    int x2 = p2.x;
-    int y1 = p1.y;
-    int y2 = p2.y;
+	int x1 = p1.x;
+	int x2 = p2.x;
+	int y1 = p1.y;
+	int y2 = p2.y;
 
 	int d, deltax, deltay, numpixels,
-    dinc1, dinc2,
-    xinc1, xinc2,
-    yinc1, yinc2;
+		dinc1, dinc2,
+		xinc1, xinc2,
+		yinc1, yinc2;
 
 	// Calculate deltax and deltay for startup
 	deltax = ABS(x2 - x1);
 	deltay = ABS(y2 - y1);
 
 	// Initialize all vars based on which is the independent variable
-    if (deltax >= deltay) {
+	if (deltax >= deltay) {
 		// x is independent variable
 		numpixels = deltax + 1;
 		dinc1 = deltay << 1;
@@ -404,8 +404,8 @@ void CSurface::Line(const CPoint &p1, const CPoint &p2, COLORREF c)
 		d = dinc1 - deltax;
 		xinc1 = xinc2 = yinc2 = 1;
 		yinc1 = 0;
-    }
-    else {
+	}
+	else {
 		// y is independent variable
 		numpixels = deltay + 1;
 		dinc1 = deltax <<  1;
@@ -413,48 +413,48 @@ void CSurface::Line(const CPoint &p1, const CPoint &p2, COLORREF c)
 		d = dinc1 - deltay;
 		xinc1 = 0;
 		xinc2 = yinc1 = yinc2 = 1;
-    }
+	}
 
 	// Make sure x and y move in the right directions
-    if (x1 > x2) {
+	if (x1 > x2) {
 		xinc1 = -xinc1;
 		xinc2 = -xinc2;
-    }
-    if (y1 > y2) {
+	}
+	if (y1 > y2) {
 		yinc1 = -yinc1;
 		yinc2 = -yinc2;
-    }
+	}
 
 	// Start drawing pixels at [x1, y1]
-    for (int i = numpixels; i > 0; i--) {
-        PointColor(x1, y1, c);
-        if (d < 0) {
+	for (int i = numpixels; i > 0; i--) {
+		PointColor(x1, y1, c);
+		if (d < 0) {
 			d += dinc1;
 			x1 += xinc1;
 			y1 += yinc1;
-        }
-        else {
+		}
+		else {
 			d += dinc2;
 			x1 += xinc2;
 			y1 += yinc2;
-        }
-    }
+		}
+	}
 }
 
 void CSurface::RandomLine(COLORREF c)
 {
-    CPoint p1(Random(m_wndWidth), Random(m_wndHeight));
-    CPoint p2(Random(m_wndWidth), Random(m_wndHeight));
-    Line(p1, p2, c);
+	CPoint p1(Random(m_wndWidth), Random(m_wndHeight));
+	CPoint p2(Random(m_wndWidth), Random(m_wndHeight));
+	Line(p1, p2, c);
 }
 
 void CSurface::BlitBits()
 {
 	ASSERT(m_wndHeight && m_wndWidth);
-    BOOL bStat = m_image.BitBlt(m_hDestDC, 0, 0, 
-        m_wndWidth, m_wndHeight, 0, m_kDeltaY);
+	BOOL bStat = m_image.BitBlt(m_hDestDC, 0, 0, 
+		m_wndWidth, m_wndHeight, 0, m_kDeltaY);
 
-    ASSERT(bStat);
+	ASSERT(bStat);
 }
 
 // GRUPO 9 - Filtro Posterize
@@ -465,13 +465,13 @@ void CSurface::Posterize()
 		inicializado = true;
 	}
 	COLORREF cCur = PointColor(0,0);
-    BYTE r, g, b;
-    for (int i = 0; i < m_wndHeight; i++) {
-        for (int j = 0; j < m_wndWidth; j++) {
+	BYTE r, g, b;
+	for (int i = 0; i < m_wndHeight; i++) {
+		for (int j = 0; j < m_wndWidth; j++) {
 			cCur = PointColor(j,i);
-            //r = (BYTE)((int)GetRValue(cCur)/2);
-            //g = (BYTE)((int)GetGValue(cCur)/2);
-            //b = (BYTE)((int)GetBValue(cCur)/2);
+			//r = (BYTE)((int)GetRValue(cCur)/2);
+			//g = (BYTE)((int)GetGValue(cCur)/2);
+			//b = (BYTE)((int)GetBValue(cCur)/2);
 
 			//r = (BYTE)(nivel[(int)GetRValue(cCur)]);
 			//g = (BYTE)(nivel[(int)GetGValue(cCur)]);
@@ -481,9 +481,9 @@ void CSurface::Posterize()
 			g = (BYTE)( (int)GetGValue(cCur) & 0xC0 );
 			b = (BYTE)( (int)GetBValue(cCur) & 0xC0 );
 
-            PointColor(j, i, RGB(b,g,r)); // RGBs are physically inverted
-        }
-    }
+			PointColor(j, i, RGB(b,g,r)); // RGBs are physically inverted
+		}
+	}
 }
 
 void CSurface::setNivel(int n)
@@ -507,19 +507,19 @@ void CSurface::inicializar()
 // GRUPO 18 - Filtro Solarize
 void CSurface::Solarize() {
 	COLORREF cCur = PointColor(0,0);
-    BYTE r, g, b;
+	BYTE r, g, b;
 	//double rgb, a, b, c;
-    for (int i = 0; i < m_wndHeight; i++) {
-        for (int j = 0; j < m_wndWidth; j++) {
+	for (int i = 0; i < m_wndHeight; i++) {
+		for (int j = 0; j < m_wndWidth; j++) {
 			cCur = PointColor(j,i);
-            r = (BYTE)(Sol(GetRValue(cCur)/255.0)*0xFF);
-            g = (BYTE)(Sol(GetGValue(cCur)/255.0)*0xFF);
-            b = (BYTE)(Sol(GetBValue(cCur)/255.0)*0xFF);
+			r = (BYTE)(Sol(GetRValue(cCur)/255.0)*0xFF);
+			g = (BYTE)(Sol(GetGValue(cCur)/255.0)*0xFF);
+			b = (BYTE)(Sol(GetBValue(cCur)/255.0)*0xFF);
 			//rgb = GetRValue(cCur) + GetGValue(cCur) + GetBValue(cCur);
 			//Sol(rgb);
-            PointColor(j, i, RGB(b,g,r)); // RGBs are physically inverted
-        }
-    }
+			PointColor(j, i, RGB(b,g,r)); // RGBs are physically inverted
+		}
+	}
 }
 
 
@@ -558,7 +558,7 @@ double CSurface::Sol(double v) {
 void CSurface::Invert(){
 	COLORREF cCur;		//declara um dword
 	BYTE r, g, b;		//variáveis tipo byte que receberão os valores RGB
-	
+
 	//realiza um loop dentro do outro para percorrer a tela inteira
 	for (int i = 0; i < m_wndHeight; i++) {
 		for (int j = 0; j < m_wndWidth; j++) {

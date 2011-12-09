@@ -37,8 +37,8 @@ void CSSE2Surface16Intrinsic::OnCreated()
 	ASSERT(GetVisibleWidth() && GetVisibleHeight());
 
 	int width = GetVisibleWidth();
-    m_qqwpl  = GetPitch()/16; // qwords Per Line
-    m_width = (width+7)/8; // 8 pixels at a time
+	m_qqwpl  = GetPitch()/16; // qwords Per Line
+	m_width = (width+7)/8; // 8 pixels at a time
 }
 
 // Note: It's still faster than the brute force approach,
@@ -47,8 +47,8 @@ void CSSE2Surface16Intrinsic::OnCreated()
 // doesn't work out well.
 void CSSE2Surface16Intrinsic::BlurBits()
 {
-    int height = GetVisibleHeight();
-    __m128i *pCur  = (__m128i *)GetPixelAddress(0,0);
+	int height = GetVisibleHeight();
+	__m128i *pCur  = (__m128i *)GetPixelAddress(0,0);
 
 	CSSE2 cUpBase, cDownBase, cCurBase, cLeftBase, cRightBase;
 	CSSE2 cUp, cDown, cCur, cLeft, cRight;
