@@ -304,64 +304,57 @@ void CMMXSurface32Intrinsic::Threshold()
 }
 
 //Grupo 14
-/*
-O nosso está com um problema nas multiplicações... Corrigiremos em breve.
 void CMMXSurface32Intrinsic::RGBAdjust()
 {
-int height = GetVisibleHeight();
-DWORD *pCur  = (DWORD *)GetPixelAddress(0,0);
-ULONGLONG mascara = 0xFF;
-ULONGLONG pixel;
-ULONGLONG next;
+	int height = GetVisibleHeight()*2;
+	DWORD *pCur  = (DWORD *)GetPixelAddress(0,0);
+	ULONGLONG mascara = 0xFF;
+	ULONGLONG pixel;
+	ULONGLONG next;
 
-pixel = *(ULONGLONG *)pCur;
-do
-{
-int width = m_width;
-do
-{
-next = *(ULONGLONG *)(pCur+1);
-__asm
-{
-movq mm0, pixel;	//mm0 = pixel atual
-pand mm0, mascara;	//mm0 = a componente 'B'
-pxor mm5, mm5;
-movq mm5, 0.89;
-pmulhw mm0, mm5;		//mm0 = Bpixel * 0.89, fator numérico escolhido p/ 'B'
+	pixel = *(ULONGLONG *)pCur;
+	do
+	{
+		int width = m_width;
+		do
+		{
+			next = *(ULONGLONG *)(pCur+1);
+			__asm
+			{
+				movq mm0, pixel	//mm0 = pixel atual
+				pand mm0, mascara	//mm0 = a componente 'B'
+				pxor mm5, mm5
+				psrlq mm0, 1		//1 shift para a direita (divide por 2, sem precisão)
 
-movq mm1, pixel;	//mm0 = pixel, novamente
-psrlq mm1, 8;		//shift à direita para pegar a componente 'G' do pixel
-pand mm1, mascara;
-movq mm5, 0.74
-pmulhw mm1, mm5;		//mm1 = Gpixel * 0.74, fator numérico escolhido p/ 'G' 
+				movq mm1, pixel	//mm0 = pixel, novamente
+				psrlq mm1, 8		//shift à direita para pegar a componente 'G' do pixel
+				pand mm1, mascara
+				psrlq mm1, 1		//1 shift para a direita (divide por 2, sem precisão) 
 
-movq mm2, pixel;
-psrlq mm2, 16;
-pand mm2, mascara;
-movq mm5, 0.81
-pmulhw mm2, mm5;		//mm2 = Rpixel * 0.81, fator numérico escolhido para 'R'
+				movq mm2, pixel
+				psrlq mm2, 16
+				pand mm2, mascara
+				psrlq mm2, 1		//1 shift para a direita (divide por 2, sem precisão)
 
-movq mm3, pixel;	//mm3 = pixel
-psrlq mm3, 24       // mm3 <- canal alpha
+				movq mm3, pixel	//mm3 = pixel
 
-pxor mm4, mm4       //garante que o registrador mm4 esta vazio
-paddd mm4, mm3      //adiciona o canal alpha ao mm4
-psllq mm4, 8        //shift para o proximo byte
-paddd mm4, mm2      //copia o canal R (mm2) para mm4
-psllq mm4, 8		//um shift para esquerda em 1 byte
-paddd mm4, mm1		//copia o canal G (mm1) para mm4
-psllq mm4, 8		//novamente um shift para esquerda em 1 byte
-paddd mm4, mm0		//copia o canal B (mm0) para mm4
-movq pixel, mm4
-}
-*(ULONGLONG *)pCur = pixel;		//joga o resultado no ponto apontado da tela
-pixel = next;					//recebe o próximo pixel a ser processado
-pCur++;							//avança o ponteiro sobre a tela
-} while (--width > 0);
-} while (--height > 0);
+				pxor mm4, mm4       //garante que o registrador mm4 esta vazio
+				paddd mm4, mm3      //adiciona o canal alpha ao mm4
+				psllq mm4, 8        //shift para o proximo byte
+				paddd mm4, mm2      //copia o canal R (mm2) para mm4
+				psllq mm4, 8		//um shift para esquerda em 1 byte
+				paddd mm4, mm1		//copia o canal G (mm1) para mm4
+				psllq mm4, 8		//novamente um shift para esquerda em 1 byte
+				paddd mm4, mm0		//copia o canal B (mm0) para mm4
+				movq pixel, mm4
+				}
+			*(ULONGLONG *)pCur = pixel;		//joga o resultado no ponto apontado da tela
+			pixel = next;					//recebe o próximo pixel a ser processado
+			pCur++;							//avança o ponteiro sobre a tela
+		} while (--width > 0);
+	} while (--height > 0);
 
 }
-*/
 
 // GRUPO 15
 void CMMXSurface32Intrinsic::Mask()
