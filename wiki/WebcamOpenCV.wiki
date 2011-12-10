@@ -1,4 +1,4 @@
-#summary Como usar a webcam no novo código postado
+#summary Como usar a webcam no código
 
 = Introdução =
 
