@@ -1577,4 +1577,4 @@ void CSSE2Surface32Intrinsic::RGBAdjust()
 
 ==_Gráfico comparativo_==
 
-http://imageshack.us/f/580/chartqs.png
+http://imageshack.us/photo/my-images/580/chartqs.png/
