@@ -1575,6 +1575,9 @@ void CSSE2Surface32Intrinsic::RGBAdjust()
 
 }}}
 
+
+As tomadas da quantidade de frames por segundo que vêm nos gráficos abaixo surgiram da aplicação do filtro em imagens estáticas, sem nenhum outro filtro aplicado simultaneamente.
+
 ==_Gráfico comparativo_==
 
 http://imageshack.us/f/580/chartqs.png/
