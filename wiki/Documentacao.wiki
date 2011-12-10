@@ -1375,6 +1375,8 @@ void CSSE2Surface32Intrinsic::Mask()
 
 http://img6.imageshack.us/img6/9112/graficoi.png
 
+----
+
 = RGB Adjust Filter =
 
 <wiki:comment>
@@ -1382,14 +1384,16 @@ RGB Adjust Filter Grupo 14
 </wiki:comment>
 
 O RGB Adjust Filter, basicamente, multiplica os valores de cada um dos 3 bytes de cor (R,G,B) por um fator pré-definido. Em nossa aplicação, decidimos escolher os valores 1 para multiplicar o valor preexistente para o byte representante da cor Vermelha (R - ou seja, não será modificada), o valor 0.5 para multiplicar o byte representante da cor verde (G) e 0.25 para multiplicar o byte representante da cor azul (B).
-Nesta implementação que realizamos, a cada vez em que o filto é acionado, a multiplicação das cores de cada pixel pelos valores pré-estabelecidos ocorre, o que implica que para análise da eficiência de cada uma das implementações, basta retirarmos uma linha do código na implementação do [i]ChildView.cpp, próximo à linha 460, deixando-se assim:
-
+Nesta implementação que realizamos, a cada vez em que o filto é acionado, a multiplicação das cores de cada pixel pelos valores pré-estabelecidos ocorre, o que implica que para análise da eficiência de cada uma das implementações, basta retirarmos uma linha do código na implementação do {{{[i]ChildView.cpp}}}, próximo à linha 460, deixando-se assim:
+{{{
 	//Grupo 14
 	if (m_bUseRGBAdjust) {
 		m_pSurface->RGBAdjust();
 		bContinue = TRUE;
 		//m_bUseRGBAdjust = false;
 	}
+
+}}}
 
 Retirando-se o 'm_bUseRGBAdjust = false' é que realizamos as medidas de desempenho. Achamos melhor deixar essa linha no código para se notar com maior clareza como funciona o filtro, senão o mesmo ficaria sendo executado ininterruptamente, o que daria a impressão de que nosso filtro apenas zera todas as componentes de cor, à exceção da vermelha.
 
@@ -1476,7 +1480,7 @@ void CMMXSurface32Intrinsic::RGBAdjust()
 
 }}}
 
-== _SSE2_ ==
+== _SSE(n)_ ==
 
 
 {{{
