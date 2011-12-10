@@ -1580,4 +1580,4 @@ As tomadas da quantidade de frames por segundo que vêm nos gráficos abaixo sur
 
 ==_Gráfico comparativo_==
 
-[http://imageshack.us/f/580/chartqs.png/]
+http://img580.imageshack.us/img580/8223/chartqs.png
