@@ -10,7 +10,7 @@ No último código (versão 120) adicionamos a funcionalidade de captura de imag
 
 = Detalhes =
 <ol>
-<li>Para baixar a biblioteca OpenCV, visite o link http://opencv.willowgarage.com/wiki/InstallGuide 
+<li>Para baixar a biblioteca OpenCV, visite o link http://opencv.willowgarage.com/wiki/InstallGuide <br>
 Escolha a versão para Windows e, ao baixar, escolha OpenCV-2.3.1-win-superpack.exe
 <li>Extraia o conteúdo do arquivo baixado para alguma pasta de sua preferência.
 <li>Siga os passos do seguinte tutorial para configuração do OpenCV em sua máquina: http://bit.ly/vdQd31
