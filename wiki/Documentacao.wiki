@@ -1593,6 +1593,29 @@ Gradient Grupo 8
 
 == _Naive_ ==
 
+Na implementação Naive,  o valor de cada pixel é somado com a metade do valor obtido na posição atual do pixel para todos os valores de R (GetRValue(cCur)) + i/2), G (GetGValue(cCur)) + i/2)  e B (GetBValue(cCur)) + i/2). 
+
+{{{
+void CSurface::Gradient()
+{
+	COLORREF cCur;		//declara um dword
+	BYTE r, g, b;		//variáveis tipo byte que receberão os valores RGB
+
+	//realiza um loop dentro do outro para percorrer a tela inteira
+	for (int i = 0; i < m_wndHeight; i++) {
+		for (int j = 0; j < m_wndWidth; j++) {
+			cCur = PointColor(j,i);		//pega um pixel da tela da posição [i,j]	
+			
+			r = ((BYTE)(GetRValue(cCur)) + i/2) > 255 ? 255 :(BYTE)(GetRValue(cCur)) + i/2;
+			g = ((BYTE)(GetGValue(cCur)) + i/2) > 255 ? 255 :(BYTE)(GetGValue(cCur)) + i/2;
+			b = ((BYTE)(GetBValue(cCur)) + i/2) > 255 ? 255 :(BYTE)(GetBValue(cCur)) + i/2;
+
+			PointColor(j,i,RGB(b,g,r));		//reescreve na tela o pixel do valores RGB modificados na posição [i,j]
+		}
+	}
+}
+
+}}}
 
 
 == _MMX_ ==
