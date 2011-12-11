@@ -88,6 +88,7 @@ public:
 	int GetLlamaVel() const { return(m_nLlamaVel); }
 
 	void Import(const CLeader *pRHS);
+	void ImportStatic(const CLeader *pRHS); //grupo 7
 protected:
 	static COLORREF HSB(BYTE H, BYTE S, BYTE B);
 	int m_nMyAcc;

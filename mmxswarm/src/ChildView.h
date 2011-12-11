@@ -68,6 +68,7 @@ protected:
 	afx_msg void OnUpdateImageFormats(CCmdUI* pCmdUI);
 	afx_msg void OnFileOpen();
 	afx_msg void OnFileSave();
+	afx_msg void OnFileOpenStatic();  //abrir unica imagem - grupo 7
 	afx_msg void OnViewPauseBlur();
 	afx_msg void OnViewPauseSwarm();
 	afx_msg void OnViewPauseBlit();

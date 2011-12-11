@@ -200,6 +200,14 @@ void CLeader::Import(const CLeader *pRHS)
 	dx = pRHS->dx;
 	dy = pRHS->dy;
 }
+void CLeader::ImportStatic(const CLeader *pRHS)   //grupo 7
+{
+	m_pSwarm = pRHS->m_pSwarm;
+	p1 = pRHS->p1;
+	p2 = pRHS->p2;
+	dx = pRHS->dx;
+	dy = pRHS->dy;
+}
 
 void CLeader::Tick()
 {
