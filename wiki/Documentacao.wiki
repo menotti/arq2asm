@@ -1620,60 +1620,6 @@ void CSurface::Gradient()
 
 == _MMX_ ==
 
-
-
-== _SSE(n)_ ==
-
-
-
-==_Gráfico comparativo_==
-
-
------
-
-= Channel Mix Filter =
-
-<wiki:comment>
-ChannelMix Grupo 11
-</wiki:comment>
-
-O filtro Channel Mix pode ser definido como a mistura dos canais RGB de uma imagem. Neste filtro, cada canal recebe a mistura dos outros dois canais, alterando as cores finais da imagem.
-Para obter a mistura de dois canais, extraímos o valor de outro sistema de cores, o CMYK, onde C (Cyan) é a mistura dos canais G e B (Green e Blue), M (Magenta) é a mistura dos canais B e R (Blue e Red) e Y (Yellow) é a mistura dos canais R e G (Red e Green).
-A imagem abaixo ajuda a compreender as alterações feitas.
-
-http://www.rpdesigner.com.br/wp-content/uploads/2011/03/rgb-vs-cmyk-comparacao.jpg
-
-Resumidamente, o processo ocorre de tal maneira:
-A mistura dos canais R-G (Y) é colocado no lugar de B,  G-B (C) é colocado em R e B-R (M) é colocado em G.
-
-==_Naive_==
-
-Nesta implementação extraimos os valores de cada canal do sistema CMYK. Estes valores são atribuídos a 3 variáveis (r,g e b) correspondentes ao sistema RGB.
-Por exemplo, o comando  "r = (BYTE)(GetCValue(cCur));" atribui à variável r o valor de C, que é a mistura dos canais G e B.
-
-{{{
-void CSurface::ChannelMix()
-{
-	COLORREF cCur;
-	BYTE r, g, b;
-
-	for(int i=0; i < m_wndHeight; i++){
-		for(int j=0; j < m_wndWidth; j++){
-			cCur = PointColor(j,i);
-
-			r = (BYTE)(GetCValue(cCur));
-			g = (BYTE)(GetMValue(cCur));
-			b = (BYTE)(GetYValue(cCur));
-			
-			PointColor(j,i,RGB(b,g,r));
-		}
-	}
-}
-}}}
-
-
-==_MMX_==
-
 {{{
 void CMMXSurface32Intrinsic::Gradient()
 {
@@ -1739,6 +1685,61 @@ void CMMXSurface32Intrinsic::Gradient()
 }
 
 }}}
+
+
+== _SSE(n)_ ==
+
+
+
+==_Gráfico comparativo_==
+
+
+-----
+
+= Channel Mix Filter =
+
+<wiki:comment>
+ChannelMix Grupo 11
+</wiki:comment>
+
+O filtro Channel Mix pode ser definido como a mistura dos canais RGB de uma imagem. Neste filtro, cada canal recebe a mistura dos outros dois canais, alterando as cores finais da imagem.
+Para obter a mistura de dois canais, extraímos o valor de outro sistema de cores, o CMYK, onde C (Cyan) é a mistura dos canais G e B (Green e Blue), M (Magenta) é a mistura dos canais B e R (Blue e Red) e Y (Yellow) é a mistura dos canais R e G (Red e Green).
+A imagem abaixo ajuda a compreender as alterações feitas.
+
+http://www.rpdesigner.com.br/wp-content/uploads/2011/03/rgb-vs-cmyk-comparacao.jpg
+
+Resumidamente, o processo ocorre de tal maneira:
+A mistura dos canais R-G (Y) é colocado no lugar de B,  G-B (C) é colocado em R e B-R (M) é colocado em G.
+
+==_Naive_==
+
+Nesta implementação extraimos os valores de cada canal do sistema CMYK. Estes valores são atribuídos a 3 variáveis (r,g e b) correspondentes ao sistema RGB.
+Por exemplo, o comando  "r = (BYTE)(GetCValue(cCur));" atribui à variável r o valor de C, que é a mistura dos canais G e B.
+
+{{{
+void CSurface::ChannelMix()
+{
+	COLORREF cCur;
+	BYTE r, g, b;
+
+	for(int i=0; i < m_wndHeight; i++){
+		for(int j=0; j < m_wndWidth; j++){
+			cCur = PointColor(j,i);
+
+			r = (BYTE)(GetCValue(cCur));
+			g = (BYTE)(GetMValue(cCur));
+			b = (BYTE)(GetYValue(cCur));
+			
+			PointColor(j,i,RGB(b,g,r));
+		}
+	}
+}
+}}}
+
+
+==_MMX_==
+
+
 
 ==_SSE(n)_==
 
