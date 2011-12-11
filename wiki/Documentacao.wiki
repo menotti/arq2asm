@@ -1750,3 +1750,116 @@ void CSurface::ChannelMix()
 ==_SSE(n)_==
 
 -----
+= Invert Filter =
+<wiki:comment>
+Invert Filter Grupo 7
+</wiki:comment>
+http://img860.imageshack.us/img860/7507/invertfilter.jpg
+<br />
+O Invert Filter realiza a inversão das cores da imagem.
+Para a aplicação do filtro foi necessário pegar cada pixel dividido em seus quatro canais (alpha,R,G,B) e realizar uma subtração de 255 para a inversão da cor atual.
+----
+==_Naive_==
+A implementação "ingênua" do Invert Filter foi realizada pegando-se cada pixel (4 bytes) e subtraindo-se 255 de cada canal de cores.
+{{{
+void CSurface::Invert(){
+	COLORREF cCur;	 //declara um dword
+	BYTE r, g, b;	//variáveis tipo byte que receberão os valores RGB                    
+        //realiza um loop dentro do outro para percorrer a tela inteira
+	for (int i = 0; i < m_wndHeight; i++) {
+	      for (int j = 0; j < m_wndWidth; j++) {
+	        cCur = PointColor(j,i);      //pega o pixel de posição [i,j] na tela
+		r = (BYTE)(255 - GetRValue(cCur));	
+		g = (BYTE)(255 - GetGValue(cCur));
+		b = (BYTE)(255 - GetBValue(cCur));
+               //reescreve na tela o pixel do valores RGB modificados na posição [i,j]
+		PointColor(j,i,RGB(b,g,r));   
+	      }
+	}
+}
+}}}
+----
+==_MMX_==
+Esta implementação utilizou inline assembly para acessar os registradores de 64 bits mmx. A ideia do código é simples: através de uma máscara com o valor de 255 (0xFF) os valores RGB foram subtraídos. Com isso o valor do pixel atual é modificado como sendo sua respectiva cor inversa.
+Nesta implementação, 2 pixels são calculados a cada iteração.
+{{{
+void CMMXSurface32Intrinsic::Invert()
+{
+    ULONGLONG mascara = 0xFFFFFFFFFFFFFFFF;		//o valor do pixel sera subtraido dessa mascara
+
+	DWORD *pCur  = (DWORD *)GetPixelAddress(0,0);
+	ULONGLONG pixels;
+
+	int height = GetVisibleHeight();
+	while (height--)
+	{
+		int width = m_width;	//m_width = (width+1)/2; pois editamos 2 pixels por iteracao
+		while(width--)
+		{
+			pixels = *(ULONGLONG *)pCur;
+
+			__asm
+			{
+					movq mm0, pixels	// registrador mm0 recebe 2 pixels
+					movq mm1, mascara	// registrador mm1 recebe valor da mascara
+					psubb mm1, mm0		// mascara - pixel1 e mascara - pixel2
+					movq pixels, mm1    // pixel recebe os dois pixels já invertidos
+			}
+
+			// Imprime dois pixels na tela
+			*(ULONGLONG *)pCur = pixels;
+
+			pCur += 2;
+		}
+	}
+}
+}}}
+----
+==_SSE2_==
+Na implementação SSE2, 4 pixels são calculados a cada iteração nos registradores xmm de 64 bits, o que demonstrou uma gradação mais eficiente a cada tecnologia utilizada.
+{{{
+void CSSE2Surface32Intrinsic::Invert()
+{
+    ULONGLONG mascara = 0xFFFFFFFFFFFFFFFF;		//o valor do pixel sera subtraido dessa mascara
+
+	DWORD *pCur  = (DWORD *)GetPixelAddress(0,0);
+	ULONGLONG pixels12, pixels34;
+
+
+	int height = GetVisibleHeight();
+	while (height--)
+	{
+		int width = m_width;
+		while(width--)
+		{
+			pixels12 = *(ULONGLONG *)pCur;
+			pixels34 = *(ULONGLONG *)(pCur+2);
+
+			__asm {
+
+				movq xmm0, pixels12		// xmm0 recebe 2 pixels em sua metade inferior
+				movhpd xmm0, pixels34	// xmm0 recebe 2 pixels em sua metade superior
+
+				// xmm1 recebe a mascara a ser aplicada em 4 pixels simultaneamente
+				movq  xmm1, mascara
+				movhpd xmm1, mascara
+
+				psubb xmm1, xmm0			// aplica mascara
+
+				movq pixels12, xmm1
+				movhpd pixels34, xmm1
+			}
+
+			// Imprime quatro pixels na tela
+			*(ULONGLONG *)pCur = pixels12;
+			*(ULONGLONG *)(pCur+2) = pixels34;
+
+			pCur += 4;
+		}
+	}
+}
+}}}
+----
+==_Gráfico Comparativo_==
+Pelo gráfico, nota-se o desempenho da tecnologia SSE2 como sendo superior à MMX e Naive, visto que a quantidade de cálculos em paralelo foi dobrando a cada nível de implementação (Naive > MMX > SSE2).<br/>
+http://img842.imageshack.us/img842/1623/benchmarkinvertfilter.png
