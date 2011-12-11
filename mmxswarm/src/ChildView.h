@@ -52,6 +52,7 @@ protected:
 	afx_msg void OnUpdatePauseBlit(CCmdUI* pCmdUI);
 	afx_msg void OnUpdateUseFade(CCmdUI* pCmdUI);
 	afx_msg void OnUpdateUseGray(CCmdUI* pCmdUI);	//Grupo 4
+	afx_msg void OnUpdateUseGradient(CCmdUI* pCmdUI);	//Grupo 8
 	afx_msg void OnUpdateUseSobel(CCmdUI* pCmdUI);//Grupo 5
 	afx_msg void OnUpdateUsePosterize(CCmdUI* pCmdUI);//Grupo 9
 	afx_msg void OnUpdateUseGrayF(CCmdUI* pCmdUI);	//Grupo 12
@@ -71,6 +72,7 @@ protected:
 	afx_msg void OnViewPauseBlit();
 	afx_msg void OnViewUseFade();
 	afx_msg void OnViewUseGray();	//Grupo 4
+	afx_msg void OnViewUseGradient();	//Grupo 8
 	afx_msg void OnViewUseSobel();//Grupo 5
 	afx_msg void OnViewUsePosterize();	//Grupo 9
 	afx_msg void OnViewUseGrayF();	//Grupo 12
@@ -115,6 +117,7 @@ private:
 	bool	m_bPauseBlit;
 	bool	m_bPauseFade;
 	bool	m_bUseGray;  //Grupo 4
+	bool	m_bUseGradient;  //Grupo 8
 	bool	m_bUseSobel;//Grupo 5
 	bool	m_bUsePosterize;//Grupo 9
 	bool	m_bUseGrayF;  //Grupo 12

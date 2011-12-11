@@ -66,6 +66,9 @@ public:
 	 //Grupo 4
 	 virtual void GrayScale();
 
+	 //Grupo 8
+	 virtual void Gradient();
+
 	 //grupo 13
 	 virtual void Threshold();
 

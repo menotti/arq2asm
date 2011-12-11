@@ -44,6 +44,7 @@ BEGIN_MESSAGE_MAP(CChildView, CWnd)
 	ON_COMMAND(ID_VIEW_PAUSE_BLIT, OnViewPauseBlit)
 	ON_COMMAND(ID_VIEW_USE_FADE, OnViewUseFade)
 	ON_COMMAND(ID_VIEW_USE_GRAY, OnViewUseGray)	//Grupo 4
+	ON_COMMAND(ID_VIEW_USE_GRADIENT, OnViewUseGradient)	//Grupo 8
 	ON_COMMAND(ID_VIEW_USE_THRESHOLD, OnViewUseThreshold) //grupo 13
 	ON_COMMAND(ID_VIEW_USE_SOBEL, OnViewUseSobel)//Grupo 5
 	ON_COMMAND(ID_VIEW_USE_POSTERIZE, OnViewUsePosterize)//Grupo 9
@@ -61,6 +62,7 @@ BEGIN_MESSAGE_MAP(CChildView, CWnd)
 	ON_UPDATE_COMMAND_UI(ID_VIEW_PAUSE_BLIT, OnUpdatePauseBlit)
 	ON_UPDATE_COMMAND_UI(ID_VIEW_USE_FADE, OnUpdateUseFade)
 	ON_UPDATE_COMMAND_UI(ID_VIEW_USE_GRAY, OnUpdateUseGray)	//Grupo 4
+	ON_UPDATE_COMMAND_UI(ID_VIEW_USE_GRADIENT, OnUpdateUseGradient)	//Grupo 8
 	ON_UPDATE_COMMAND_UI(ID_VIEW_USE_THRESHOLD, OnUpdateUseThreshold) //grupo 13
 	ON_UPDATE_COMMAND_UI(ID_VIEW_USE_SOBEL, OnUpdateUseSobel)//Grupo 5
 	ON_UPDATE_COMMAND_UI(ID_VIEW_USE_POSTERIZE, OnUpdateUsePosterize)//Grupo 9
@@ -73,6 +75,7 @@ BEGIN_MESSAGE_MAP(CChildView, CWnd)
 	ON_UPDATE_COMMAND_UI(ID_INDICATOR_PAUSE_BLIT, OnUpdatePauseBlit)
 	ON_UPDATE_COMMAND_UI(ID_INDICATOR_USE_FADE, OnUpdateUseFade)
 	ON_UPDATE_COMMAND_UI(ID_INDICATOR_USE_GRAY, OnUpdateUseGray)	//Grupo 4
+	ON_UPDATE_COMMAND_UI(ID_INDICATOR_USE_GRADIENT, OnUpdateUseGradient)	//Grupo 8
 	ON_UPDATE_COMMAND_UI(ID_INDICATOR_USE_THRESHOLD, OnUpdateUseThreshold) //grupo 13
 	ON_UPDATE_COMMAND_UI(ID_INDICATOR_USE_SOBEL, OnUpdateUseSobel) //Grupo 5
 	ON_UPDATE_COMMAND_UI(ID_INDICATOR_USE_GRAYF, OnUpdateUseGrayF)	//Grupo 12
@@ -105,6 +108,7 @@ CChildView::CChildView()
 	m_bPauseBlit = false;
 	m_bPauseFade = false;
 	m_bUseGray = false;	//Grupo 4
+	m_bUseGradient = false;	//Grupo 8
 	m_bUseThreshold = false; //grupo 13
 	m_bUseSobel = false;	//Grupo 5
 	m_bUseGrayF = false;	//Grupo 12
@@ -203,6 +207,7 @@ void CChildView::OnFileOpen()
 		m_bUseGrayF = false;
 		m_bUseSolarize = false;
 		m_bUseThreshold = false;
+		m_bUseGradient = false;
 	}
 }
 
@@ -298,6 +303,12 @@ void CChildView::OnViewUseFade()
 void CChildView::OnViewUseGray()	
 {
 	m_bUseGray = !m_bUseGray;
+}
+
+//Grupo 8
+void CChildView::OnViewUseGradient()	
+{
+	m_bUseGradient = !m_bUseGradient;
 }
 
 //Grupo5
@@ -426,6 +437,14 @@ BOOL CChildView::OnIdle(LONG /*lCount*/)
 	if (m_bUseGray) {
 		m_pSurface->GrayScale();
 		bContinue = TRUE;
+	}
+
+	//Grupo 8
+	if (m_bUseGradient) {
+		m_pSurface->Gradient();
+		bContinue = TRUE;
+		if(!m_bPauseFade)
+			m_bUseGradient = false;
 	}
 
 	//Grupo5
@@ -717,6 +736,19 @@ void CChildView::OnUpdateUseGray(CCmdUI* pCmdUI)
 	else {
 		ASSERT(pCmdUI->m_nID == ID_VIEW_USE_GRAY);
 		pCmdUI->SetCheck(m_bUseGray ? 1 : 0);
+		pCmdUI->Enable(TRUE);
+	}
+}
+
+//Grupo 8
+void CChildView::OnUpdateUseGradient(CCmdUI* pCmdUI)
+{
+	if (pCmdUI->m_nID == ID_INDICATOR_USE_GRADIENT) {
+		pCmdUI->Enable(m_bUseGradient ? FALSE : TRUE);
+	}
+	else {
+		ASSERT(pCmdUI->m_nID == ID_VIEW_USE_GRADIENT);
+		pCmdUI->SetCheck(m_bUseGradient ? 1 : 0);
 		pCmdUI->Enable(TRUE);
 	}
 }
