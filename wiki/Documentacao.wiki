@@ -1581,3 +1581,30 @@ As tomadas da quantidade de frames por segundo que vêm nos gráficos abaixo sur
 ==_Gráfico comparativo_==
 
 http://img580.imageshack.us/img580/8223/chartqs.png
+
+----
+
+= Gradient =
+
+<wiki:comment>
+Gradient Grupo 8
+</wiki:comment>
+
+
+== _Naive_ ==
+
+
+
+== _MMX_ ==
+
+
+
+== _SSE(n)_ ==
+
+
+
+==_Gráfico comparativo_==
+
+
+
+-----
