@@ -1631,7 +1631,7 @@ void CSurface::Gradient()
 
 -----
 
-= ChannelMix Filter =
+= Channel Mix Filter =
 
 <wiki:comment>
 ChannelMix Grupo 11
@@ -1648,8 +1648,8 @@ A mistura dos canais R-G (Y) é colocado no lugar de B,  G-B (C) é colocado em 
 
 ==_Naive_==
 
-Nesta implementação os métodos GetValue() são usados para extrair o valor do sistema CMYK. Estes valores são atribuídos a 3 variáveis (r,g e b) correspondentes ao sistema RGB.
-Por exemplo, o comando  “r = (BYTE)(GetCValue(cCur));” atribui à variável r o valor de C, que é a mistura dos canais G e B.
+Nesta implementação extraimos os valores de cada canal do sistema CMYK. Estes valores são atribuídos a 3 variáveis (r,g e b) correspondentes ao sistema RGB.
+Por exemplo, o comando  "r = (BYTE)(GetCValue(cCur));" atribui à variável r o valor de C, que é a mistura dos canais G e B.
 
 {{{
 void CSurface::ChannelMix()
