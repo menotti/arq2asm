@@ -54,7 +54,7 @@ BEGIN_MESSAGE_MAP(CChildView, CWnd)
 	ON_COMMAND(ID_VIEW_USE_MANDEL, OnViewUseMandel)	//Grupo 6
 	ON_COMMAND(ID_VIEW_USE_SOLARIZE, OnViewUseSolarize)//Grupo 18
 	ON_COMMAND(ID_VIEW_USE_INVERT, OnViewUseInvert)//Grupo 7
-	
+	ON_COMMAND(ID_VIEW_USE_CHANNELMIX, OnViewUseChannelmix) //Grupo 11
 	ON_COMMAND(ID_MODE_WEBCAM, OnModeWebcam) // Grupo 16
 
 	ON_UPDATE_COMMAND_UI(ID_VIEW_PAUSE_BLUR, OnUpdatePauseBlur)
@@ -70,6 +70,7 @@ BEGIN_MESSAGE_MAP(CChildView, CWnd)
 	ON_UPDATE_COMMAND_UI(ID_VIEW_USE_RGBADJUST, OnUpdateUseRGBAdjust)	//Grupo 14
 	ON_UPDATE_COMMAND_UI(ID_VIEW_USE_MASK, OnUpdateUseMask)	//Grupo 15
 	ON_UPDATE_COMMAND_UI(ID_VIEW_USE_SOLARIZE, OnUpdateUseSolarize)//Grupo 18
+	ON_UPDATE_COMMAND_UI(ID_VIEW_USE_CHANNELMIX, OnUpdateUseChannelmix) //Grupo 11
 	ON_UPDATE_COMMAND_UI(ID_INDICATOR_PAUSE_BLUR, OnUpdatePauseBlur)
 	ON_UPDATE_COMMAND_UI(ID_INDICATOR_PAUSE_SWARM, OnUpdatePauseSwarm)
 	ON_UPDATE_COMMAND_UI(ID_INDICATOR_PAUSE_BLIT, OnUpdatePauseBlit)
@@ -85,6 +86,7 @@ BEGIN_MESSAGE_MAP(CChildView, CWnd)
 	ON_UPDATE_COMMAND_UI(ID_INDICATOR_USE_MANDEL, OnUpdateUseMandel)//Grupo 6
 	ON_UPDATE_COMMAND_UI(ID_INDICATOR_USE_SOLARIZE, OnUpdateUseSolarize)//Grupo 18
 	ON_UPDATE_COMMAND_UI(ID_INDICATOR_USE_INVERT, OnUpdateUseInvert)//Grupo 7
+	ON_UPDATE_COMMAND_UI(ID_INDICATOR_USE_CHANNELMIX, OnUpdateUseChannelmix) //Grupo 11
 	ON_UPDATE_COMMAND_UI(ID_INDICATOR_FPS, OnUpdateFPS)
 	ON_UPDATE_COMMAND_UI(ID_INDICATOR_RESOLUTION, OnUpdateResolution)
 	ON_UPDATE_COMMAND_UI(ID_INDICATOR_USE_WEBCAM, OnUpdateModeWebcam) //Grupo 16
@@ -116,6 +118,7 @@ CChildView::CChildView()
 	m_bUseMask = false;	//Grupo 15
 	m_bUsePosterize = false; //Grupo 9
 	m_bUseMandel = false;	//Grupo 6
+	m_bUseChannelmix = false; //Grupo 11
 	m_bTimerPopped = false;
 	m_eSurf = eNone;
 	execSobel = false; //Grupo 5
@@ -208,6 +211,7 @@ void CChildView::OnFileOpen()
 		m_bUseSolarize = false;
 		m_bUseThreshold = false;
 		m_bUseGradient = false;
+		m_bUseChannelmix = false;
 	}
 }
 
@@ -365,6 +369,12 @@ void CChildView::OnViewUseThreshold()
 	m_bUseThreshold = !m_bUseThreshold;
 }
 
+//Grupo 11
+void CChildView::OnViewUseChannelmix()	
+{
+	m_bUseChannelmix = !m_bUseChannelmix;
+}
+
 // Grupo 16
 void CChildView::OnModeWebcam()
 {
@@ -508,6 +518,14 @@ BOOL CChildView::OnIdle(LONG /*lCount*/)
 	if (m_bUseThreshold) {
 		m_pSurface->Threshold();
 		bContinue = TRUE;
+	}
+
+	//Grupo 11
+	if (m_bUseChannelmix) {
+		m_pSurface->ChannelMix();
+		bContinue = TRUE;
+		if(!m_bPauseFade)
+			m_bUseChannelmix = false;
 	}
 
 	if (bContinue) {
@@ -864,6 +882,19 @@ void CChildView::OnUpdateUseThreshold(CCmdUI* pCmdUI)
 	else {
 		ASSERT(pCmdUI->m_nID == ID_VIEW_USE_THRESHOLD);
 		pCmdUI->SetCheck(m_bUseThreshold ? 1 : 0);
+		pCmdUI->Enable(TRUE);
+	}
+}
+
+//Grupo 11
+void CChildView::OnUpdateUseChannelmix(CCmdUI* pCmdUI)
+{
+	if (pCmdUI->m_nID == ID_INDICATOR_USE_CHANNELMIX) {
+		pCmdUI->Enable(m_bUseChannelmix ? FALSE : TRUE);
+	}
+	else {
+		ASSERT(pCmdUI->m_nID == ID_VIEW_USE_CHANNELMIX);
+		pCmdUI->SetCheck(m_bUseChannelmix ? 1 : 0);
 		pCmdUI->Enable(TRUE);
 	}
 }

@@ -61,6 +61,7 @@ protected:
 	afx_msg void OnUpdateUseMandel(CCmdUI* pCmdUI);	//Grupo 6
 	afx_msg void OnUpdateUseSolarize(CCmdUI* pCmdUI);//Grupo 18
 	afx_msg void OnUpdateUseThreshold(CCmdUI* pCmdUI); //grupo 13
+	afx_msg void OnUpdateUseChannelmix(CCmdUI* pCmdUI); //Grupo 11
 	afx_msg void OnUpdateUseInvert(CCmdUI* pCmdUI); //grupo 7
 	afx_msg void OnUpdateModeWebcam(CCmdUI* pCmdUI); //grupo 16
 	afx_msg void OnUpdateResolution(CCmdUI* pCmdUI);
@@ -81,6 +82,7 @@ protected:
 	afx_msg void OnViewUseMandel(); //Grupo 6
 	afx_msg void OnViewUseSolarize();//Grupo 18
 	afx_msg void OnViewUseThreshold(); //grupo 13
+	afx_msg void OnViewUseChannelmix(); //Grupo 11
 	afx_msg void OnViewUseInvert(); //grupo 7
 	afx_msg void OnModeWebcam();	//grupo 16
 	afx_msg void OnImageFormats(UINT nID);
@@ -126,6 +128,7 @@ private:
 	bool	m_bUseMandel; //Grupo 6
 	bool	m_bUseSolarize;//Grupo 18
 	bool m_bUseThreshold; //grupo 13
+	bool m_bUseChannelmix; //Grupo 11
 	bool m_bUseInvert; //grupo 7
 	bool m_bTimerPopped;
 	bool	execSobel;//Grupo 5 - Verifica se executou o Sobel alguma vez quando fadeIn estEoff

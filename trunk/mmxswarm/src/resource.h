@@ -44,6 +44,7 @@
 #define ID_INDICATOR_USE_INVERT			59157 //grupo 7
 #define ID_INDICATOR_USE_WEBCAM			59158 //Grupo 16
 #define ID_INDICATOR_USE_GRADIENT		59159 //Grupo 8
+#define ID_INDICATOR_USE_CHANNELMIX	59160 //Grupo 11
 
 #define ID_VIEW_PAUSE_SWARM             59394
 #define ID_VIEW_PAUSE_BLUR              59395
@@ -60,6 +61,7 @@
 #define ID_VIEW_USE_THRESHOLD           59406 //grupo 13
 #define ID_VIEW_USE_INVERT				59407 //grupo 7
 #define ID_VIEW_USE_GRADIENT			59408 //grupo 8
+#define ID_VIEW_USE_CHANNELMIX		59409	//Grupo11
 
 // Next default values for new objects
 // 

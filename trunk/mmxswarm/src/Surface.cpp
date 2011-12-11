@@ -568,6 +568,25 @@ void CSurface::Threshold()
 	}
 }
 
+//Grupo 11
+void CSurface::ChannelMix()
+{
+	COLORREF cCur;
+	BYTE r, g, b;
+
+	for(int i=0; i < m_wndHeight; i++){
+		for(int j=0; j < m_wndWidth; j++){
+			cCur = PointColor(j,i);
+
+			r = (BYTE)(GetCValue(cCur));
+			g = (BYTE)(GetMValue(cCur));
+			b = (BYTE)(GetYValue(cCur));
+			
+			PointColor(j,i,RGB(b,g,r));
+		}
+	}
+}
+
 
 double CSurface::Sol(double v) {
 	return (v > 0.5) ? (2*(v-0.5)) : (2*(0.5-v));
