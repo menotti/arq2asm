@@ -42,16 +42,21 @@ public:
 
 	 }
 
+	void Import(const CImage &image, const CImage &image2);
+	void ImportStatic(const CImage &image);  //Static Mode - grupo 7
+	
+	//Grupo 5 - Método usado para fazer copiar uma imagem para imagem_m(em exibição)
+	void Copy(const CImage &image);
 	 virtual ~CSurface()
 	 { Destroy(); }
 
 	 void Create(CWnd *pWnd, int nBitDepth); // this is stored internally
 	 void Destroy();
 
-	 void Import(const CImage &image, const CImage &image2);
+	 //void Import(const CImage &image, const CImage &image2);
 
 	 //Grupo 5 - Método usado para fazer copiar uma imagem para imagem_m(em exibição)
-	 void Copy(const CImage &image);
+	 //void Copy(const CImage &image);
 
 	 void ClearBits();
 	 void StripeBits();

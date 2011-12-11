@@ -390,7 +390,7 @@ void CChildView::OnPaint()
 		m_pSurface->BlitBits();
 }
 
-BOOL CChildView::OnIdle(LONG /*lCount*/)
+BOOL CChildView::OnIdle(LONG)  //1Count
 {
 	BOOL bContinue = FALSE;
 	if (m_pSurface == NULL)
@@ -949,7 +949,7 @@ void CChildView::OnUpdateImageFormats(CCmdUI* pCmdUI)
 	pCmdUI->Enable(bEnable);
 }
 
-BOOL CChildView::OnEraseBkgnd(CDC* /*pDC*/)
+BOOL CChildView::OnEraseBkgnd(CDC*)  //pDC
 {
 	return(TRUE);
 }

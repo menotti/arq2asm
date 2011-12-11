@@ -89,16 +89,19 @@ void CSurface::Destroy()
 
 void CSurface::Import(const CImage &image, const CImage &image2)
 {
-	image2.BitBlt(m_image.GetDC(), 0, m_kDeltaY, 
-		GetVisibleWidth(), GetVisibleHeight(), 0, 0);
+	image2.BitBlt(m_image.GetDC(), 0, m_kDeltaY, GetVisibleWidth(), GetVisibleHeight(), 0, 0);
 	m_image.ReleaseDC();
-	image2.BitBlt(n_image.GetDC(), 0, m_kDeltaY, 
-		GetVisibleWidth(), GetVisibleHeight(), 0, 0);
+	image2.BitBlt(n_image.GetDC(), 0, m_kDeltaY, GetVisibleWidth(), GetVisibleHeight(), 0, 0);
 	n_image.ReleaseDC();
-	image.BitBlt(o_image.GetDC(), 0, m_kDeltaY, 
-		GetVisibleWidth(), GetVisibleHeight(), 0, 0);
+	image.BitBlt(o_image.GetDC(), 0, m_kDeltaY, GetVisibleWidth(), GetVisibleHeight(), 0, 0);
 	o_image.ReleaseDC();
 	BlitBits();
+}
+void CSurface::ImportStatic(const CImage &image)  //import para abrir 1 unica imagem
+{
+    image.BitBlt(o_image.GetDC(), 0, m_kDeltaY, GetVisibleWidth(), GetVisibleHeight(), 0, 0);
+    o_image.ReleaseDC();
+    BlitBits();
 }
 
 void CSurface::ClearBits()
@@ -471,8 +474,8 @@ void CSurface::RandomLine(COLORREF c)
 void CSurface::BlitBits()
 {
 	ASSERT(m_wndHeight && m_wndWidth);
-	BOOL bStat = m_image.BitBlt(m_hDestDC, 0, 0, 
-		m_wndWidth, m_wndHeight, 0, m_kDeltaY);
+     BOOL bStat = m_image.BitBlt(m_hDestDC, 0, 0, 
+     m_wndWidth, m_wndHeight, 0, m_kDeltaY);
 
 	ASSERT(bStat);
 }
