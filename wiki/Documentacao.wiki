@@ -1584,7 +1584,7 @@ http://img580.imageshack.us/img580/8223/chartqs.png
 
 ----
 
-= Gradient Filter =
+= Gradient =
 
 <wiki:comment>
 Gradient Grupo 8
@@ -1593,27 +1593,7 @@ Gradient Grupo 8
 
 == _Naive_ ==
 
-{{{
-void CSurface::Gradient()
-{
-	COLORREF cCur;		//declara um dword
-	BYTE r, g, b;		//variáveis tipo byte que receberão os valores RGB
 
-	//realiza um loop dentro do outro para percorrer a tela inteira
-	for (int i = 0; i < m_wndHeight; i++) {
-		for (int j = 0; j < m_wndWidth; j++) {
-			cCur = PointColor(j,i);		//pega um pixel da tela da posição [i,j]	
-			
-			r = ((BYTE)(GetRValue(cCur)) + i/2) > 255 ? 255 :(BYTE)(GetRValue(cCur)) + i/2;
-			g = ((BYTE)(GetGValue(cCur)) + i/2) > 255 ? 255 :(BYTE)(GetGValue(cCur)) + i/2;
-			b = ((BYTE)(GetBValue(cCur)) + i/2) > 255 ? 255 :(BYTE)(GetBValue(cCur)) + i/2;
-
-			PointColor(j,i,RGB(b,g,r));		//reescreve na tela o pixel do valores RGB modificados na posição [i,j]
-		}
-	}
-}
-
-}}}
 
 == _MMX_ ==
 
@@ -1626,5 +1606,52 @@ void CSurface::Gradient()
 ==_Gráfico comparativo_==
 
 
+-----
+
+= ChannelMix Filter =
+
+<wiki:comment>
+ChannelMix Grupo 11
+</wiki:comment>
+
+O filtro Channel Mix pode ser definido como a mistura dos canais RGB de uma imagem. Neste filtro, cada canal recebe a mistura dos outros dois canais, alterando as cores finais da imagem.
+Para obter a mistura de dois canais, extraímos o valor de outro sistema de cores, o CMYK, onde C (Cyan) é a mistura dos canais G e B (Green e Blue), M (Magenta) é a mistura dos canais B e R (Blue e Red) e Y (Yellow) é a mistura dos canais R e G (Red e Green).
+A imagem abaixo ajuda a compreender as alterações feitas.
+
+http://www.rpdesigner.com.br/wp-content/uploads/2011/03/rgb-vs-cmyk-comparacao.jpg
+
+Resumidamente, o processo ocorre de tal maneira:
+A mistura dos canais R-G (Y) é colocado no lugar de B,  G-B (C) é colocado em R e B-R (M) é colocado em G.
+
+==_Naive_==
+
+Nesta implementação os métodos GetValue() são usados para extrair o valor do sistema CMYK. Estes valores são atribuídos a 3 variáveis (r,g e b) correspondentes ao sistema RGB.
+Por exemplo, o comando  “r = (BYTE)(GetCValue(cCur));” atribui à variável r o valor de C, que é a mistura dos canais G e B.
+
+{{{
+void CSurface::ChannelMix()
+{
+	COLORREF cCur;
+	BYTE r, g, b;
+
+	for(int i=0; i < m_wndHeight; i++){
+		for(int j=0; j < m_wndWidth; j++){
+			cCur = PointColor(j,i);
+
+			r = (BYTE)(GetCValue(cCur));
+			g = (BYTE)(GetMValue(cCur));
+			b = (BYTE)(GetYValue(cCur));
+			
+			PointColor(j,i,RGB(b,g,r));
+		}
+	}
+}
+}}}
+
+
+==_MMX_==
+
+
+==_SSE(n)_==
 
 -----
