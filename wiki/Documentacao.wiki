@@ -1700,10 +1700,6 @@ void CMMXSurface32Intrinsic::Gradient()
 == _SSE(n)_ ==
 
 
-
-==_Gráfico comparativo_==
-
-
 -----
 
 = Channel Mix Filter =
