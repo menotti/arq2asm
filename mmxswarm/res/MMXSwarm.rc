@@ -159,6 +159,7 @@
 	MENUITEM "Use &Threshold\tK",           ID_VIEW_USE_THRESHOLD //grupo 13
 	MENUITEM "Use &Invert\tY",              ID_VIEW_USE_INVERT //grupo 7
 	MENUITEM "Use &Gradient\tD",            ID_VIEW_USE_GRADIENT //grupo 8
+	MENUITEM "Use &ChannelMix\tAlt+C"		ID_VIEW_USE_CHANNELMIX //grupo 11
 	END
 	POPUP "&Mode"
 	BEGIN
@@ -205,6 +206,7 @@
 	"L",            ID_VIEW_USE_SOLARIZE,	VIRTKEY, NOINVERT//Grupo 18
 	"K",            ID_VIEW_USE_THRESHOLD,    VIRTKEY, NOINVERT//grupo 13
 	"Y",            ID_VIEW_USE_INVERT,    VIRTKEY, NOINVERT//grupo 7
+	"C",			ID_VIEW_USE_CHANNELMIX,	VIRTKEY, ALT, NOINVERT //Grupo 11
 	"S",		ID_STATIC_MODE,	VIRTKEY, CONTROL, NOINVERT  //atalho para Static Mode
 	END
 

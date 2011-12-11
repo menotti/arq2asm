@@ -72,6 +72,9 @@ public:
 	 //grupo 13
 	 virtual void Threshold();
 
+	 //Grupo 11
+	virtual void ChannelMix();
+
 	 //Grupo 5
 	 virtual void Sobel(); // neste método está a implementação do Sobel
 
