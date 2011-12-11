@@ -1584,16 +1584,26 @@ http://img580.imageshack.us/img580/8223/chartqs.png
 
 ----
 
-= Gradient =
+= Gradient Filter =
 
 <wiki:comment>
-Gradient Grupo 8
+Gradient Filter Grupo 8
 </wiki:comment>
 
+O Filtro Gradiente pode escurecer ou clarear uma parte da imagem (de forma gradiente e não completamente), dependendo da implementação feita.  Esse filtro tem como objetivo alterar a variação da luz na imagem, sendo que a transformação aplicada depende sempre da luminosidade no objeto, e assim o filtro pode ser aplicado de forma coerente.
+No início do século XX, o filtro gradiente era muito utilizado, por exemplo, para escurecer céus em fotos de paisagens, como na imagem abaixo.
+
+http://img819.imageshack.us/img819/359/gradientdark.jpg
+
+Na foto acima é possível verificar a forte diferença de luminosidade entre o céu e a terra, e quando foi tirada, o céu se encontrava nublado e não havia sol. Para esse exemplo o filtro escureceu a imagem e foi utilizado 2 vezes consecutivas
+
+Em nossas implementações foi utilizado o gradiente que clareia a imagem, somando o valor RGB pela sua metade atual, e foram feitas nas versões “Naive”, “MMX” e “SSE(n)”. A foto abaixo ilustra, oque acontece quando o filtro é aplicado.
+
+http://img806.imageshack.us/img806/3876/clearing.png
 
 == _Naive_ ==
 
-Na implementação Naive,  o valor de cada pixel é somado com a metade do valor obtido na posição atual do pixel para todos os valores de R (GetRValue(cCur)) + i/2), G (GetGValue(cCur)) + i/2)  e B (GetBValue(cCur)) + i/2). 
+Na implementação Naive,  o valor de cada pixel é somado com a metade do valor obtido na posição atual do pixel para todos os valores de R (GetRValue(cCur)) + i/2), G (GetGValue(cCur)) + i/2)  e B (GetBValue(cCur)) + i/2) e caso a soma ultrapasse 255, o valor 255 é aplicado. 
 
 {{{
 void CSurface::Gradient()
