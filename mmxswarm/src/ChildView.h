@@ -64,6 +64,7 @@ protected:
 	afx_msg void OnUpdateUseChannelmix(CCmdUI* pCmdUI); //Grupo 11
 	afx_msg void OnUpdateUseInvert(CCmdUI* pCmdUI); //grupo 7
 	afx_msg void OnUpdateModeWebcam(CCmdUI* pCmdUI); //grupo 16
+	afx_msg void OnUpdateUseRescale(CCmdUI* pCmdUI); //grupo 17
 	afx_msg void OnUpdateResolution(CCmdUI* pCmdUI);
 	afx_msg void OnUpdateImageFormats(CCmdUI* pCmdUI);
 	afx_msg void OnFileOpen();
@@ -86,6 +87,7 @@ protected:
 	afx_msg void OnViewUseChannelmix(); //Grupo 11
 	afx_msg void OnViewUseInvert(); //grupo 7
 	afx_msg void OnModeWebcam();	//grupo 16
+	afx_msg void OnViewUseRescale(); //grupo 17
 	afx_msg void OnImageFormats(UINT nID);
 	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
 	//}}AFX_MSG
@@ -136,6 +138,7 @@ private:
 	bool	execGray; //grupo 12
 	bool m_bUseStatic; //STATIC MODE - grupo 7
 	bool m_bUseWebcam;	// Grupo 16
+	bool m_bUseRescale;  // Grupo 17
 
 	static const UINT_PTR m_kTimerID = 31;
 	static const UINT m_kTimerDelay = 1500;

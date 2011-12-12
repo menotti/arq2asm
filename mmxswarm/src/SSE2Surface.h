@@ -24,6 +24,7 @@ public:
 	virtual void RGBAdjust(); // grupo 14
 	virtual void Mask();	// Grupo 15
 	virtual void Invert(); //GRUPO 7
+	virtual void Rescale(); //grupo 17
 protected:
 	virtual void OnCreated();
 private:

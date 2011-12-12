@@ -28,6 +28,7 @@ public:
 	virtual void Solarize();	// Grupo 18
 	virtual void Gradient();	//Grupo 8
 	virtual void MandelBrot();
+	virtual void Rescale();      // grupo 17
 protected:
 	virtual void OnCreated();
 private:
