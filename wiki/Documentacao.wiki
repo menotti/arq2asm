@@ -1863,3 +1863,29 @@ void CSSE2Surface32Intrinsic::Invert()
 ==_Gráfico Comparativo_==
 Pelo gráfico, nota-se o desempenho da tecnologia SSE2 como sendo superior à MMX e Naive, visto que a quantidade de cálculos em paralelo foi dobrando a cada nível de implementação (Naive > MMX > SSE2).<br/>
 http://img842.imageshack.us/img842/1623/benchmarkinvertfilter.png
+
+= Rescale Filter =
+
+<wiki:comment>
+Rescale Filter Grupo 17
+</wiki:comment>
+
+Descrição...........
+
+A seguir estão os códigos, todos implementados na versão 32 bits.
+
+== _Naive_ ==
+
+
+
+== _MMX_ ==
+
+
+== _SSE2_ ==
+
+
+==_Gráfico comparativo_==
+
+http://imageshack.us/photo/my-images/337/graficocomparativo.jpg/
+
+----
