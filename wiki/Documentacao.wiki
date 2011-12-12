@@ -1896,10 +1896,8 @@ Gray Filter - Grupo 12
 </wiki:comment>
 
 Este filtro produz um efeito “desabilitado” na imagem, o que por vezes
-resulta em umaversão “acinzentada” da mesma.
-Figuras abaixo: imagem antes e depois da aplicação do filtro Gray.
+resulta em uma versão “acinzentada” da mesma.
 ----
-
 ==_Exemplo de aplicação_==
 Temos abaixo, a imagem original, sem efeitos aplicados:
 
