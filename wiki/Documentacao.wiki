@@ -1895,7 +1895,9 @@ http://img35.imageshack.us/img35/1246/graficocomparativo.jpg
 Gray Filter - Grupo 12
 </wiki:comment>
 
-Esse filtro produz um efeito “desabilitado” para a imagem, ou como diz o nome do filtro, uma versão “acinzentada” da imagem. Abaixo segue a comparação de uma imagem com a aplicação do GrayFilter.
+Este filtro produz um efeito “desabilitado” na imagem, o que por vezes
+resulta em umaversão “acinzentada” da mesma.
+Figuras abaixo: imagem antes e depois da aplicação do filtro Gray.
 ----
 
 ==_Exemplo de aplicação_==
