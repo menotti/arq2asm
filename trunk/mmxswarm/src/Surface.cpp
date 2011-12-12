@@ -608,3 +608,23 @@ void CSurface::Invert(){
 		}
 	}
 }
+
+//Grupo 17
+void CSurface::Rescale() {
+	COLORREF cCur;
+	int r,g,b;
+	for(int i = 0; i< m_wndHeight;i++) {
+		for(int j = 0; j < m_wndWidth; j++) {
+		
+					cCur = PointColor (j,i);   
+					r = GetRValue(cCur)*2;		// Multiplica as 3 componentes das cores por 2
+					g = GetGValue(cCur)*2;
+					b = GetBValue(cCur)*2;
+					if(r>255) r = 255;			// Estabelece a cor branca como teto, evitando wrap around
+					if(g>255) g = 255;
+					if(b>255) b = 255;
+					PointColor(j,i,RGB(b,g,r)); // Atualiza o pixel com a nova cor
+
+		}
+	}
+}

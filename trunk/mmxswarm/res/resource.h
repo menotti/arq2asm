@@ -45,6 +45,7 @@
 #define ID_INDICATOR_USE_WEBCAM         59158
 #define ID_INDICATOR_USE_GRADIENT       59159
 #define ID_INDICATOR_USE_CHANNELMIX     59160
+#define ID_INDICATOR_USE_RESCALE		59161
 #define ID_VIEW_PAUSE_SWARM             59394
 #define ID_VIEW_PAUSE_BLUR              59395
 #define ID_VIEW_PAUSE_BLIT              59396
@@ -64,6 +65,7 @@
 #define ID_MODE_IMAGE                   59410
 #define ID_MODE_FADE                    59411
 #define ID_MODE_SWARM                   59412
+#define ID_VIEW_USE_RESCALE				59413
 
 // Next default values for new objects
 // 

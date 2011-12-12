@@ -580,5 +580,58 @@ void CMMXSurface32Intrinsic::MandelBrot()
 
 }
 
+//Grupo 17
+void CMMXSurface32Intrinsic::Rescale()
+{
+	int height = GetVisibleHeight()*2;
+	DWORD *pCur  = (DWORD *)GetPixelAddress(0,0);
+	ULONGLONG mascara = 0xFF;
+	ULONGLONG pixel;
+	ULONGLONG next;
+
+	pixel = *(ULONGLONG *)pCur;
+	do
+	{
+		int width = m_width;
+		do
+		{
+			next = *(ULONGLONG *)(pCur+1);
+			__asm
+			{
+				movq mm0, pixel		//mm0 = pixel atual
+				pand mm0, mascara	//mm0 = a componente 'B'
+				pxor mm5, mm5
+				paddusb mm0, mm0	//adiciona a si próprio (multiplica por 2)
+
+
+				movq mm1, pixel		//mm0 = pixel, novamente
+				psrlq mm1, 8		//shift à direita para pegar a componente 'G' do pixel
+				pand mm1, mascara
+				paddusb mm1, mm1	//adiciona a si próprio (multiplica por 2)
+
+				movq mm2, pixel
+				psrlq mm2, 16		//mm0 = a componente 'R'
+				pand mm2, mascara
+				paddusb mm2, mm2	//adiciona a si próprio (multiplica por 2)
+
+				movq mm3, pixel		//mm3 = pixel
+
+				pxor mm4, mm4       //garante que o registrador mm4 esta vazio
+				paddd mm4, mm3      //adiciona o canal alpha ao mm4
+				psllq mm4, 8        //shift para o proximo byte
+				paddd mm4, mm2      //copia o canal R (mm2) para mm4
+				psllq mm4, 8		//um shift para esquerda em 1 byte
+				paddd mm4, mm1		//copia o canal G (mm1) para mm4
+				psllq mm4, 8		//novamente um shift para esquerda em 1 byte
+				paddd mm4, mm0		//copia o canal B (mm0) para mm4
+				movq pixel, mm4
+				}
+			*(ULONGLONG *)pCur = pixel;		//joga o resultado no ponto apontado da tela
+			pixel = next;					//recebe o próximo pixel a ser processado
+			pCur++;							//avança o ponteiro sobre a tela
+		} while (--width > 0);
+	} while (--height > 0);
+
+}
 
  

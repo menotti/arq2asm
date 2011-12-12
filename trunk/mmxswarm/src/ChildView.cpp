@@ -56,6 +56,8 @@ BEGIN_MESSAGE_MAP(CChildView, CWnd)
 	ON_COMMAND(ID_VIEW_USE_INVERT, OnViewUseInvert)//Grupo 7
 	ON_COMMAND(ID_VIEW_USE_CHANNELMIX, OnViewUseChannelmix) //Grupo 11
 	ON_COMMAND(ID_MODE_WEBCAM, OnModeWebcam) // Grupo 16
+	ON_COMMAND(ID_VIEW_USE_RESCALE, OnViewUseRescale)//Grupo 17
+	
 
 	ON_UPDATE_COMMAND_UI(ID_VIEW_PAUSE_BLUR, OnUpdatePauseBlur)
 	ON_UPDATE_COMMAND_UI(ID_VIEW_PAUSE_SWARM, OnUpdatePauseSwarm)
@@ -70,6 +72,7 @@ BEGIN_MESSAGE_MAP(CChildView, CWnd)
 	ON_UPDATE_COMMAND_UI(ID_VIEW_USE_RGBADJUST, OnUpdateUseRGBAdjust)	//Grupo 14
 	ON_UPDATE_COMMAND_UI(ID_VIEW_USE_MASK, OnUpdateUseMask)	//Grupo 15
 	ON_UPDATE_COMMAND_UI(ID_VIEW_USE_SOLARIZE, OnUpdateUseSolarize)//Grupo 18
+	ON_UPDATE_COMMAND_UI(ID_VIEW_USE_RESCALE, OnUpdateUseRescale)//Grupo 17
 	ON_UPDATE_COMMAND_UI(ID_VIEW_USE_CHANNELMIX, OnUpdateUseChannelmix) //Grupo 11
 	ON_UPDATE_COMMAND_UI(ID_INDICATOR_PAUSE_BLUR, OnUpdatePauseBlur)
 	ON_UPDATE_COMMAND_UI(ID_INDICATOR_PAUSE_SWARM, OnUpdatePauseSwarm)
@@ -85,11 +88,13 @@ BEGIN_MESSAGE_MAP(CChildView, CWnd)
 	ON_UPDATE_COMMAND_UI(ID_INDICATOR_USE_POSTERIZE, OnUpdateUsePosterize)//Grupo 9
 	ON_UPDATE_COMMAND_UI(ID_INDICATOR_USE_MANDEL, OnUpdateUseMandel)//Grupo 6
 	ON_UPDATE_COMMAND_UI(ID_INDICATOR_USE_SOLARIZE, OnUpdateUseSolarize)//Grupo 18
+	ON_UPDATE_COMMAND_UI(ID_INDICATOR_USE_RESCALE, OnUpdateUseRescale)//Grupo 17
 	ON_UPDATE_COMMAND_UI(ID_INDICATOR_USE_INVERT, OnUpdateUseInvert)//Grupo 7
 	ON_UPDATE_COMMAND_UI(ID_INDICATOR_USE_CHANNELMIX, OnUpdateUseChannelmix) //Grupo 11
 	ON_UPDATE_COMMAND_UI(ID_INDICATOR_FPS, OnUpdateFPS)
 	ON_UPDATE_COMMAND_UI(ID_INDICATOR_RESOLUTION, OnUpdateResolution)
 	ON_UPDATE_COMMAND_UI(ID_INDICATOR_USE_WEBCAM, OnUpdateModeWebcam) //Grupo 16
+	
 
 	ON_COMMAND_RANGE(IDD_16BIT_MMXINTRINSICS, IDD_32BIT_GENERICCBLUR, OnImageFormats)
 	ON_UPDATE_COMMAND_UI_RANGE(IDD_16BIT_MMXINTRINSICS, IDD_32BIT_GENERICCBLUR, OnUpdateImageFormats)
@@ -126,6 +131,7 @@ CChildView::CChildView()
 	m_bUseSolarize = false; // Grupo 18
 	m_bUseInvert = false;  //GRUPO 7
 	m_bUseWebcam = false;	// Grupo 16
+	m_bUseRescale = false;  //GRUPO 17
 }
 
 CChildView::~CChildView()
@@ -212,6 +218,7 @@ void CChildView::OnFileOpen()
 		m_bUseThreshold = false;
 		m_bUseGradient = false;
 		m_bUseChannelmix = false;
+		m_bUseRescale = false;
 	}
 }
 
@@ -381,6 +388,11 @@ void CChildView::OnModeWebcam()
 	m_bUseWebcam = !m_bUseWebcam;
 }
 
+//Grupo 17
+void CChildView::OnViewUseRescale(){
+	m_bUseRescale = !m_bUseRescale;
+}
+
 
 void CChildView::OnPaint() 
 {
@@ -518,6 +530,14 @@ BOOL CChildView::OnIdle(LONG)  //1Count
 	if (m_bUseThreshold) {
 		m_pSurface->Threshold();
 		bContinue = TRUE;
+	}
+
+	//Grupo 17
+	if (m_bUseRescale) {
+		m_pSurface->Rescale();
+		bContinue = TRUE;
+		if(!m_bPauseFade)
+			m_bUseRescale = false;
 	}
 
 	//Grupo 11
@@ -908,6 +928,19 @@ void CChildView::OnUpdateModeWebcam(CCmdUI* pCmdUI)
 	else {
 		ASSERT(pCmdUI->m_nID == ID_MODE_WEBCAM);
 		pCmdUI->SetCheck(m_bUseWebcam ? 1 : 0);
+		pCmdUI->Enable(TRUE);
+	}
+}
+
+//Grupo 17
+void CChildView::OnUpdateUseRescale(CCmdUI *pCmdUI)
+{
+	if (pCmdUI->m_nID == ID_INDICATOR_USE_RESCALE) {
+		pCmdUI->Enable(m_bUseRescale ? FALSE : TRUE);
+	}
+	else {
+		ASSERT(pCmdUI->m_nID == ID_VIEW_USE_RESCALE);
+		pCmdUI->SetCheck(m_bUseRescale ? 1 : 0);
 		pCmdUI->Enable(TRUE);
 	}
 }
