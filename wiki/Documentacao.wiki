@@ -1886,6 +1886,6 @@ A seguir estão os códigos, todos implementados na versão 32 bits.
 
 ==_Gráfico comparativo_==
 
-http://imageshack.us/photo/my-images/337/graficocomparativo.jpg/
+http://img196.imageshack.us/img196/1246/graficocomparativo.jpg
 
 ----
