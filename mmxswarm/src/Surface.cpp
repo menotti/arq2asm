@@ -347,6 +347,7 @@ void CSurface::Mask()
 }
 
 //Grupo 6
+//Função que gera o Mandelbrot
 int CSurface::CAL_PIXEL(Complex c)
 {
 	int count, max;
@@ -356,7 +357,7 @@ int CSurface::CAL_PIXEL(Complex c)
 	z.real = 0;
 	z.imag = 0;
 	count = 0;
-
+	//Equação do Mandelbrot
 	do
 	{
 		temp = z.real * z.real - z.imag * z.imag + c.real;
@@ -373,30 +374,25 @@ void CSurface::MandelBrot()
 {
 	BYTE r,g,b;
 	Complex c1;
-	float real_min = -2, real_max = 2;
-	float imag_min = -2, imag_max = 2;
-	int disp_width = m_wndWidth, disp_heigth = m_wndHeight;
-	int x = 1 ,y = 1;
+	float real_min = -2, real_max = 2; //Variáveis para o tamanho max e min da parte real
+	float imag_min = -2, imag_max = 2; //Variáveis para o tamanho max e min da parte imaginária
+	int disp_width = m_wndWidth, disp_heigth = m_wndHeight; //Tamanho da tela
+	int x,y;
 	int color1;
-	float scale_real, scale_imag;
-
-	c1.real = real_min + x * (real_max - real_min)/disp_width;
-	c1.imag = imag_min + y * (imag_max - imag_min)/disp_heigth;
-
-	scale_real = (real_max - real_min)/disp_width;
-	scale_imag = (imag_max - imag_min)/disp_heigth;
 
 	for(x = 0; x < disp_width; x++)
 	{
 		for(y = 0; y < disp_heigth; y++)
 		{
-			c1.real = real_min + ((float) x * scale_real);
-			c1.imag = imag_min + ((float) y * scale_imag);
+			//Calcula o valor do número complexo c para que caiba na tela
+			c1.real = real_min + ((float) x * ((real_max - real_min)/disp_width));
+			c1.imag = imag_min + ((float) y * ((imag_max - imag_min)/disp_heigth));
+			//Função CAL_PIXEL gera o formato do Mandelbrot, em função da cor.
 			color1 = CAL_PIXEL(c1);
-			r = (BYTE)((color1));
-			g = (BYTE)((color1)); 
-			b = (BYTE)((color1));
-			PointColor(x,y,RGB(r,g,b));
+			r = (BYTE)(0);
+			g = (BYTE)(0); 
+			b = (BYTE)(color1);
+			PointColor(x,y,RGB(b,g,r));
 		}
 	}
 }

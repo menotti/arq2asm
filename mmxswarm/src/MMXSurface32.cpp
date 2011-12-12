@@ -574,3 +574,11 @@ POSITIVO:
 			pCur++;
 		}
 }
+
+void CMMXSurface32Intrinsic::MandelBrot()
+{
+
+}
+
+
+ 

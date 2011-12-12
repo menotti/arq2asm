@@ -16,6 +16,7 @@
 template<class T> T ABS(T x) { return(x < 0 ? -x : x); }
 
 //Grupo 6
+//Struct para criação de número complexo.
 typedef struct{
 	float real;
 	float imag;

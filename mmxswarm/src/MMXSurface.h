@@ -27,6 +27,7 @@ public:
 	virtual void Invert();   //GRUPO 7
 	virtual void Solarize();	// Grupo 18
 	virtual void Gradient();	//Grupo 8
+	virtual void MandelBrot();
 protected:
 	virtual void OnCreated();
 private:
