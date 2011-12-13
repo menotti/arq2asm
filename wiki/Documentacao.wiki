@@ -2315,4 +2315,35 @@ Pudemos observar que no caso do nosso efeito, a versão MMX não nos deu ganho s
 O gráfico abaixo nos mostra o desempenho das versões para resolução da tela em 320x240:<br/>
 http://img97.imageshack.us/img97/8538/chart1.png
 
+
+
 ----
+
+= Sepia =
+<wiki:comment>
+Grupo 19
+Implementar e descrever as nas versões Normal, MMX e SSE.
+</wiki:comment>
+
+Este filtro reproduz o aspecto marron-avermelhado de fotos antigas. Raramente utilizado em vídeo, uma vez que o mesmo efeito está disponível na maioria das câmeras em seu conjunto de efeitos especiais, criados eletronicamente e acessados geralmente através de menus.
+
+
+http://www.correctmyphotos.com/wp-content/uploads/2010/02/Tree-CP-sepia-BA550.jpg
+
+
+
+
+==_Naive_==
+
+
+
+
+
+
+==_MMX_==
+
+
+
+==_SSE(n)_==
+
+-----
