@@ -2623,7 +2623,8 @@ void CSSE2Surface32Intrinsic::Invert()
 ----
 ==_Gráfico Comparativo_==
 Pelo gráfico, nota-se o desempenho da tecnologia SSE2 como sendo superior à MMX e Naive, visto que a quantidade de cálculos em paralelo foi dobrando a cada nível de implementação (Naive > MMX > SSE2).<br/>
-http://img842.imageshack.us/img842/1623/benchmarkinvertfilter.png
+
+http://img705.imageshack.us/img705/1984/chartaz.png
 
 ----
 
