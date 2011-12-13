@@ -878,15 +878,31 @@ void CSurface::Sobel()
 
 O filtro azular deixa a imagem em tons de azul. Calculando o valor da média do RGB de um pixel, para então atribuir o valor da média ao B e zerar os valores de RGB.
 
+= Naive =
+
+= MMX =
+
+= SSE =
+
 == Esverdear ==
 
 O filtro esverdar deixa a imagem em tons de verde. Calculando o valor da média do RGB de um pixel, para então atribuir o valor da média ao G e zerar os valores de RGB.
+
+= Naive =
+
+= MMX =
+
+= SSE =
 
 == Envermelhar ==
 
 O filtro envermelhar deixa a imagem em tons de vermelho. Calculando o valor da média do RGB de um pixel, para então atribuir o valor da média ao B e zerar os valores de RGB.
 
+= Naive =
 
+= MMX =
+
+= SSE =
 
 == Posterize Filter ==
 
