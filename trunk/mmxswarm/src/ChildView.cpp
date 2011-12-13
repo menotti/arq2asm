@@ -60,6 +60,7 @@ BEGIN_MESSAGE_MAP(CChildView, CWnd)
 	ON_COMMAND(ID_VIEW_USE_CHANNELMIX, OnViewUseChannelmix) //Grupo 11
 	ON_COMMAND(ID_MODE_WEBCAM, OnModeWebcam) // Grupo 16
 	ON_COMMAND(ID_VIEW_USE_RESCALE, OnViewUseRescale)//Grupo 17
+	ON_COMMAND(ID_VIEW_USE_MIRROR, OnViewUseMirror)//Grupo 18
 	
 
 	ON_UPDATE_COMMAND_UI(ID_VIEW_PAUSE_BLUR, OnUpdatePauseBlur)
@@ -80,6 +81,7 @@ BEGIN_MESSAGE_MAP(CChildView, CWnd)
 	ON_UPDATE_COMMAND_UI(ID_VIEW_USE_SOLARIZE, OnUpdateUseSolarize)//Grupo 18
 	ON_UPDATE_COMMAND_UI(ID_VIEW_USE_RESCALE, OnUpdateUseRescale)//Grupo 17
 	ON_UPDATE_COMMAND_UI(ID_VIEW_USE_CHANNELMIX, OnUpdateUseChannelmix) //Grupo 11
+	ON_UPDATE_COMMAND_UI(ID_VIEW_USE_MIRROR, OnUpdateUseMirror)//Grupo 18
 	ON_UPDATE_COMMAND_UI(ID_INDICATOR_PAUSE_BLUR, OnUpdatePauseBlur)
 	ON_UPDATE_COMMAND_UI(ID_INDICATOR_PAUSE_SWARM, OnUpdatePauseSwarm)
 	ON_UPDATE_COMMAND_UI(ID_INDICATOR_PAUSE_BLIT, OnUpdatePauseBlit)
@@ -100,6 +102,7 @@ BEGIN_MESSAGE_MAP(CChildView, CWnd)
 	ON_UPDATE_COMMAND_UI(ID_INDICATOR_USE_RESCALE, OnUpdateUseRescale)//Grupo 17
 	ON_UPDATE_COMMAND_UI(ID_INDICATOR_USE_INVERT, OnUpdateUseInvert)//Grupo 7
 	ON_UPDATE_COMMAND_UI(ID_INDICATOR_USE_CHANNELMIX, OnUpdateUseChannelmix) //Grupo 11
+	ON_UPDATE_COMMAND_UI(ID_INDICATOR_USE_MIRROR, OnUpdateUseMirror) //Grupo 18
 	ON_UPDATE_COMMAND_UI(ID_INDICATOR_FPS, OnUpdateFPS)
 	ON_UPDATE_COMMAND_UI(ID_INDICATOR_RESOLUTION, OnUpdateResolution)
 	ON_UPDATE_COMMAND_UI(ID_INDICATOR_USE_WEBCAM, OnUpdateModeWebcam) //Grupo 16
@@ -143,6 +146,7 @@ CChildView::CChildView()
 	execSobel = false; //Grupo 5
 	execGray = false; //grupo 12
 	m_bUseSolarize = false; // Grupo 18
+	m_bUseMirror = false; // Grupo 18
 	m_bUseInvert = false;  //GRUPO 7
 	m_bUseWebcam = false;	// Grupo 16
 	m_bUseRescale = false;  //GRUPO 17
@@ -236,6 +240,7 @@ void CChildView::OnFileOpen()
 		m_bUseGradient = false;
 		m_bUseChannelmix = false;
 		m_bUseRescale = false;
+		m_bUseMirror = false;
 	}
 }
 
@@ -403,6 +408,11 @@ void CChildView::OnViewUseMandel()
 //Grupo 18
 void CChildView::OnViewUseSolarize(){
 	m_bUseSolarize = !m_bUseSolarize;
+}
+
+//Grupo 18
+void CChildView::OnViewUseMirror(){
+	m_bUseMirror = !m_bUseMirror;
 }
 
 //grupo 13
@@ -580,6 +590,14 @@ BOOL CChildView::OnIdle(LONG)  //1Count
 		bContinue = TRUE;
 		if(!m_bPauseFade)
 			m_bUseSolarize = false;
+	}
+	
+	//Grupo 18
+	if (m_bUseMirror) {
+		m_pSurface->Mirror();
+		bContinue = TRUE;
+		if(!m_bPauseFade)
+			m_bUseMirror = false;
 	}
 
 	//grupo 13
@@ -985,6 +1003,19 @@ void CChildView::OnUpdateUseSolarize(CCmdUI *pCmdUI)
 	else {
 		ASSERT(pCmdUI->m_nID == ID_VIEW_USE_SOLARIZE);
 		pCmdUI->SetCheck(m_bUseSolarize ? 1 : 0);
+		pCmdUI->Enable(TRUE);
+	}
+}
+
+//Grupo 18
+void CChildView::OnUpdateUseMirror(CCmdUI *pCmdUI)
+{
+	if (pCmdUI->m_nID == ID_INDICATOR_USE_MIRROR) {
+		pCmdUI->Enable(m_bUseMirror ? FALSE : TRUE);
+	}
+	else {
+		ASSERT(pCmdUI->m_nID == ID_VIEW_USE_MIRROR);
+		pCmdUI->SetCheck(m_bUseMirror ? 1 : 0);
 		pCmdUI->Enable(TRUE);
 	}
 }
