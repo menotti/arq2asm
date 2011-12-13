@@ -30,6 +30,7 @@ public:
 	virtual void Envermelhar();	// Grupo 5
 	//virtual void Solarize();	// Grupo 18
 	virtual void Gradient();	//Grupo 8
+	virtual void Dither(); //grupo 20
 protected:
 	virtual void OnCreated();
 private:

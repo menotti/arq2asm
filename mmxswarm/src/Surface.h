@@ -80,6 +80,9 @@ public:
 
 	 //Grupo 11
 	 virtual void ChannelMix();
+	 
+	 //Grupo 20
+	 virtual void Dither();
 
 	 //Grupo 5
 	 virtual void Sobel(); // neste método está a implementação do Sobel
