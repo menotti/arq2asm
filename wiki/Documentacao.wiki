@@ -2922,9 +2922,9 @@ Para que a perda de qualidade seja a mínima possível após a aplicação do fi
 
 Ex: Canal vermelho do pixel = R
 
-R = 230                     // Valor inicial de R
-R = | R-128 | x 2
-R = | 230 -128 | x 2
+R = 230;                     // Valor inicial de R
+R = | R-128 | x 2;
+R = | 230 -128 | x 2;
 R = 204                // Valor de R após aplicar o filtro
 
 O resultado final é para ser um efeito desse tipo:
@@ -3057,3 +3057,5 @@ void CMMXSurface32Intrinsic::Solarize()
 
 == SSE ==
 Há uma versão iniciada não-funcional em comentário no repositório, mas não conseguimos implementá-la adequadamente a tempo.
+
+---
