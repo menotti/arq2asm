@@ -52,6 +52,7 @@
 #define ID_INDICATOR_USE_AZULAR			59162
 #define ID_INDICATOR_USE_ESVERDEAR		59163
 #define ID_INDICATOR_USE_ENVERMELHAR	59164
+#define ID_INDICATOR_USE_MIRROR			59165
 #define ID_VIEW_PAUSE_SWARM             59394
 #define ID_VIEW_PAUSE_BLUR              59395
 #define ID_VIEW_PAUSE_BLIT              59396
@@ -68,13 +69,14 @@
 #define ID_VIEW_USE_INVERT              59407
 #define ID_VIEW_USE_GRADIENT            59408
 #define ID_VIEW_USE_CHANNELMIX          59409
-#define ID_MODE_IMAGE                   59410
-#define ID_MODE_FADE                    59411
-#define ID_MODE_SWARM                   59412
+//#define ID_MODE_IMAGE                   59410
+//#define ID_MODE_FADE                    59411
+//#define ID_MODE_SWARM                   59412
 #define ID_VIEW_USE_RESCALE				59413
 #define ID_VIEW_USE_AZULAR				59414
 #define ID_VIEW_USE_ESVERDEAR			59415
 #define ID_VIEW_USE_ENVERMELHAR			59416
+#define ID_VIEW_USE_MIRROR				59417
 
 // Next default values for new objects
 // 
