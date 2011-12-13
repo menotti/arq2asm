@@ -32,6 +32,7 @@ public:
 	virtual void Gradient();	//Grupo 8
 	virtual void MandelBrot();
 	virtual void Rescale();      // grupo 17
+	virtual void ChannelMix();  // grupo 11
 protected:
 	virtual void OnCreated();
 private:

@@ -706,11 +706,13 @@ void CSurface::ChannelMix()
 		for(int j=0; j < m_wndWidth; j++){
 			cCur = PointColor(j,i);
 
-			r = (BYTE)(GetCValue(cCur));
-			g = (BYTE)(GetMValue(cCur));
-			b = (BYTE)(GetYValue(cCur));
 			
-			PointColor(j,i,RGB(b,g,r));
+			 r = (BYTE)(GetCValue(cCur));
+                g = (BYTE)(GetMValue(cCur));
+                b = (BYTE)(GetYValue(cCur));
+                        
+                PointColor(j,i,RGB(b,g,r));
+
 		}
 	}
 }
