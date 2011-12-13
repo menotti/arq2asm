@@ -801,7 +801,7 @@ Para uma imagem estática de 1498x935 esta implementação consegue calcular 23 
 
 <wiki:comment>
 Grupo 5
-Implementar e descrever as nas versões Normal, MMX e SSE.
+Implementar e descrever as nas versões Normal.
 </wiki:comment>
 
 O mecanismo de detecção de borda Sobel é elaborado com a finaliadde de encontrar os pixels onde há uma mudança no nível de intensidade, sendo está mudança uma característica relevante de uma borda em uma imagem. Assim quando esses pixel estão próximos podem ser destacados formando uma borda.
@@ -873,6 +873,12 @@ void CSurface::Sobel()
     Copy(t_image);
 }
 }}}
+
+== Azular ==
+
+O filtro azular deixa a imagem em tons de azul. Calculando o valor da média do RGB de um pixel, para então atribuir o valor da média ao B e zerar os valores de RGB.
+
+
 
 == Posterize Filter ==
 
