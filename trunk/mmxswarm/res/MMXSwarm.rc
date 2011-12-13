@@ -113,7 +113,7 @@ BEGIN
     POPUP "&CImage"
     BEGIN
         POPUP "&32 Bit"
-        BEGIN
+        BEGIN  
             MENUITEM "&SSE2 Intrinsics",            IDD_32BIT_SSE2INTRINSICS
             MENUITEM "&MMX Intrinsics",             IDD_32BIT_MMXINTRINSICS
             MENUITEM "&Generic C++ Code",           IDD_32BIT_GENERICCBLUR
@@ -152,11 +152,8 @@ BEGIN
         MENUITEM "Use &Invert\tY",              ID_VIEW_USE_INVERT
         MENUITEM "Use &Gradient\tD",            ID_VIEW_USE_GRADIENT
         MENUITEM "Use &ChannelMix\tAlt+C",      ID_VIEW_USE_CHANNELMIX
-		MENUITEM "Use &Rescale\tW",             ID_VIEW_USE_RESCALE
-		MENUITEM "Use Azular",					ID_VIEW_USE_AZULAR
-		MENUITEM "Use Esverdear",				ID_VIEW_USE_ESVERDEAR
-		MENUITEM "Use Envermelhar",				ID_VIEW_USE_ENVERMELHAR
-		MENUITEM "Use &Mirror\tU",			    ID_VIEW_USE_MIRROR //Grupo 18
+		MENUITEM "Use &Rescale\tW",             ID_VIEW_USE_RESCALE 
+		MENUITEM "Use &Dither\tAlt+D",			ID_VIEW_USE_DITHER
     END
     POPUP "&Mode"
     BEGIN
@@ -209,7 +206,7 @@ BEGIN
     "C",            ID_VIEW_USE_CHANNELMIX, VIRTKEY, ALT, NOINVERT
     "S",            ID_STATIC_MODE,         VIRTKEY, CONTROL, NOINVERT
 	"W",            ID_VIEW_USE_RESCALE,	VIRTKEY, NOINVERT
-	"U",            ID_VIEW_USE_MIRROR,		VIRTKEY, NOINVERT//Grupo 18
+	"D",			ID_VIEW_USE_DITHER,			VIRTKEY, ALT, NOINVERT
 END
 
 

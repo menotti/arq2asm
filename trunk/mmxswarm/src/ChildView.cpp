@@ -47,9 +47,6 @@ BEGIN_MESSAGE_MAP(CChildView, CWnd)
 	ON_COMMAND(ID_VIEW_USE_GRADIENT, OnViewUseGradient)	//Grupo 8
 	ON_COMMAND(ID_VIEW_USE_THRESHOLD, OnViewUseThreshold) //grupo 13
 	ON_COMMAND(ID_VIEW_USE_SOBEL, OnViewUseSobel)//Grupo 5
-	ON_COMMAND(ID_VIEW_USE_AZULAR, OnViewUseAzular)	//Grupo 5
-	ON_COMMAND(ID_VIEW_USE_ESVERDEAR, OnViewUseEsverdear)	//Grupo 5
-	ON_COMMAND(ID_VIEW_USE_ENVERMELHAR, OnViewUseEnvermelhar)	//Grupo 5
 	ON_COMMAND(ID_VIEW_USE_POSTERIZE, OnViewUsePosterize)//Grupo 9
 	ON_COMMAND(ID_VIEW_USE_GRAYF, OnViewUseGrayF)	//Grupo 12
 	ON_COMMAND(ID_VIEW_USE_RGBADJUST, OnViewUseRGBAdjust)	//Grupo 14
@@ -60,7 +57,7 @@ BEGIN_MESSAGE_MAP(CChildView, CWnd)
 	ON_COMMAND(ID_VIEW_USE_CHANNELMIX, OnViewUseChannelmix) //Grupo 11
 	ON_COMMAND(ID_MODE_WEBCAM, OnModeWebcam) // Grupo 16
 	ON_COMMAND(ID_VIEW_USE_RESCALE, OnViewUseRescale)//Grupo 17
-	ON_COMMAND(ID_VIEW_USE_MIRROR, OnViewUseMirror)//Grupo 18
+	ON_COMMAND(ID_VIEW_USE_DITHER, OnViewUseDither)//Grupo 20
 	
 
 	ON_UPDATE_COMMAND_UI(ID_VIEW_PAUSE_BLUR, OnUpdatePauseBlur)
@@ -71,17 +68,14 @@ BEGIN_MESSAGE_MAP(CChildView, CWnd)
 	ON_UPDATE_COMMAND_UI(ID_VIEW_USE_GRADIENT, OnUpdateUseGradient)	//Grupo 8
 	ON_UPDATE_COMMAND_UI(ID_VIEW_USE_THRESHOLD, OnUpdateUseThreshold) //grupo 13
 	ON_UPDATE_COMMAND_UI(ID_VIEW_USE_SOBEL, OnUpdateUseSobel)//Grupo 5
-	ON_UPDATE_COMMAND_UI(ID_VIEW_USE_AZULAR, OnUpdateUseAzular)//Grupo 5
-	ON_UPDATE_COMMAND_UI(ID_VIEW_USE_ESVERDEAR, OnUpdateUseEsverdear)//Grupo 5
-	ON_UPDATE_COMMAND_UI(ID_VIEW_USE_ENVERMELHAR, OnUpdateUseEnvermelhar)//Grupo 5
 	ON_UPDATE_COMMAND_UI(ID_VIEW_USE_POSTERIZE, OnUpdateUsePosterize)//Grupo 9
 	ON_UPDATE_COMMAND_UI(ID_VIEW_USE_GRAYF, OnUpdateUseGrayF)	//Grupo 12
 	ON_UPDATE_COMMAND_UI(ID_VIEW_USE_RGBADJUST, OnUpdateUseRGBAdjust)	//Grupo 14
 	ON_UPDATE_COMMAND_UI(ID_VIEW_USE_MASK, OnUpdateUseMask)	//Grupo 15
 	ON_UPDATE_COMMAND_UI(ID_VIEW_USE_SOLARIZE, OnUpdateUseSolarize)//Grupo 18
 	ON_UPDATE_COMMAND_UI(ID_VIEW_USE_RESCALE, OnUpdateUseRescale)//Grupo 17
+	ON_UPDATE_COMMAND_UI(ID_VIEW_USE_DITHER, OnUpdateUseDither)//Grupo 20
 	ON_UPDATE_COMMAND_UI(ID_VIEW_USE_CHANNELMIX, OnUpdateUseChannelmix) //Grupo 11
-	ON_UPDATE_COMMAND_UI(ID_VIEW_USE_MIRROR, OnUpdateUseMirror)//Grupo 18
 	ON_UPDATE_COMMAND_UI(ID_INDICATOR_PAUSE_BLUR, OnUpdatePauseBlur)
 	ON_UPDATE_COMMAND_UI(ID_INDICATOR_PAUSE_SWARM, OnUpdatePauseSwarm)
 	ON_UPDATE_COMMAND_UI(ID_INDICATOR_PAUSE_BLIT, OnUpdatePauseBlit)
@@ -90,9 +84,6 @@ BEGIN_MESSAGE_MAP(CChildView, CWnd)
 	ON_UPDATE_COMMAND_UI(ID_INDICATOR_USE_GRADIENT, OnUpdateUseGradient)	//Grupo 8
 	ON_UPDATE_COMMAND_UI(ID_INDICATOR_USE_THRESHOLD, OnUpdateUseThreshold) //grupo 13
 	ON_UPDATE_COMMAND_UI(ID_INDICATOR_USE_SOBEL, OnUpdateUseSobel) //Grupo 5
-	ON_UPDATE_COMMAND_UI(ID_INDICATOR_USE_AZULAR, OnUpdateUseAzular) //Grupo 5
-	ON_UPDATE_COMMAND_UI(ID_INDICATOR_USE_ESVERDEAR, OnUpdateUseEsverdear) //Grupo 5
-	ON_UPDATE_COMMAND_UI(ID_INDICATOR_USE_ENVERMELHAR, OnUpdateUseEnvermelhar) //Grupo 5
 	ON_UPDATE_COMMAND_UI(ID_INDICATOR_USE_GRAYF, OnUpdateUseGrayF)	//Grupo 12
 	ON_UPDATE_COMMAND_UI(ID_INDICATOR_USE_RGBADJUST, OnUpdateUseRGBAdjust)//Grupo 14
 	ON_UPDATE_COMMAND_UI(ID_INDICATOR_USE_MASK, OnUpdateUseMask)//Grupo 15
@@ -100,9 +91,9 @@ BEGIN_MESSAGE_MAP(CChildView, CWnd)
 	ON_UPDATE_COMMAND_UI(ID_INDICATOR_USE_MANDEL, OnUpdateUseMandel)//Grupo 6
 	ON_UPDATE_COMMAND_UI(ID_INDICATOR_USE_SOLARIZE, OnUpdateUseSolarize)//Grupo 18
 	ON_UPDATE_COMMAND_UI(ID_INDICATOR_USE_RESCALE, OnUpdateUseRescale)//Grupo 17
+	ON_UPDATE_COMMAND_UI(ID_INDICATOR_USE_DITHER, OnUpdateUseDither)//Grupo 20
 	ON_UPDATE_COMMAND_UI(ID_INDICATOR_USE_INVERT, OnUpdateUseInvert)//Grupo 7
 	ON_UPDATE_COMMAND_UI(ID_INDICATOR_USE_CHANNELMIX, OnUpdateUseChannelmix) //Grupo 11
-	ON_UPDATE_COMMAND_UI(ID_INDICATOR_USE_MIRROR, OnUpdateUseMirror) //Grupo 18
 	ON_UPDATE_COMMAND_UI(ID_INDICATOR_FPS, OnUpdateFPS)
 	ON_UPDATE_COMMAND_UI(ID_INDICATOR_RESOLUTION, OnUpdateResolution)
 	ON_UPDATE_COMMAND_UI(ID_INDICATOR_USE_WEBCAM, OnUpdateModeWebcam) //Grupo 16
@@ -110,7 +101,6 @@ BEGIN_MESSAGE_MAP(CChildView, CWnd)
 
 	ON_COMMAND_RANGE(IDD_16BIT_MMXINTRINSICS, IDD_32BIT_GENERICCBLUR, OnImageFormats)
 	ON_UPDATE_COMMAND_UI_RANGE(IDD_16BIT_MMXINTRINSICS, IDD_32BIT_GENERICCBLUR, OnUpdateImageFormats)
-	ON_UPDATE_COMMAND_UI_RANGE(ID_MODE_WEBCAM, ID_MODE_SWARM, OnUpdateMode)
 	ON_WM_ERASEBKGND()
 	ON_WM_DESTROY()
 END_MESSAGE_MAP()
@@ -131,9 +121,6 @@ CChildView::CChildView()
 	m_bUseGradient = false;	//Grupo 8
 	m_bUseThreshold = false; //grupo 13
 	m_bUseSobel = false;	//Grupo 5
-	m_bUseAzular = false;	// Grupo 5
-	m_bUseEsverdear = false;	// Grupo 5
-	m_bUseEnvermelhar = false;	// Grupo 5
 	m_bUseGrayF = false;	//Grupo 12
 	m_bUseRGBAdjust = false;	//Grupo 14
 	m_bUseMask = false;	//Grupo 15
@@ -142,14 +129,13 @@ CChildView::CChildView()
 	m_bUseChannelmix = false; //Grupo 11
 	m_bTimerPopped = false;
 	m_eSurf = eNone;
-	m_eMode = eSwarm;
 	execSobel = false; //Grupo 5
 	execGray = false; //grupo 12
 	m_bUseSolarize = false; // Grupo 18
-	m_bUseMirror = false; // Grupo 18
 	m_bUseInvert = false;  //GRUPO 7
 	m_bUseWebcam = false;	// Grupo 16
 	m_bUseRescale = false;  //GRUPO 17
+	m_bUseDither = false;  //GRUPO 20
 }
 
 CChildView::~CChildView()
@@ -230,9 +216,6 @@ void CChildView::OnFileOpen()
 		m_bUseMandel = false;
 		m_bUsePosterize = false;
 		m_bUseSobel = false;
-		m_bUseAzular = false;
-		m_bUseEsverdear = false;
-		m_bUseEnvermelhar = false;
 		m_bUseGray = false;
 		m_bUseGrayF = false;
 		m_bUseSolarize = false;
@@ -240,7 +223,6 @@ void CChildView::OnFileOpen()
 		m_bUseGradient = false;
 		m_bUseChannelmix = false;
 		m_bUseRescale = false;
-		m_bUseMirror = false;
 	}
 }
 
@@ -338,24 +320,6 @@ void CChildView::OnViewUseGray()
 	m_bUseGray = !m_bUseGray;
 }
 
-//Grupo 5
-void CChildView::OnViewUseAzular()	
-{
-	m_bUseAzular = !m_bUseAzular;
-}
-
-//Grupo 5
-void CChildView::OnViewUseEsverdear()	
-{
-	m_bUseEsverdear = !m_bUseEsverdear;
-}
-
-//Grupo 5
-void CChildView::OnViewUseEnvermelhar()	
-{
-	m_bUseEnvermelhar = !m_bUseEnvermelhar;
-}
-
 //Grupo 8
 void CChildView::OnViewUseGradient()	
 {
@@ -410,11 +374,6 @@ void CChildView::OnViewUseSolarize(){
 	m_bUseSolarize = !m_bUseSolarize;
 }
 
-//Grupo 18
-void CChildView::OnViewUseMirror(){
-	m_bUseMirror = !m_bUseMirror;
-}
-
 //grupo 13
 void CChildView::OnViewUseThreshold()
 {
@@ -437,6 +396,13 @@ void CChildView::OnModeWebcam()
 void CChildView::OnViewUseRescale(){
 	m_bUseRescale = !m_bUseRescale;
 }
+
+//Grupo 20
+void CChildView::OnViewUseDither()
+{
+	m_bUseDither = !m_bUseDither;
+}
+
 
 
 void CChildView::OnPaint() 
@@ -524,27 +490,6 @@ BOOL CChildView::OnIdle(LONG)  //1Count
 		bContinue = TRUE;
 	}
 
-	//Grupo 5
-	if (m_bUseAzular) {
-		m_pSurface->Azular();
-		bContinue = TRUE;
-		m_bUseAzular = false;
-	}
-
-	//Grupo 5
-	if (m_bUseEsverdear) {
-		m_pSurface->Esverdear();
-		bContinue = TRUE;
-		m_bUseEsverdear = false;
-	}
-
-	//Grupo 5
-	if (m_bUseEnvermelhar) {
-		m_pSurface->Envermelhar();
-		bContinue = TRUE;
-		m_bUseEnvermelhar = false;
-	}
-
 	//Grupo 9
 	if (m_bUsePosterize) {
 		m_pSurface->Posterize();
@@ -591,18 +536,16 @@ BOOL CChildView::OnIdle(LONG)  //1Count
 		if(!m_bPauseFade)
 			m_bUseSolarize = false;
 	}
-	
-	//Grupo 18
-	if (m_bUseMirror) {
-		m_pSurface->Mirror();
-		bContinue = TRUE;
-		if(!m_bPauseFade)
-			m_bUseMirror = false;
-	}
 
 	//grupo 13
 	if (m_bUseThreshold) {
 		m_pSurface->Threshold();
+		bContinue = TRUE;
+	}
+
+	//grupo 20
+	if (m_bUseDither) {
+		m_pSurface->Dither();
 		bContinue = TRUE;
 	}
 
@@ -877,46 +820,6 @@ void CChildView::OnUpdateUseSobel(CCmdUI* pCmdUI)
 		pCmdUI->Enable(TRUE);
 	}
 }
-
-//Grupo 5
-void CChildView::OnUpdateUseAzular(CCmdUI* pCmdUI)
-{
-	if (pCmdUI->m_nID == ID_INDICATOR_USE_AZULAR) {
-		pCmdUI->Enable(m_bUseAzular ? FALSE : TRUE);
-	}
-	else {
-		ASSERT(pCmdUI->m_nID == ID_VIEW_USE_AZULAR);
-		pCmdUI->SetCheck(m_bUseAzular ? 1 : 0);
-		pCmdUI->Enable(TRUE);
-	}
-}
-
-//Grupo 5
-void CChildView::OnUpdateUseEsverdear(CCmdUI* pCmdUI)
-{
-	if (pCmdUI->m_nID == ID_INDICATOR_USE_ESVERDEAR) {
-		pCmdUI->Enable(m_bUseEsverdear ? FALSE : TRUE);
-	}
-	else {
-		ASSERT(pCmdUI->m_nID == ID_VIEW_USE_ESVERDEAR);
-		pCmdUI->SetCheck(m_bUseEsverdear ? 1 : 0);
-		pCmdUI->Enable(TRUE);
-	}
-}
-
-//Grupo 5
-void CChildView::OnUpdateUseEnvermelhar(CCmdUI* pCmdUI)
-{
-	if (pCmdUI->m_nID == ID_INDICATOR_USE_ENVERMELHAR) {
-		pCmdUI->Enable(m_bUseEnvermelhar ? FALSE : TRUE);
-	}
-	else {
-		ASSERT(pCmdUI->m_nID == ID_VIEW_USE_ENVERMELHAR);
-		pCmdUI->SetCheck(m_bUseEnvermelhar ? 1 : 0);
-		pCmdUI->Enable(TRUE);
-	}
-}
-
 //Grupo 7
 void CChildView::OnUpdateUseInvert(CCmdUI* pCmdUI)
 {
@@ -1007,19 +910,6 @@ void CChildView::OnUpdateUseSolarize(CCmdUI *pCmdUI)
 	}
 }
 
-//Grupo 18
-void CChildView::OnUpdateUseMirror(CCmdUI *pCmdUI)
-{
-	if (pCmdUI->m_nID == ID_INDICATOR_USE_MIRROR) {
-		pCmdUI->Enable(m_bUseMirror ? FALSE : TRUE);
-	}
-	else {
-		ASSERT(pCmdUI->m_nID == ID_VIEW_USE_MIRROR);
-		pCmdUI->SetCheck(m_bUseMirror ? 1 : 0);
-		pCmdUI->Enable(TRUE);
-	}
-}
-
 //Grupo 13
 void CChildView::OnUpdateUseThreshold(CCmdUI* pCmdUI)
 {
@@ -1072,6 +962,19 @@ void CChildView::OnUpdateUseRescale(CCmdUI *pCmdUI)
 	}
 }
 
+//Grupo 20
+void CChildView::OnUpdateUseDither(CCmdUI *pCmdUI)
+{
+	if (pCmdUI->m_nID == ID_INDICATOR_USE_DITHER) {
+		pCmdUI->Enable(m_bUseDither ? FALSE : TRUE);
+	}
+	else {
+		ASSERT(pCmdUI->m_nID == ID_VIEW_USE_DITHER);
+		pCmdUI->SetCheck(m_bUseDither ? 1 : 0);
+		pCmdUI->Enable(TRUE);
+	}
+}
+
 void CChildView::OnUpdateResolution(CCmdUI* pCmdUI)
 {
 	if (m_bSizeChanged) {
@@ -1107,17 +1010,6 @@ void CChildView::OnUpdateImageFormats(CCmdUI* pCmdUI)
 		pCmdUI->SetCheck(0);
 
 	pCmdUI->Enable(bEnable);
-}
-			
-void CChildView::OnUpdateMode(CCmdUI* pCmdUI)		
-{						
-	m_eMode = EMode(pCmdUI->m_nID);		
-		
-	if (ESurface(pCmdUI->m_nID) == m_eMode)		
-		pCmdUI->SetCheck(1);		
-	else		
-		pCmdUI->SetCheck(0);				
-	pCmdUI->Enable(true);		
 }
 
 BOOL CChildView::OnEraseBkgnd(CDC*)  //pDC
