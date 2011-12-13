@@ -1754,6 +1754,203 @@ void CSurface::ChannelMix()
 ==_SSE(n)_==
 
 -----
+
+= Rescale Filter =
+
+<wiki:comment>
+Rescale Filter Grupo 17
+</wiki:comment>
+
+Descrição...........
+
+A seguir estão os códigos, todos implementados na versão 32 bits.
+
+== _Naive_ ==
+
+{{{
+
+void CSurface::Rescale() {
+	COLORREF cCur;
+	int r,g,b;
+	for(int i = 0; i< m_wndHeight;i++) {
+		for(int j = 0; j < m_wndWidth; j++) {
+		
+					cCur = PointColor (j,i);   
+					r = GetRValue(cCur)*2;	    // Multiplica as 3 componentes das cores por 2
+					g = GetGValue(cCur)*2;
+					b = GetBValue(cCur)*2;
+					if(r>255) r = 255;	    // Estabelece a cor branca como teto, evitando wrap around
+					if(g>255) g = 255;
+					if(b>255) b = 255;
+					PointColor(j,i,RGB(b,g,r)); // Atualiza o pixel com a nova cor
+		}
+	}
+}
+
+}}}
+
+== _MMX_ ==
+
+{{{
+
+void CMMXSurface32Intrinsic::Rescale()
+{
+	int height = GetVisibleHeight()*2;
+	DWORD *pCur  = (DWORD *)GetPixelAddress(0,0);
+	ULONGLONG mascara = 0xFF;
+	ULONGLONG pixel;
+	ULONGLONG next;
+
+	pixel = *(ULONGLONG *)pCur;
+	do
+	{
+		int width = m_width;
+		do
+		{
+			next = *(ULONGLONG *)(pCur+1);
+			__asm
+			{
+				movq mm0, pixel		//mm0 = pixel atual
+				pand mm0, mascara	//mm0 = a componente 'B'
+				pxor mm5, mm5
+				paddusb mm0, mm0	//adiciona a si próprio (multiplica por 2)
+
+
+				movq mm1, pixel		//mm0 = pixel, novamente
+				psrlq mm1, 8		//shift à direita para pegar a componente 'G' do pixel
+				pand mm1, mascara
+				paddusb mm1, mm1	//adiciona a si próprio (multiplica por 2)
+
+				movq mm2, pixel
+				psrlq mm2, 16		//mm0 = a componente 'R'
+				pand mm2, mascara
+				paddusb mm2, mm2	//adiciona a si próprio (multiplica por 2)
+
+				movq mm3, pixel		//mm3 = pixel
+
+				pxor mm4, mm4           //garante que o registrador mm4 esta vazio
+				paddd mm4, mm3          //adiciona o canal alpha ao mm4
+				psllq mm4, 8            //shift para o proximo byte
+				paddd mm4, mm2          //copia o canal R (mm2) para mm4
+				psllq mm4, 8		//um shift para esquerda em 1 byte
+				paddd mm4, mm1		//copia o canal G (mm1) para mm4
+				psllq mm4, 8		//novamente um shift para esquerda em 1 byte
+				paddd mm4, mm0		//copia o canal B (mm0) para mm4
+				movq pixel, mm4
+				}
+			*(ULONGLONG *)pCur = pixel;	//joga o resultado no ponto apontado da tela
+			pixel = next;			//recebe o próximo pixel a ser processado
+			pCur++;				//avança o ponteiro sobre a tela
+		} while (--width > 0);
+	} while (--height > 0);
+}
+
+}}}
+
+== _SSE2_ ==
+
+{{{
+
+void CSSE2Surface32Intrinsic::Rescale()
+{
+	int height = GetVisibleHeight()*2;		     //aumenta a altura em 2, pois são processados 2 pixels de 32-bits de uma só vez em variáveis de 128 bits	
+	DWORD *pCur  = (DWORD *)GetPixelAddress(0,0);	     //ponteiro para posição atual da tela
+
+	ULONGLONG mascara = 0xFF;		             //máscara para selecionar um byte por vez
+	ULONGLONG pixel1, pixel2;			     //variaveis de 64 bits que receberão valores de dois pixels consecutivos
+	ULONGLONG next1, next2;				     //variáveis que guardam a próximas posições de pixel1 e pixel2
+
+	pixel1 = *(ULONGLONG *) pCur;			     //pixel1 recebe pixel que está sendo apontado no inicio (0,0) 
+	pixel2 = *(ULONGLONG *) (pCur+1);		     //pixel2 recebe pixel consecutivo (0,1)
+
+	//loops para percorrer toda a tela
+	do {
+		int width = m_width;
+		do {
+
+			next1 = *(ULONGLONG *) (pCur+2);     //guarda próximo valor para pixel1	
+			next2 = *(ULONGLONG *) (pCur+3);     //guarda próximo valor para pixel2	
+
+			__asm{
+					movq xmm0, pixel1    //move pixel1 para os 64 bits menos significativos de xmm0 (128 bits)
+					movhpd xmm0, pixel2  //move pixel2 para os 64 bits mais significativos de xmm0
+
+					movq xmm1, mascara   //xmm1 fará o papel de seletor de bytes especificos de xmm0
+					pand xmm1,xmm0					
+					movq xmm2,xmm1       //isola o canal B de pixel1 em xmm2
+					paddusb xmm2, xmm2   //adiciona a si próprio (multiplica por 2)
+
+					movq xmm1,mascara					
+					psrldq xmm0,1	     //desloca em 1 para direita xmm0 (como são registradores 128 bits, na verdade ocorre um deslocamento de 2 unidades)
+					pand xmm1,xmm0
+					movq xmm3,xmm1	     //isola o canal G de pixel1 em xmm3
+					paddusb xmm3, xmm3   //adiciona a si próprio (multiplica por 2)
+
+					movq xmm1,mascara
+					psrldq xmm0,1	     //desloca em 1 para direita xmm0 (como são registradores 128 bits, na verdade ocorre um deslocamento de 2 unidades)
+					pand xmm1,xmm0
+					movq xmm4,xmm1	     //isola o canal R de pixel1 em xmm4
+					paddusb xmm4, xmm4   //adiciona a si próprio (multiplica por 2)
+
+					psrldq xmm0,2	     //desloca em 2 (pula o alpha) para direita xmm0, para selecionar agora sua metade mais significativa (pixel2)
+
+					movq xmm1,mascara
+					pand xmm1,xmm0
+					movq xmm5,xmm1	     //isola o canal B de pixel2 em xmm5
+					paddusb xmm5,xmm5    //adiciona a si próprio (multiplica por 2)
+
+					movq xmm1,mascara
+					psrldq xmm0,1
+					pand xmm1,xmm0
+					movq xmm6,xmm1	     //isola o canal G de pixel2 em xmm6
+					paddusb xmm6, xmm6   //adiciona a si próprio (multiplica por 2)
+
+					movq xmm1,mascara
+					psrldq xmm0,1
+					pand xmm1,xmm0
+					movq xmm7,xmm1	     //isola o canal R de pixel2 em xmm7
+					paddusb xmm7, xmm7   //adiciona a si próprio (multiplica por 2)
+
+					pxor xmm0,xmm0	     // zera o registrador que vai receber os resultados
+
+					paddq xmm0,xmm4	     // R de pixel1
+					pslldq xmm0,1	     // proxima posição
+					paddq xmm0,xmm3	     // G de pixel1
+					pslldq xmm0,1	     // proxima posição
+					paddq xmm0,xmm2	     // B de pixel1
+					movq pixel1,xmm0     // atualiza o valor de pixel1
+
+					pxor xmm0,xmm0	     // zera o registrador que vai receber os resultados
+
+					paddq xmm0,xmm7	     // R de pixel2
+					pslldq xmm0,1	     // proxima posição
+					paddq xmm0,xmm6	     // G de pixel2
+					pslldq xmm0,1	     // proxima posição
+					paddq xmm0,xmm5	     // B de pixel2
+					movq pixel2,xmm0     // atualiza o valor de pixel2
+			}
+
+			*(ULONGLONG *)pCur = pixel1;	     //joga o valor calculado de pixel1 de volta na tela
+			*(ULONGLONG *)(pCur+1) = pixel2;     //joga o valor calculado de pixel2 de volta na tela
+			pixel1 = next1;			     //pixel1 recebe o próximo pixel 
+			pixel2 = next2;			     //pixel2 recebe o próximo pixel
+			pCur += 2;			     //aumenta o ponteiro da tela em 2 (calcula 2 pixels por vez)
+		} while (--width > 0);
+	} while (--height > 0); 
+}
+
+}}}
+
+==_Gráfico comparativo_==
+
+|| *Versão* || *Naive* || *MMX* || *SSE2* ||
+|| *32 bits (320x240)* || 87 || 71 || 95 ||
+|| *32 bits (640x480)* || 16 || 17 || 22 ||
+
+http://img35.imageshack.us/img35/1246/graficocomparativo.jpg
+
+-----
+
 = Invert Filter =
 <wiki:comment>
 Invert Filter Grupo 7
@@ -1867,30 +2064,6 @@ void CSSE2Surface32Intrinsic::Invert()
 ==_Gráfico Comparativo_==
 Pelo gráfico, nota-se o desempenho da tecnologia SSE2 como sendo superior à MMX e Naive, visto que a quantidade de cálculos em paralelo foi dobrando a cada nível de implementação (Naive > MMX > SSE2).<br/>
 http://img842.imageshack.us/img842/1623/benchmarkinvertfilter.png
-
-= Rescale Filter =
-
-<wiki:comment>
-Rescale Filter Grupo 17
-</wiki:comment>
-
-Descrição...........
-
-A seguir estão os códigos, todos implementados na versão 32 bits.
-
-== _Naive_ ==
-
-
-
-== _MMX_ ==
-
-
-== _SSE2_ ==
-
-
-==_Gráfico comparativo_==
-
-http://img35.imageshack.us/img35/1246/graficocomparativo.jpg
 
 ----
 
