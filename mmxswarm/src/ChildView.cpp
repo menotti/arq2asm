@@ -61,7 +61,6 @@ BEGIN_MESSAGE_MAP(CChildView, CWnd)
 	ON_COMMAND(ID_MODE_WEBCAM, OnModeWebcam) // Grupo 16
 	ON_COMMAND(ID_VIEW_USE_RESCALE, OnViewUseRescale)//Grupo 17
 	ON_COMMAND(ID_VIEW_USE_MIRROR, OnViewUseMirror)//Grupo 18
-	ON_COMMAND(ID_VIEW_USE_DITHER, OnViewUseDither) //Grupo 20
 	
 
 	ON_UPDATE_COMMAND_UI(ID_VIEW_PAUSE_BLUR, OnUpdatePauseBlur)
@@ -107,7 +106,6 @@ BEGIN_MESSAGE_MAP(CChildView, CWnd)
 	ON_UPDATE_COMMAND_UI(ID_INDICATOR_FPS, OnUpdateFPS)
 	ON_UPDATE_COMMAND_UI(ID_INDICATOR_RESOLUTION, OnUpdateResolution)
 	ON_UPDATE_COMMAND_UI(ID_INDICATOR_USE_WEBCAM, OnUpdateModeWebcam) //Grupo 16
-	ON_UPDATE_COMMAND_UI(ID_VIEW_USE_DITHER, OnUpdateUseDither)//Grupo 20
 	
 
 	ON_COMMAND_RANGE(IDD_16BIT_MMXINTRINSICS, IDD_32BIT_GENERICCBLUR, OnImageFormats)
@@ -152,7 +150,6 @@ CChildView::CChildView()
 	m_bUseInvert = false;  //GRUPO 7
 	m_bUseWebcam = false;	// Grupo 16
 	m_bUseRescale = false;  //GRUPO 17
-	m_bUseDither = false;  //GRUPO 20
 }
 
 CChildView::~CChildView()
@@ -441,11 +438,6 @@ void CChildView::OnViewUseRescale(){
 	m_bUseRescale = !m_bUseRescale;
 }
 
-//Grupo 20
-void CChildView::OnViewUseDither(){
-	m_bUseDither = !m_bUseDither;
-}
-
 
 void CChildView::OnPaint() 
 {
@@ -620,12 +612,6 @@ BOOL CChildView::OnIdle(LONG)  //1Count
 		bContinue = TRUE;
 		if(!m_bPauseFade)
 			m_bUseRescale = false;
-	}
-	
-	//grupo 20
-	if (m_bUseDither) {
-	m_pSurface->Dither();
-	bContinue = TRUE;
 	}
 
 	//Grupo 11
@@ -927,20 +913,6 @@ void CChildView::OnUpdateUseEnvermelhar(CCmdUI* pCmdUI)
 	else {
 		ASSERT(pCmdUI->m_nID == ID_VIEW_USE_ENVERMELHAR);
 		pCmdUI->SetCheck(m_bUseEnvermelhar ? 1 : 0);
-		pCmdUI->Enable(TRUE);
-	}
-}
-
-//Grupo 20
-
- 	void CChildView::OnUpdateUseDither(CCmdUI *pCmdUI)
-{
-	if (pCmdUI->m_nID == ID_INDICATOR_USE_DITHER) {
-		pCmdUI->Enable(m_bUseDither ? FALSE : TRUE);
-	}
-	else {
-		ASSERT(pCmdUI->m_nID == ID_VIEW_USE_DITHER);
-		pCmdUI->SetCheck(m_bUseDither ? 1 : 0);
 		pCmdUI->Enable(TRUE);
 	}
 }
