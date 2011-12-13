@@ -79,13 +79,10 @@ public:
 	 virtual void Threshold();
 
 	 //Grupo 11
-	 virtual void ChannelMix();
+	virtual void ChannelMix();
 
 	 //Grupo 5
 	 virtual void Sobel(); // neste método está a implementação do Sobel
-	 virtual void Azular();
-	 virtual void Esverdear();
-	 virtual void Envermelhar();
 
 	 //Grupo 12
 	 virtual void GrayFilter();
@@ -109,6 +106,9 @@ public:
 	 //Grupo 17
 	 virtual void Rescale();
 
+	 //Grupo 20
+	 virtual void Dither();
+
 	 // These methods compensate for m_kDelta
 	 void PointColor(int x, int y, COLORREF c);
 
@@ -130,9 +130,7 @@ public:
 
 	 // GRUPO 18 - Filtro Solarize
 	 virtual void Solarize();
-	 //double Sol(double v);
-	 byte Sol(byte v);
-	 virtual void Mirror();
+	 double Sol(double v);
 
 	 BYTE *GetPixelAddress(int x, int y) const
 	 { return((BYTE*)m_image.GetPixelAddress(x, y+m_kDeltaY)); }
