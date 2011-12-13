@@ -2250,7 +2250,54 @@ void CSurface::ChannelMix()
 
 ==_MMX_==
 
+O efeito final obtido nessa implementação, não é o desejado, mas tentamos chegar o mais perto possível. Para gerar o efeito, é preciso uma simples rotação de 1 Byte no registrador correspondente ao pixel (MM0). Como em MMX não existe instruções "rotate", tentamos forçar essa rotação, salvando o Byte mais significativo em outro registrador (MM1), e copiando-o no Byte mais significativo de MM0, após um Shft de 1 Byte pra direita.
 
+{{{
+void CMMXSurface32Intrinsic::ChannelMix() {
+	int height = GetVisibleHeight()*2;	//altura multiplicada por 2 pois são pixels de 32 bits em variáveis de 64 bits (2x maior)
+	DWORD *pCur  = (DWORD *)GetPixelAddress(0,0);	// cada pixel tem 32bits, 1byte para cada canal de cor: alfa, red, green, blue
+
+	// Variaveis do tipo unsigned long long, de 64 bits
+	ULONGLONG mascara = 0xFF;	//seleciona um byte de alguma variável (utilizada para pegar valores individuais de RGB)	
+	ULONGLONG pixel;	//recebe os valores referentes a um ponto da tela
+	ULONGLONG next;		//recebe os valores do próximo ponto a partir de pixel 
+	ULONGLONG mascara2 = 0xFFFFFFFF;  //usada para zerar os 32 primeiros bits de um registrador
+
+	pixel = *(ULONGLONG *)pCur;	//faz um casting 64 bits dos dados do ponto atual na variável pixel
+
+	//loops para percorrer toda a tela
+	do {
+		int width = m_width;
+		do {
+
+			next = *(ULONGLONG *)(pCur+1);	//próximo ponto recebe o ponteiro que aponta para um ponto na tela + 1
+
+			//utilização dos registradores mmx 64 bits com inline assembly 
+			__asm{
+					movq mm0, pixel	//move o pixel para um registrador
+					pand mm0, mascara2	//aplica a mascara2 para garantir que os 32 primeiros bits são zeros
+					movq mm1, pixel	//repete o processo em outro registrador
+					pand mm1, mascara2
+					pslld mm1, 32		//faz em mm1 um shift de 32 bits pra esquerda
+					paddd mm0, mm1		//adiciona o valor de mm1 em mm2, assim a dword mais significativa fica igual à menos significativa
+
+					movq mm1, mm0		//copia mm0 para mm1
+					pand mm1, mascara	//aplica a mascara para isolar o byte menos significativo
+					pslld mm1, 56		//faz um shift para a esquerda de 56 bits para colocar o byte na posição mais significativa do registrador
+
+					psrld mm0, 8		//shift a direita em mm0, de 1 byte
+					paddd mm0, mm1		//adiciona mm1 à mm0, colocando o byte isolado em mm1, na posição mais significativa de mm0
+
+					movq pixel, mm0	//copia o valor de mm0 para o pixel	
+			}
+
+			*(ULONGLONG *)pCur = pixel;		//joga o resultado no ponto apontado da tela
+			pixel = next;					//recebe o próximo pixel a ser processado
+			pCur++;							//avança o ponteiro sobre a tela
+		} while (--width > 0);
+	} while (--height > 0);
+}
+}}}
 
 ==_SSE(n)_==
 
@@ -2860,152 +2907,3 @@ http://www.correctmyphotos.com/wp-content/uploads/2010/02/Tree-CP-sepia-BA550.jp
 ==_SSE(n)_==
 
 -----
-
-= Solarize =
-<wiki:comment>
-Grupo 18
-Implementar e descrever as versões Naive, MMX e SSE.
-</wiki:comment>
-Nesta implementação o valor de cada canal (RGB), que pode ir de 0 a 255, é subtraído da média entre o valor máximo e o mínimo, correspondente a 128. Isso significa o mesmo que obter a distância do valor dos canais até o meio (128). Essa distância posteriormente é multiplicada por 2, o que deixa o valor de cada canal mais distante de valores pequenos, acentuando sua tonalidade.
-
-Esse filtro realiza uma modificação similar à modificação química que ocorre em filmes de máquinas fotográficas quando expostos ao sol.
-
-Para que a perda de qualidade seja a mínima possível após a aplicação do filtro, o modo correto de se aplicar o filtro seria enviando cada valor de cada cada dividido por 255 para que a comparação fosse com 0.5 e gerasse assim casas decimais, que posteriormente seriam multiplicadas por 255 para voltar à base normal. Isso foi feito inicialmente mas infelizmente não prosseguimos pois não seria possível analisar dessa forma tanto nas versões MMX e SSE, já que estas possuem um grau muito difícil de manipulação de pontos flutuantes.
-
-Ex: Canal vermelho do pixel = R
-
-R = 230                     // Valor inicial de R
-R = | R-128 | \* 2
-R = | 230 -128 | \* 2
-R = 204                // Valor de R após aplicar o filtro
-
-O resultado final é para ser um efeito desse tipo:
-
-https://lh3.googleusercontent.com/-NRJj31RXiBE/TuejfneVzUI/AAAAAAAAAFk/dRlsPcaL47w/s800/normal.png
-
-https://lh5.googleusercontent.com/-k-A5ZUwDzuw/TuejfrlbhXI/AAAAAAAAAFo/QF_4HvpxMNc/s800/solarize.png
-
-== Naive ==
-Aplicamos o filtro separadamente em cada canal  (R, G, B). Implementamos uma pequena função para tratar os casos em que '[Canal]-128'  vem a ser negativo. Assim, temos o valor absoluto (módulo) da operação.
-
-Fizemos duas implementações, em uma delas utilizamos C++, e na outra adicionamos assembly inline para otimização.
-
-{{{
-byte CSurface::Sol(byte v) {
-   return (v > 128) ? (2*(v-128)) : (2*(128-v));     //retorna |v-128| * 2
-}
-
-// Função simples- Naive apenas em C++
-void CSurface::Solarize() {
-   COLORREF cCur = PointColor(0,0); //Ponteiro cCur reecebe o pixel da tela na posição [0,0]
-    BYTE r, g, b;    //variáveis para separar os valores r,g,b
-//loops para percorrer pixel a pixel
-    for (int i = 0; i < m_wndHeight; i++) {
-       for (int j = 0; j < m_wndWidth; j++) {
-           cCur = PointColor(j,i);
-           r = Sol(GetRValue(cCur));         //calculos de valor r(red),
-           g = Sol(GetGValue(cCur));        //b(blue) e g(green)
-           b = Sol(GetBValue(cCur));
-           PointColor(j, i, RGB(b,g,r)); // reescreve o novo valor r,g,b no pixel [i,j]
-       }
-    }
-}
-
-// Função Naive Otimizada - C++  com Assembly Inline
-void CSurface::Solarize() {
-   DWORD *pCur = (DWORD *)GetPixelAddress(0,0); // aponta pCur para o pixel(0,0)
-   //loop para percorrer a matriz pixel a pixel
-   for (int i = 0; i < m_wndHeight; i++) {
-       for (int j = 0; j < m_wndWidth; j++) {
-           // Inline assembly
-           __asm {
-               mov ecx, 3            // Move 3 para fazer loop nos 3 canais, RGB
-               mov esi, pCur    // esi passa a apontar para o pixel atual
-           SOLARIZANDO:
-               mov al, BYTE ptr [esi]  //move o valor do pixel atual para al
-               sub al, 80h            // Subtrai o canal em 128 e modifica o flag de sinal (ou não)
-               jns POSITIVO        // Se for positivo, pula
-               neg al                // Senão, faz complemento de 2
-               inc al
-           POSITIVO:
-               add al, al            // Dobra o valor
-               mov [esi], al        //da nova cor pro pixel
-               inc esi
-               loop SOLARIZANDO
-           }
-           pCur++; //passa para o proximo pixel
-       }
-   }
-}
-}}}
-
-== MMX ==
-A versão MMX implementada infelizmente não funcionou corretamente pois houve grande dificuldade em implementar a função de módulo, que substituiria a condicional do código original, pois os registradores de 64 bits do MMX não modificam flags. O mesmo problema aconteceu com o SSE, o que foi um dos motivos para não termos conseguido implementar a tempo.
-
-Entretanto, conseguimos encontrar algumas funções lógicas que combinadas conseguiriam obter o módulo do valor desejado. Ao aplicarmos essas funções, conseguimos obter um resultado próximo ao que queríamos, apesar de algumas partes da imagem não terem sido modificadas da forma que gostaríamos. A função que utilizamos foi esta:
-
-|n| = n – ((2 \* n) & mask)
-
-Sendo que a máscara é justamente o valor do bit mais significativo, calculado pela da seguinte forma:
-
-mask = n >> (sizeof(BYTE) \* CHAR_BIT – 1)
-
-A imagem resultante dessa operação foi esta:
-
-https://lh3.googleusercontent.com/-QXnuAgvap08/TuemdkhRhWI/AAAAAAAAAGU/fXQswq6wlWs/s800/solarize-mmx.png
-
-{{{
-void CMMXSurface32Intrinsic::Solarize()
-{
-   DWORD *pCur  = (DWORD *)GetPixelAddress(0,0);            // Ponteiro para o início dos pixels
-   int i, j;
-   int hei = GetVisibleHeight(), wid = GetVisibleWidth();
-
-   ULONGLONG meio = 0x8080808080808080;
-      for(i=0;i<hei/2;i++)
-       for(j=0;j<wid;j++) {
-           ULONGLONG pixels = *(ULONGLONG *)pCur;    //faz um casting 64 bits dos dados do ponto atual na variável pixel
-
-           // Inline assembly
-           __asm {
-               movq mm0, pixels   // mm0 recebe os dois pixels
-               movq mm1, meio       // mm1 recebe 128
-               psubb mm0, mm1   // distancia de mm0 a mm1
-
-               movq mm2, mm0        // calcula o bit mais significativo do byte 1
-               pslld mm2, 24
-               psrld mm2, 31
-               movq mm3, mm2
-               movq mm2, mm0        // calcula o bit mais significativo do byte 2
-               pslld mm2, 16
-               psrld mm2, 31
-               pslld mm2, 8
-               paddd mm3, mm2
-               movq mm2, mm0        // calcula o bit mais significativo do byte 3
-               pslld mm2, 8
-               psrld mm2, 31
-               pslld mm2, 16
-               paddd mm3, mm2
-               movq mm2, mm0        // calcula o bit mais significativo do byte 4
-               psrld mm2, 31
-               pslld mm2, 24
-               paddd mm3, mm2
-
-               movq mm4, mm0
-               paddb mm4, mm4
-               pxor mm4, mm3
-               psubb mm4, mm3
-               psubb mm0, mm4
-               paddb mm0, mm0
-
-               movq pixels, mm0
-           }
-
-           *(ULONGLONG *)pCur = pixels;
-           pCur+=2;
-       }
-}
-}}}
-
-== SSE ==
-Há uma versão iniciada não-funcional em comentário no repositório, mas não conseguimos implementá-la adequadamente a tempo.
