@@ -1321,7 +1321,7 @@ void CMMXSurface32Intrinsic::Mask()
 
 }}}
 
-== _SSE3_ ==
+== _SSE2_ ==
 O registrador xmm0 recebe 4 pixels e a máscara é novamente aplicada, jogando quatro pixels na tela após a operação AND
 
 {{{
