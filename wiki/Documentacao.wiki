@@ -1373,7 +1373,9 @@ void CSSE2Surface32Intrinsic::Mask()
 
 ==_Gráfico comparativo_==
 
-http://img6.imageshack.us/img6/9112/graficoi.png
+|| *Versão* || *Naive* || *MMX* || *SSE2* ||
+|| *32 bits (320x240)* || 169 || 1142 || 1606 ||
+|| *32 bits (680x340)* || 58 || 384 || 452 ||
 
 ----
 
