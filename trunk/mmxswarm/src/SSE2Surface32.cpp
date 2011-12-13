@@ -975,3 +975,154 @@ void CSSE2Surface32Intrinsic::Rescale()
 		} while (--width > 0);
 	} while (--height > 0); 
 }
+
+// Grupo 18 - Solarize
+/*
+void CSSE2Surface32Intrinsic::Solarize()
+{
+	DWORD *pCur  = (DWORD *)GetPixelAddress(0,0);			// Ponteiro para o início dos pixels
+	int i, j;
+	int hei = GetVisibleHeight()*2, wid = GetVisibleWidth();
+
+	ULONGLONG mascara = 0xFF;							//máscara para selecionar um byte por vez
+	ULONGLONG pixel1, pixel2;							//variaveis de 64 bits que receberão valores de dois pixels consecutivos
+	ULONGLONG meio = 0x8080808080808080;//medias RGB de pixel1 e pixel2 respectivamente
+	
+	for(i=0;i<hei;i++)
+		for(j=0;j<wid;j++) {
+			pixel1 = *(ULONGLONG *) pCur;					//pixel1 recebe pixel que está sendo apontado por pCur 
+			pixel2 = *(ULONGLONG *) (pCur+1);				//pixel2 recebe pixel consecutivo
+			
+			// Inline assembly
+			__asm {
+				movq xmm0, pixel1		//move pixel1 para os 64 bits menos significativos de xmm0 (128 bits)
+				movhpd xmm0, pixel2		//move pixel2 para os 64 bits mais significativos de xmm0
+				movq xmm1, meio
+				movhpd xmm1, meio
+				psubb xmm0, xmm1		// distancia de xmm0 a xmm1
+
+				movq xmm2, xmm0		// calcula o bit mais significativo do byte 1
+				pslld xmm2, 24
+				psrld xmm2, 31
+				movq xmm3, xmm2
+				movq xmm2, xmm0		// calcula o bit mais significativo do byte 2
+				pslld xmm2, 16
+				psrld xmm2, 31
+				pslld xmm2, 8
+				paddd xmm3, xmm2
+				movq xmm2, xmm0		// calcula o bit mais significativo do byte 3
+				pslld xmm2, 8
+				psrld xmm2, 31
+				pslld xmm2, 16
+				paddd xmm3, xmm2
+				movq xmm2, xmm0		// calcula o bit mais significativo do byte 4
+				psrld xmm2, 31
+				pslld xmm2, 24
+				paddd xmm3, xmm2
+
+				movq xmm4, xmm0
+				paddb xmm4, xmm4
+				pxor xmm4, xmm3
+				psubb xmm4, xmm3
+				//paddb mm0, mm3
+				//pxor mm0, mm3
+				psubb xmm0, xmm4
+				paddb xmm0, xmm0
+
+				movlps pixel1, xmm0
+				movhps pixel2, xmm0
+				
+				/*movq xmm0, pixel1					  //move pixel1 para os 64 bits menos significativos de xmm0 (128 bits)
+				movhpd xmm0, pixel2					 //move pixel2 para os 64 bits mais significativos de xmm0
+
+				movq xmm1, mascara					//xmm1 fará o papel de seletor de bytes especificos de xmm0
+				pand xmm1,xmm0						
+				movq xmm2,xmm1                      //isola o canal B de pixel1 em xmm2
+				movq xmm1, meio
+				psubq xmm2, xmm1					//Subtrai 128 do canal B
+				cvtdq2ps xmm2,xmm2
+				mulps xmm2, xmm2					//Eleva ao quadrado
+				sqrtsd xmm2, xmm2                   //Tira a raiz
+				cvtps2dq xmm2,xmm2
+
+				movq xmm1,mascara					
+				psrldq xmm0,1						//desloca em 1 para direita xmm0 (como são registradores 128 bits, na verdade ocorre um deslocamento de 2 unidades)
+				pand xmm1,xmm0
+				movq xmm3,xmm1						//isola o canal G de pixel1 em xmm3
+				movq xmm1, meio
+				psubq xmm3, xmm1					//Subtrai 128 do canal G
+				cvtdq2ps xmm3,xmm3
+				mulps xmm3, xmm3					//Eleva ao quadrado
+				sqrtsd xmm3, xmm3                   //Tira a raiz
+				cvtps2dq xmm3,xmm3
+				
+				movq xmm1,mascara
+				psrldq xmm0,1						//desloca em 1 para direita xmm0 (como são registradores 128 bits, na verdade ocorre um deslocamento de 2 unidades)
+				pand xmm1,xmm0
+				movq xmm4,xmm1						//isola o canal R de pixel1 em xmm3
+				movq xmm1, meio
+				psubq xmm4, xmm1					//Subtrai 128 do canal R
+				cvtdq2ps xmm4,xmm4
+				mulps xmm4, xmm4					//Eleva ao quadrado
+				sqrtsd xmm4, xmm4                   //Tira a raiz
+				cvtps2dq xmm4,xmm4
+				
+				psrldq xmm0,2						//desloca em 2 (pula o alpha) para direita xmm0, para selecionar agora sua metade mais significativa (pixel2)
+				
+				movq xmm1,mascara
+				pand xmm1,xmm0
+				movq xmm5,xmm1						//isola o canal B de pixel1 em xmm5
+				movq xmm1, meio
+				psubq xmm5, xmm1					//Subtrai 128 do canal B
+				cvtdq2ps xmm5,xmm5
+				mulps xmm5, xmm5					//Eleva ao quadrado
+				sqrtsd xmm5, xmm5                   //Tira a raiz
+				cvtps2dq xmm5,xmm5
+
+				movq xmm1,mascara
+				psrldq xmm0,1
+				pand xmm1,xmm0
+				movq xmm6,xmm1						//isola o canal G de pixel1 em xmm6
+				movq xmm1, meio
+				psubq xmm6, xmm1					//Subtrai 128 do canal G
+				cvtdq2ps xmm6,xmm6
+				mulps xmm6, xmm6					//Eleva ao quadrado
+				sqrtsd xmm6, xmm6                   //Tira a raiz
+				cvtps2dq xmm6,xmm6
+
+				movq xmm1,mascara
+				psrldq xmm0,1
+				pand xmm1,xmm0
+				movq xmm7,xmm1						//isola o canal R de pixel1 em xmm7
+				movq xmm1, meio
+				psubq xmm7, xmm1					//Subtrai 128 do canal R
+				cvtdq2ps xmm7,xmm7
+				mulps xmm7, xmm7					//Eleva ao quadrado
+				sqrtsd xmm7, xmm7                   //Tira a raiz
+				cvtps2dq xmm7,xmm7
+
+				pxor xmm0,xmm0					// zera o registrador que vai receber os resultados
+
+				paddq xmm0,xmm4					// R de pixel1
+				pslldq xmm0,1					// proxima posição
+				paddq xmm0,xmm3					// G de pixel1
+				pslldq xmm0,1					// proxima posição
+				paddq xmm0,xmm2					// B de pixel1
+				movq pixel1,xmm0				// atualiza o valor de pixel1
+				
+				pxor xmm0,xmm0					// zera o registrador que vai receber os resultados
+
+				paddq xmm0,xmm7					// R de pixel2
+				pslldq xmm0,1					// proxima posição
+				paddq xmm0,xmm6					// G de pixel2
+				pslldq xmm0,1					// proxima posição
+				paddq xmm0,xmm5					// B de pixel2
+				movq pixel2,xmm0				// atualiza o valor de pixel2*/
+			/*}
+
+			*(ULONGLONG *)pCur = pixel1;			//joga o valor calculado de pixel1 de volta na tela
+			*(ULONGLONG *)(pCur+1) = pixel2;		//joga o valor calculado de pixel2 de volta na tela
+
+			pCur+=2;
+		}
+}*/
