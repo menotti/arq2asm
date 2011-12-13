@@ -2936,7 +2936,7 @@ https://lh3.googleusercontent.com/-NRJj31RXiBE/TuejfneVzUI/AAAAAAAAAFk/dRlsPcaL4
 https://lh5.googleusercontent.com/-k-A5ZUwDzuw/TuejfrlbhXI/AAAAAAAAAFo/QF_4HvpxMNc/s800/solarize.png
 
 == Naive ==
-Aplicamos o filtro separadamente em cada canal  (R, G, B). Implementamos uma pequena função para tratar os casos em que '[Canal]-128'  vem a ser negativo. Assim, temos o valor absoluto (módulo) da operação.
+Aplicamos o filtro separadamente em cada canal  (R, G, B). Implementamos uma pequena função para tratar os casos em que 'Canal-128'  vem a ser negativo. Assim, temos o valor absoluto (módulo) da operação.
 
 Fizemos duas implementações, em uma delas utilizamos C++, e na outra adicionamos assembly inline para otimização.
 
@@ -3060,4 +3060,4 @@ void CMMXSurface32Intrinsic::Solarize()
 == SSE ==
 Há uma versão iniciada não-funcional em comentário no repositório, mas não conseguimos implementá-la adequadamente a tempo.
 
----
+-----
