@@ -880,6 +880,28 @@ O filtro azular deixa a imagem em tons de azul. Calculando o valor da média do 
 
 <b>Naive</b>
 
+void CSurface::Azular()
+{
+   // Azular
+   COLORREF cCur;
+	
+   //Percorre toda imagem
+   for (int y = 0; y < m_wndHeight; y++) {
+      for (int x = 0; x < m_wndWidth; x++) {
+	 cCur = PointColorD(x,y);
+	 int R = GetRValue(cCur);
+	 int G = GetGValue(cCur);
+	 int B = GetBValue(cCur);
+	 int NC = (R+G+B)/3;
+	 COLORREF newPixCol =  RGB(0,0,NC);
+	 PointColorT(x,y,newPixCol);
+      }
+  }
+
+  //Quando terminar, copia o resultado para a imagem corrente
+  Copy(t_image);
+}
+
 <b>MMX</b>
 
 <b>SSE</b>
@@ -890,6 +912,27 @@ O filtro esverdar deixa a imagem em tons de verde. Calculando o valor da média 
 
 <b>Naive</b>
 
+void CSurface::Esverdear()
+{
+   // Esverdear
+   COLORREF cCur;
+	
+   //Percorre toda imagem
+   for (int y = 0; y < m_wndHeight; y++) {
+      for (int x = 0; x < m_wndWidth; x++) {
+	 cCur = PointColorD(x,y);
+	 int R = GetRValue(cCur);
+	 int G = GetGValue(cCur);
+	 int B = GetBValue(cCur);
+	 int NC = (R+G+B)/3;
+	 COLORREF newPixCol =  RGB(0,NC,0);
+	 PointColorT(x,y,newPixCol);
+      }
+  }
+
+  //Quando terminar, copia o resultado para a imagem corrente
+  Copy(t_image);
+}
 <b>MMX</b>
 
 <b>SSE</b>
@@ -899,6 +942,27 @@ O filtro esverdar deixa a imagem em tons de verde. Calculando o valor da média 
 O filtro envermelhar deixa a imagem em tons de vermelho. Calculando o valor da média do RGB de um pixel, para então atribuir o valor da média ao B e zerar os valores de RGB.
 
 <b>Naive</b>
+void CSurface::Envermelhar()
+{
+   // Envermelhar
+   COLORREF cCur;
+	
+   //Percorre toda imagem
+   for (int y = 0; y < m_wndHeight; y++) {
+      for (int x = 0; x < m_wndWidth; x++) {
+	 cCur = PointColorD(x,y);
+	 int R = GetRValue(cCur);
+	 int G = GetGValue(cCur);
+	 int B = GetBValue(cCur);
+	 int NC = (R+G+B)/3;
+	 COLORREF newPixCol =  RGB(NC,0,0);
+	 PointColorT(x,y,newPixCol);
+      }
+  }
+
+  //Quando terminar, copia o resultado para a imagem corrente
+  Copy(t_image);
+}
 
 <b>MMX</b>
 
