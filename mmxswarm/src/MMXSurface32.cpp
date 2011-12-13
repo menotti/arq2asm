@@ -253,18 +253,7 @@ void CMMXSurface32Intrinsic::Azular() {
 			}
 
 			pixel /= 3;				//realiza media dos valores RGB ((R+G+B)/3)
-			/*
-			__asm{
-				movq mm0, pixel		//mm0 recebe a media dos valores RGB
-					movq mm1, mm0		//copia mm0 em mm1
-					psllq mm0, 8		//realiza um shift lógico para esquerda em 1 byte
-					pxor mm2,mm2
-					paddd mm1, mm2		//soma a (media<<8) em mm1 
-					psllq mm0, 8		//novamente um shift para esquerda em 1 byte
-					paddd mm1, mm2		//soma a (media<<16) em mm1
-					movq pixel, mm1		//mm1 agora possui os valores médios RGB (GrayScale), então salva isso em pixel
-			}
-			*/
+
 			*(ULONGLONG *)pCur = pixel;		//joga o resultado no ponto apontado da tela
 			pixel = next;					//recebe o próximo pixel a ser processado
 			pCur++;							//avança o ponteiro sobre a tela
@@ -312,7 +301,7 @@ void CMMXSurface32Intrinsic::Esverdear() {
 			__asm{
 					movq mm0, pixel		//mm0 recebe a media dos valores RGB
 					psllq mm0, 8
-					movq pixel, mm0		//mm1 agora possui os valores médios RGB (GrayScale), então salva isso em pixel
+					movq pixel, mm0		
 			}
 
 			*(ULONGLONG *)pCur = pixel;		//joga o resultado no ponto apontado da tela
@@ -362,7 +351,7 @@ void CMMXSurface32Intrinsic::Envermelhar() {
 			__asm{
 					movq mm0, pixel		//mm0 recebe a media dos valores RGB
 					psllq mm0, 16
-					movq pixel, mm0		//mm1 agora possui os valores médios RGB (GrayScale), então salva isso em pixel
+					movq pixel, mm0	
 			}
 
 			*(ULONGLONG *)pCur = pixel;		//joga o resultado no ponto apontado da tela
