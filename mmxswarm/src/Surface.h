@@ -130,7 +130,9 @@ public:
 
 	 // GRUPO 18 - Filtro Solarize
 	 virtual void Solarize();
-	 double Sol(double v);
+	 //double Sol(double v);
+	 byte Sol(byte v);
+	 virtual void Mirror();
 
 	 BYTE *GetPixelAddress(int x, int y) const
 	 { return((BYTE*)m_image.GetPixelAddress(x, y+m_kDeltaY)); }
