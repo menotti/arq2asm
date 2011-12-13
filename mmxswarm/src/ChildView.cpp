@@ -98,6 +98,7 @@ BEGIN_MESSAGE_MAP(CChildView, CWnd)
 
 	ON_COMMAND_RANGE(IDD_16BIT_MMXINTRINSICS, IDD_32BIT_GENERICCBLUR, OnImageFormats)
 	ON_UPDATE_COMMAND_UI_RANGE(IDD_16BIT_MMXINTRINSICS, IDD_32BIT_GENERICCBLUR, OnUpdateImageFormats)
+	ON_UPDATE_COMMAND_UI_RANGE(ID_MODE_WEBCAM, ID_MODE_SWARM, OnUpdateMode)
 	ON_WM_ERASEBKGND()
 	ON_WM_DESTROY()
 END_MESSAGE_MAP()
@@ -126,6 +127,7 @@ CChildView::CChildView()
 	m_bUseChannelmix = false; //Grupo 11
 	m_bTimerPopped = false;
 	m_eSurf = eNone;
+	m_eMode = eSwarm;
 	execSobel = false; //Grupo 5
 	execGray = false; //grupo 12
 	m_bUseSolarize = false; // Grupo 18
@@ -981,6 +983,21 @@ void CChildView::OnUpdateImageFormats(CCmdUI* pCmdUI)
 
 	pCmdUI->Enable(bEnable);
 }
+
+void CChildView::OnUpdateMode(CCmdUI* pCmdUI)
+{
+
+
+	m_eMode = EMode(pCmdUI->m_nID);
+
+	if (ESurface(pCmdUI->m_nID) == m_eMode)
+		pCmdUI->SetCheck(1);
+	else
+		pCmdUI->SetCheck(0);
+
+	pCmdUI->Enable(true);
+}
+
 
 BOOL CChildView::OnEraseBkgnd(CDC*)  //pDC
 {

@@ -26,6 +26,9 @@
 #define IDS_ALL_IMAGES                  176
 #define ID_STATIC_MODE                  177
 #define ID_MODE_WEBCAM                  178
+#define ID_MODE_IMAGE                   179
+#define ID_MODE_FADE                    180
+#define ID_MODE_SWARM                   181
 #define ID_INDICATOR_FPS                59142
 #define ID_INDICATOR_RESOLUTION         59143
 #define ID_INDICATOR_PAUSE_SWARM        59144
@@ -62,17 +65,14 @@
 #define ID_VIEW_USE_INVERT              59407
 #define ID_VIEW_USE_GRADIENT            59408
 #define ID_VIEW_USE_CHANNELMIX          59409
-#define ID_MODE_IMAGE                   59410
-#define ID_MODE_FADE                    59411
-#define ID_MODE_SWARM                   59412
 #define ID_VIEW_USE_RESCALE				59413
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        177
-#define _APS_NEXT_COMMAND_VALUE         59413
+#define _APS_NEXT_RESOURCE_VALUE        182
+#define _APS_NEXT_COMMAND_VALUE         59414
 #define _APS_NEXT_CONTROL_VALUE         1000
 #define _APS_NEXT_SYMED_VALUE           101
 #endif

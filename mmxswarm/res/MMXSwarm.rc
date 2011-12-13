@@ -152,13 +152,13 @@ BEGIN
         MENUITEM "Use &Invert\tY",              ID_VIEW_USE_INVERT
         MENUITEM "Use &Gradient\tD",            ID_VIEW_USE_GRADIENT
         MENUITEM "Use &ChannelMix\tAlt+C",      ID_VIEW_USE_CHANNELMIX
-		MENUITEM "Use &Rescale\tW",             ID_VIEW_USE_RESCALE 
+        MENUITEM "Use &Rescale\tW",             ID_VIEW_USE_RESCALE
     END
     POPUP "&Mode"
     BEGIN
-        MENUITEM "&Image",                      ID_MODE_IMAGE
-        MENUITEM "&Fade In/Out",                ID_MODE_FADE
         MENUITEM "&Swarm",                      ID_MODE_SWARM
+        MENUITEM "&Fade In/Out",                ID_MODE_FADE
+        MENUITEM "&Image",                      ID_MODE_IMAGE
         MENUITEM "&Webcam",                     ID_MODE_WEBCAM
     END
     POPUP "&Help"
@@ -204,7 +204,7 @@ BEGIN
     "Y",            ID_VIEW_USE_INVERT,     VIRTKEY, NOINVERT
     "C",            ID_VIEW_USE_CHANNELMIX, VIRTKEY, ALT, NOINVERT
     "S",            ID_STATIC_MODE,         VIRTKEY, CONTROL, NOINVERT
-	"W",            ID_VIEW_USE_RESCALE,	VIRTKEY, NOINVERT
+    "W",            ID_VIEW_USE_RESCALE,    VIRTKEY, NOINVERT
 END
 
 
