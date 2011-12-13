@@ -753,3 +753,50 @@ void CSurface::Rescale() {
 		}
 	}
 }
+
+//Grupo 20
+void CSurface::Dither() {
+	COLORREF cCur;
+
+	int r,g,b;
+	for(int i = 0; i< m_wndHeight;i++) {
+		for(int j = 0; j < m_wndWidth; j++) {
+					int rows, cols;
+					int div[256];
+					int mod[256];
+					int v = 0;
+					rows = cols = m_wndWidth/2;
+					int map[6];
+					int rc = (rows*cols+1);
+					for (int i = 0; i < 256; i++) {
+						div[i] = (6-1)*i / 256;
+						mod[i] = i*rc/256;
+													}
+					for (int i = 0; i < 6; i++) {
+						v = 255 * i / (6-1);
+						map[i] = v;
+												}
+					cCur = PointColor (j,i);   
+					r = (GetRValue(cCur) >> 16) & 0xff;
+					g = (GetRValue(cCur) >> 8) & 0xff;
+					b = GetRValue(cCur) & 0xff;
+					int col = m_wndHeight % cols;
+					int row = m_wndWidth % rows;
+					int matrix[16] = {
+	 									 0,  1,  2,  3,
+										 4,  5,  6,  7,
+										 8,  9, 10, 11,
+										12, 13, 14, 15
+									};
+
+					v = matrix[row*cols+col];
+					/*r = map[mod[r] > v ? div[r] + 1 : div[r]];
+					g = map[mod[g] > v ? div[g] + 1 : div[g]];
+					b = map[mod[b] > v ? div[b] + 1 : div[b]];*/
+					int value = (r+g+b)/3;
+					r = g = b = map[mod[value] > v ? div[value] + 1 : div[value]];
+					PointColor(j,i,RGB(b,g,r)); // Atualiza o pixel com a nova cor
+
+		}
+	}
+}
