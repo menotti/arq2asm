@@ -156,6 +156,7 @@ BEGIN
 		MENUITEM "Use Azular",					ID_VIEW_USE_AZULAR
 		MENUITEM "Use Esverdear",				ID_VIEW_USE_ESVERDEAR
 		MENUITEM "Use Envermelhar",				ID_VIEW_USE_ENVERMELHAR
+		MENUITEM "Use &Mirror\tU",			    ID_VIEW_USE_MIRROR //Grupo 18
     END
     POPUP "&Mode"
     BEGIN
@@ -208,6 +209,7 @@ BEGIN
     "C",            ID_VIEW_USE_CHANNELMIX, VIRTKEY, ALT, NOINVERT
     "S",            ID_STATIC_MODE,         VIRTKEY, CONTROL, NOINVERT
 	"W",            ID_VIEW_USE_RESCALE,	VIRTKEY, NOINVERT
+	"U",            ID_VIEW_USE_MIRROR,		VIRTKEY, NOINVERT//Grupo 18
 END
 
 
