@@ -844,13 +844,15 @@ Para uma imagem estática de 1498x935 esta implementação consegue calcular 23 
 
 <wiki:comment>
 Grupo 5
-Implementar e descrever as nas versões Normal, MMX e SSE.
+Implementar e descrever as nas versões Normal.
 </wiki:comment>
 
 O mecanismo de detecção de borda Sobel é elaborado com a finaliadde de encontrar os pixels onde há uma mudança no nível de intensidade, sendo está mudança uma característica relevante de uma borda em uma imagem. Assim quando esses pixel estão próximos podem ser destacados formando uma borda.
 A sua implementação consiste no cálculo do gradiente da imagem. Esse cálculo é feito definindo máscaras que caracterizam a variação de intensidade presente nas bordas de imagens, e em seguida fazer a convolução da imagem pela máscara.
+http://i41.tinypic.com/jhg42e.png
 
-=== _Naive_ ===
+
+<b>Naive</b>
 
 {{{
 
@@ -875,45 +877,501 @@ void CSurface::Sobel()
     //Percorre toda imagem
     for (y = 0; y < m_wndHeight; y++) {
         for (x = 0; x <m_wndWidth; x++) {
-	    sumX = 0;
-	    sumY = 0;
+            sumX = 0;
+            sumY = 0;
 
-	    //Se for boada, atribui o valor 0(preto)
-	    if((y==0) || (y == (m_wndHeight - 1)) || (x==0) || (x == (m_wndWidth - 1)))
-	        SUM = 0;
-		else{
-		    for(I=-1; I<=1; I++){
-		        for(J=-1; J<=1; J++){
-		            piX = J + x;
-			    piY = I + y;
+            //Se for boada, atribui o valor 0(preto)
+            if((y==0) || (y == (m_wndHeight - 1)) || (x==0) || (x == (m_wndWidth - 1)))
+                SUM = 0;
+                else{
+                    for(I=-1; I<=1; I++){
+                        for(J=-1; J<=1; J++){
+                            piX = J + x;
+                            piY = I + y;
 
-			    //Pega o valor da imagem corrente
-			    cCur = PointColor(piX,piY);
+                            //Pega o valor da imagem corrente
+                            cCur = PointColor(piX,piY);
 
-			    r = GetRValue(cCur);
-			    g = GetGValue(cCur);
-			    b = GetBValue(cCur);
+                            r = GetRValue(cCur);
+                            g = GetGValue(cCur);
+                            b = GetBValue(cCur);
 
-			    NC = (r+g+b)/3;
+                            NC = (r+g+b)/3;
 
-			    sumX = sumX + (NC) * GXS[J+1][I+1];
-			    sumY = sumY + (NC) * GYS[J+1][I+1];
-			}
-		    }
+                            sumX = sumX + (NC) * GXS[J+1][I+1];
+                            sumY = sumY + (NC) * GYS[J+1][I+1];
+                        }
+                    }
 
-		    SUM = abs(sumX) + abs(sumY);
-		}
+                    SUM = abs(sumX) + abs(sumY);
+                }
 
-		if(SUM>255) SUM=255;
-		if(SUM<0) SUM=0;
-		newPixel = ((unsigned char)(SUM));
-			
-		PointColorT(x,y,RGB(newPixel,newPixel,newPixel));
-	    }
-	}
+                if(SUM>255) SUM=255;
+                if(SUM<0) SUM=0;
+                newPixel = ((unsigned char)(SUM));
+                        
+                PointColorT(x,y,RGB(newPixel,newPixel,newPixel));
+            }
+        }
 
     //Quando terminar, copia o resultado para a imagem corrente
     Copy(t_image);
+}
+}}}
+
+== Azular ==
+
+O filtro azular deixa a imagem em tons de azul. Calculando o valor da média do RGB de um pixel, para então atribuir o valor da média ao B e zerar os valores de RGB.
+
+http://i42.tinypic.com/994caw.png
+
+<b>Naive</b>
+{{{
+void CSurface::Azular()
+{
+   // Azular
+   COLORREF cCur;
+        
+   //Percorre toda imagem
+   for (int y = 0; y < m_wndHeight; y++) {
+      for (int x = 0; x < m_wndWidth; x++) {
+         cCur = PointColorD(x,y);
+         int R = GetRValue(cCur);
+         int G = GetGValue(cCur);
+         int B = GetBValue(cCur);
+         int NC = (R+G+B)/3;
+         COLORREF newPixCol =  RGB(0,0,NC);
+         PointColorT(x,y,newPixCol);
+      }
+  }
+
+  //Quando terminar, copia o resultado para a imagem corrente
+  Copy(t_image);
+}
+}}}
+<b>MMX</b>
+{{{
+void CMMXSurface32Intrinsic::Azular() {
+        int height = GetVisibleHeight()*2;      
+        DWORD *pCur  = (DWORD *)GetPixelAddress(0,0);   
+
+
+        ULONGLONG mascara = 0xFF;       
+        ULONGLONG pixel;        
+        ULONGLONG next;         
+
+        pixel = *(ULONGLONG *)pCur;     
+
+        do {
+                int width = m_width;
+                do {
+
+                        next = *(ULONGLONG *)(pCur+1);  
+
+                        //Calcula média dos pixels
+                        __asm{
+                                movq mm0, pixel         
+                                        pand mm0, mascara       
+                                        movq mm1, mm0           
+                                        movq mm0, pixel 
+                                        psrlq mm0, 8    
+                                        pand mm0, mascara
+                                        paddd mm1, mm0  
+                                        movq mm0, pixel 
+                                        psrlq mm0, 16   
+                                        pand mm0, mascara
+                                        paddd mm1,mm0   
+                                        movq pixel, mm1 
+                        }
+
+                        pixel /= 3;     
+                        // Atribui valor
+                        *(ULONGLONG *)pCur = pixel;
+                        pixel = next;           
+                        pCur++;                                                 
+                } while (--width > 0);
+        } while (--height > 0);
+}
+}}}
+<b>SSE</b>
+{{{
+void CSSE2Surface32Intrinsic::Azular()
+{
+        int height = GetVisibleHeight()*2;
+        DWORD *pCur  = (DWORD *)GetPixelAddress(0,0);   
+
+        ULONGLONG mascara = 0xFF;
+        ULONGLONG pixel1, pixel2;
+        ULONGLONG next1, next2; 
+        ULONGLONG media1, media2;       
+
+        pixel1 = *(ULONGLONG *) pCur;   
+        pixel2 = *(ULONGLONG *) (pCur+1);
+
+        //loops para percorrer toda a tela
+        do {
+                int width = m_width;
+                do {
+                        next1 = *(ULONGLONG *) (pCur+2);
+                        next2 = *(ULONGLONG *) (pCur+3);        
+
+                        __asm{
+                                        movq xmm0, pixel1
+                                        movhpd xmm0, pixel2
+                                        movq xmm1, mascara
+                                        pand xmm1,xmm0
+                                        movq xmm2,xmm1  
+                                        movq xmm1,mascara                                       
+                                        psrldq xmm0,1   
+                                        pand xmm1,xmm0
+                                        paddq xmm2,xmm1
+                                        movq xmm1,mascara
+                                        psrldq xmm0,1
+                                        pand xmm1,xmm0
+                                        paddq xmm2,xmm1
+                                        movq media1,xmm2
+                                        movq xmm1,mascara
+                                        psrldq xmm0,2           
+                                        pand xmm1,xmm0
+                                        movq xmm2,xmm1
+                                        movq xmm1,mascara
+                                        psrldq xmm0,1
+                                        pand xmm1,xmm0
+                                        paddq xmm2,xmm1
+                                        movq xmm1,mascara
+                                        psrldq xmm0,1
+                                        pand xmm1,xmm0
+                                        paddq xmm2,xmm1
+                                        movq media2,xmm2                                        //salva a soma dos valores RGB de pixel2 em media2
+                        }
+
+                        media1 /= 3;                                            
+                        media2 /= 3;
+
+                        __asm{
+                                        pxor xmm2,xmm2
+                                        movq xmm0,media1
+                                        movq pixel1,xmm0        
+                                        movq xmm0,media2
+                                        movq pixel2,xmm0        
+                        }
+
+                        *(ULONGLONG *)pCur = pixel1;    
+                        *(ULONGLONG *)(pCur+1) = pixel2;
+                        pixel1 = next1; 
+                        pixel2 = next2; 
+                        pCur += 2;      
+                } while (--width > 0);
+        } while (--height > 0);
+}
+}}}
+
+== Esverdear ==
+
+O filtro esverdar deixa a imagem em tons de verde. Calculando o valor da média do RGB de um pixel, para então atribuir o valor da média ao G e zerar os valores de RGB.
+
+http://i43.tinypic.com/2i1no89.png 
+
+<b>Naive</b>
+{{{
+void CSurface::Esverdear()
+{
+   // Esverdear
+   COLORREF cCur;
+        
+   //Percorre toda imagem
+   for (int y = 0; y < m_wndHeight; y++) {
+      for (int x = 0; x < m_wndWidth; x++) {
+         cCur = PointColorD(x,y);
+         int R = GetRValue(cCur);
+         int G = GetGValue(cCur);
+         int B = GetBValue(cCur);
+         int NC = (R+G+B)/3;
+         COLORREF newPixCol =  RGB(0,NC,0);
+         PointColorT(x,y,newPixCol);
+      }
+  }
+
+  //Quando terminar, copia o resultado para a imagem corrente
+  Copy(t_image);
+}
+}}}
+<b>MMX</b>
+{{{
+void CMMXSurface32Intrinsic::Esverdear() {
+        int height = GetVisibleHeight()*2;      
+        DWORD *pCur  = (DWORD *)GetPixelAddress(0,0);   
+
+
+        ULONGLONG mascara = 0xFF;       
+        ULONGLONG pixel;        
+        ULONGLONG next;         
+
+        pixel = *(ULONGLONG *)pCur;     
+
+        do {
+                int width = m_width;
+                do {
+
+                        next = *(ULONGLONG *)(pCur+1);  
+
+                        //Calcula média dos pixels
+                        __asm{
+                                movq mm0, pixel         
+                                        pand mm0, mascara       
+                                        movq mm1, mm0           
+                                        movq mm0, pixel 
+                                        psrlq mm0, 8    
+                                        pand mm0, mascara
+                                        paddd mm1, mm0  
+                                        movq mm0, pixel 
+                                        psrlq mm0, 16   
+                                        pand mm0, mascara
+                                        paddd mm1,mm0   
+                                        movq pixel, mm1 
+                        }
+
+                        pixel /= 3;
+                        __asm{
+                                        movq mm0, pixel         
+                                        psllq mm0, 8
+                                        movq pixel, mm0         
+                        }
+                        // Atribui valor
+                        *(ULONGLONG *)pCur = pixel;
+                        pixel = next;           
+                        pCur++;                                                 
+                } while (--width > 0);
+        } while (--height > 0);
+}
+}}}
+
+<b>SSE</b>
+{{{
+void CSSE2Surface32Intrinsic::Esverdear()
+{
+        int height = GetVisibleHeight()*2;
+        DWORD *pCur  = (DWORD *)GetPixelAddress(0,0);   
+
+        ULONGLONG mascara = 0xFF;
+        ULONGLONG pixel1, pixel2;
+        ULONGLONG next1, next2; 
+        ULONGLONG media1, media2;       
+
+        pixel1 = *(ULONGLONG *) pCur;   
+        pixel2 = *(ULONGLONG *) (pCur+1);
+
+        //loops para percorrer toda a tela
+        do {
+                int width = m_width;
+                do {
+                        next1 = *(ULONGLONG *) (pCur+2);
+                        next2 = *(ULONGLONG *) (pCur+3);        
+
+                        __asm{
+                                        movq xmm0, pixel1
+                                        movhpd xmm0, pixel2
+                                        movq xmm1, mascara
+                                        pand xmm1,xmm0
+                                        movq xmm2,xmm1  
+                                        movq xmm1,mascara                                       
+                                        psrldq xmm0,1   
+                                        pand xmm1,xmm0
+                                        paddq xmm2,xmm1
+                                        movq xmm1,mascara
+                                        psrldq xmm0,1
+                                        pand xmm1,xmm0
+                                        paddq xmm2,xmm1
+                                        movq media1,xmm2
+                                        movq xmm1,mascara
+                                        psrldq xmm0,2           
+                                        pand xmm1,xmm0
+                                        movq xmm2,xmm1
+                                        movq xmm1,mascara
+                                        psrldq xmm0,1
+                                        pand xmm1,xmm0
+                                        paddq xmm2,xmm1
+                                        movq xmm1,mascara
+                                        psrldq xmm0,1
+                                        pand xmm1,xmm0
+                                        paddq xmm2,xmm1
+                                        movq media2,xmm2                                        //salva a soma dos valores RGB de pixel2 em media2
+                        }
+
+                        media1 /= 3;                                            
+                        media2 /= 3;
+
+                        __asm{
+                                        pxor xmm2,xmm2
+                                        movq xmm0,media1
+                                        pslldq xmm0,1
+                                        movq pixel1,xmm0        
+                                        movq xmm0,media2
+                                        pslldq xmm0,1
+                                        movq pixel2,xmm0        
+                        }
+
+                        *(ULONGLONG *)pCur = pixel1;    
+                        *(ULONGLONG *)(pCur+1) = pixel2;
+                        pixel1 = next1; 
+                        pixel2 = next2; 
+                        pCur += 2;      
+                } while (--width > 0);
+        } while (--height > 0);
+}
+}}}
+
+== Envermelhar ==
+
+O filtro envermelhar deixa a imagem em tons de vermelho. Calculando o valor da média do RGB de um pixel, para então atribuir o valor da média ao B e zerar os valores de RGB.
+
+http://i42.tinypic.com/2ip9j4.png 
+
+<b>Naive</b>
+{{{
+void CSurface::Envermelhar()
+{
+   // Envermelhar
+   COLORREF cCur;
+        
+   //Percorre toda imagem
+   for (int y = 0; y < m_wndHeight; y++) {
+      for (int x = 0; x < m_wndWidth; x++) {
+         cCur = PointColorD(x,y);
+         int R = GetRValue(cCur);
+         int G = GetGValue(cCur);
+         int B = GetBValue(cCur);
+         int NC = (R+G+B)/3;
+         COLORREF newPixCol =  RGB(NC,0,0);
+         PointColorT(x,y,newPixCol);
+      }
+  }
+
+  //Quando terminar, copia o resultado para a imagem corrente
+  Copy(t_image);
+}
+}}}
+<b>MMX</b>
+{{{
+void CMMXSurface32Intrinsic::Envermelhar() {
+        int height = GetVisibleHeight()*2;      
+        DWORD *pCur  = (DWORD *)GetPixelAddress(0,0);   
+
+
+        ULONGLONG mascara = 0xFF;       
+        ULONGLONG pixel;        
+        ULONGLONG next;         
+
+        pixel = *(ULONGLONG *)pCur;     
+
+        do {
+                int width = m_width;
+                do {
+
+                        next = *(ULONGLONG *)(pCur+1);  
+
+                        //Calcula média dos pixels
+                        __asm{
+                                movq mm0, pixel         
+                                        pand mm0, mascara       
+                                        movq mm1, mm0           
+                                        movq mm0, pixel 
+                                        psrlq mm0, 8    
+                                        pand mm0, mascara
+                                        paddd mm1, mm0  
+                                        movq mm0, pixel 
+                                        psrlq mm0, 16   
+                                        pand mm0, mascara
+                                        paddd mm1,mm0   
+                                        movq pixel, mm1 
+                        }
+
+                        pixel /= 3;
+                        __asm{
+                                        movq mm0, pixel         
+                                        psllq mm0, 16
+                                        movq pixel, mm0         
+                        }
+                        // Atribui valor
+                        *(ULONGLONG *)pCur = pixel;
+                        pixel = next;           
+                        pCur++;                                                 
+                } while (--width > 0);
+        } while (--height > 0);
+}
+}}}
+<b>SSE</b>
+{{{
+void CSSE2Surface32Intrinsic::Envermelhar()
+{
+        int height = GetVisibleHeight()*2;
+        DWORD *pCur  = (DWORD *)GetPixelAddress(0,0);   
+
+        ULONGLONG mascara = 0xFF;
+        ULONGLONG pixel1, pixel2;
+        ULONGLONG next1, next2; 
+        ULONGLONG media1, media2;       
+
+        pixel1 = *(ULONGLONG *) pCur;   
+        pixel2 = *(ULONGLONG *) (pCur+1);
+
+        //loops para percorrer toda a tela
+        do {
+                int width = m_width;
+                do {
+                        next1 = *(ULONGLONG *) (pCur+2);
+                        next2 = *(ULONGLONG *) (pCur+3);        
+
+                        __asm{
+                                        movq xmm0, pixel1
+                                        movhpd xmm0, pixel2
+                                        movq xmm1, mascara
+                                        pand xmm1,xmm0
+                                        movq xmm2,xmm1  
+                                        movq xmm1,mascara                                       
+                                        psrldq xmm0,1   
+                                        pand xmm1,xmm0
+                                        paddq xmm2,xmm1
+                                        movq xmm1,mascara
+                                        psrldq xmm0,1
+                                        pand xmm1,xmm0
+                                        paddq xmm2,xmm1
+                                        movq media1,xmm2
+                                        movq xmm1,mascara
+                                        psrldq xmm0,2           
+                                        pand xmm1,xmm0
+                                        movq xmm2,xmm1
+                                        movq xmm1,mascara
+                                        psrldq xmm0,1
+                                        pand xmm1,xmm0
+                                        paddq xmm2,xmm1
+                                        movq xmm1,mascara
+                                        psrldq xmm0,1
+                                        pand xmm1,xmm0
+                                        paddq xmm2,xmm1
+                                        movq media2,xmm2                                        //salva a soma dos valores RGB de pixel2 em media2
+                        }
+
+                        media1 /= 3;                                            
+                        media2 /= 3;
+
+                        __asm{
+                                        pxor xmm2,xmm2
+                                        movq xmm0,media1
+                                        pslldq xmm0,2
+                                        movq pixel1,xmm0        
+                                        movq xmm0,media2
+                                        pslldq xmm0,2
+                                        movq pixel2,xmm0        
+                        }
+
+                        *(ULONGLONG *)pCur = pixel1;    
+                        *(ULONGLONG *)(pCur+1) = pixel2;
+                        pixel1 = next1; 
+                        pixel2 = next2; 
+                        pCur += 2;      
+                } while (--width > 0);
+        } while (--height > 0);
 }
 }}}
 
