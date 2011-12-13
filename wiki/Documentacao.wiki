@@ -1761,11 +1761,15 @@ void CSurface::ChannelMix()
 Rescale Filter Grupo 17
 </wiki:comment>
 
-Descrição...........
+http://img163.imageshack.us/img163/4590/efeitorescale.jpg
+
+O filtro Rescale simplesmente multiplica os pixels por um certo fator. É usualmente empregado para mudança de máscaras ou para aumento de efeitos de iluminação. Em nossa implementação fizemos a multiplicação de cada canal de um pixel pelo fator de escala 2. 
 
 A seguir estão os códigos, todos implementados na versão 32 bits.
 
 == _Naive_ ==
+
+A implementação da versão Naive consistiu em multiplicar cada canal de cor (RGB) pelo fator 2. A simples multiplicação poderia levar ao wrap around que, ao ultrapassar o ponto de saturação (FFh - branco), assume valores negativos, fazendo todos os pixels tenderem à cor preta (00h). Para evitar esse efeito indesejável, utilizou-se uma estrutura condicional para certificar-se que o ponto de saturação não fosse ultrapassado, mantendo o valor máximo em FFh - branco.
 
 {{{
 
@@ -1790,6 +1794,8 @@ void CSurface::Rescale() {
 }}}
 
 == _MMX_ ==
+
+A versão MMX utilizou inline assembly para acessar os registradores de 64bits MMX. Selecionando um byte por vez e extraindo os canais RGB, utilizou-se funções aritméticas com saturação sem sinal (para evitar o efeito wrap around) para somar o valor dos canais dos pixels a si próprios (multiplicação por 2). 
 
 {{{
 
@@ -1848,6 +1854,8 @@ void CMMXSurface32Intrinsic::Rescale()
 }}}
 
 == _SSE2_ ==
+
+A versão SSE2 utilizou inline assembly para acessar os registradores de 128 bits SSE. Extraiu-se os canais RGB através da máscara FFh, assim como na implementação MMX, mas processando-se dois pixels por loop. Novamente, utilizou-se funções  aritméticas com saturação sem sinal (para evitar o efeito wrap around) para somar os valores dos canais dos pixels a si próprios, dobrando seu valor. 
 
 {{{
 
@@ -1942,6 +1950,10 @@ void CSSE2Surface32Intrinsic::Rescale()
 }}}
 
 ==_Gráfico comparativo_==
+
+A quantidade de quadros por segundo foi aferida aplicando-se o flitro no swarm, com o Blur ativado.
+
+Observa-se o desempenho da implementação MMX ainda inferior à Naive, na resolução 320x240. Em contrapartida, na resolução 640x480, MMX mostrou-se superior. Em ambos os casos a versão SSE superou as demais implementações.
 
 || *Versão* || *Naive* || *MMX* || *SSE2* ||
 || *32 bits (320x240)* || 87 || 71 || 95 ||
