@@ -92,6 +92,101 @@ void CSSE2Surface32Intrinsic::BlurBits()
 		} while (--width > 0);
 	} while (--height > 0);
 }
+//grupo 8
+void CSSE2Surface32Intrinsic::Gradient()
+{
+	int height = GetVisibleHeight()*2;				//aumenta a altura em 2 pois são processados 2 pixels de 32-bits de uma só vez em variáveis de 128 bits	
+	DWORD *pCur  = (DWORD *)GetPixelAddress(0,0);	//ponteiro para posição atual da tela
+
+	ULONGLONG mascara = 0xFF;						//máscara para selecionar um byte por vez
+	ULONGLONG pixel1, pixel2;						//variaveis de 64 bits que receberão valores de dois pixels consecutivos
+	ULONGLONG next1, next2;							//variáveis que guardam a próximas posições de pixel1 e pixel2
+
+	pixel1 = *(ULONGLONG *) pCur;					//pixel1 recebe pixel que está sendo apontado no inicio (0,0) 
+	pixel2 = *(ULONGLONG *) (pCur+1);				//pixel2 recebe pixel consecutivo (0,1)
+
+	int contador;
+	int contador2= 1;
+
+	//loops para percorrer toda a tela
+	do {
+		int width = m_width;
+		do {
+
+			next1 = *(ULONGLONG *) (pCur+2);		//guarda próximo valor para pixel1	
+			next2 = *(ULONGLONG *) (pCur+3);		//guarda próximo valor para pixel2	
+
+			contador = contador2/5;
+
+			__asm{
+					movq xmm0, pixel1					//move pixel1 para os 64 bits menos significativos de xmm0 (128 bits)
+					movhpd xmm0, pixel2					//move pixel2 para os 64 bits mais significativos de xmm0
+
+					movq xmm1, mascara					//xmm1 fará o papel de seletor de bytes especificos de xmm0
+					pand xmm1,xmm0						
+					movq xmm2,xmm1                      //isola o canal B de pixel1 em xmm2
+					addss xmm2, contador
+
+					movq xmm1,mascara					
+					psrldq xmm0,1						//desloca em 1 para direita xmm0 (como são registradores 128 bits, na verdade ocorre um deslocamento de 2 unidades)
+					pand xmm1,xmm0
+					movq xmm3,xmm1						//isola o canal G de pixel1 em xmm3
+					addss xmm3, contador
+
+					movq xmm1,mascara
+					psrldq xmm0,1						//desloca em 1 para direita xmm0 (como são registradores 128 bits, na verdade ocorre um deslocamento de 2 unidades)
+					pand xmm1,xmm0
+					movq xmm4,xmm1						//isola o canal R de pixel1 em xmm4
+					addss xmm4, contador
+
+					psrldq xmm0,2						//desloca em 2 (pula o alpha) para direita xmm0, para selecionar agora sua metade mais significativa (pixel2)
+
+					movq xmm1,mascara
+					pand xmm1,xmm0
+					movq xmm5,xmm1						//isola o canal B de pixel2 em xmm5
+					addss xmm5, contador
+
+					movq xmm1,mascara
+					psrldq xmm0,1
+					pand xmm1,xmm0
+					movq xmm6,xmm1						//isola o canal G de pixel2 em xmm6
+					addss xmm6, contador
+
+					movq xmm1,mascara
+					psrldq xmm0,1
+					pand xmm1,xmm0
+					movq xmm7,xmm1						//isola o canal R de pixel2 em xmm7
+					addss xmm7, contador
+
+					pxor xmm0,xmm0					// zera o registrador que vai receber os resultados
+
+					paddq xmm0,xmm4					// R de pixel1
+					pslldq xmm0,1					// proxima posição
+					paddq xmm0,xmm3					// G de pixel1
+					pslldq xmm0,1					// proxima posição
+					paddq xmm0,xmm2					// B de pixel1
+					movq pixel1,xmm0				// atualiza o valor de pixel1
+
+					pxor xmm0,xmm0					// zera o registrador que vai receber os resultados
+
+					paddq xmm0,xmm7					// R de pixel2
+					pslldq xmm0,1					// proxima posição
+					paddq xmm0,xmm6					// G de pixel2
+					pslldq xmm0,1					// proxima posição
+					paddq xmm0,xmm5					// B de pixel2
+					movq pixel2,xmm0				// atualiza o valor de pixel2
+			}
+
+			*(ULONGLONG *)pCur = pixel1;			//joga o valor calculado de pixel1 de volta na tela
+			*(ULONGLONG *)(pCur+1) = pixel2;		//joga o valor calculado de pixel2 de volta na tela
+			pixel1 = next1;							//pixel1 recebe o próximo pixel 
+			pixel2 = next2;							//pixel2 recebe o próximo pixel
+			pCur += 2;								//aumenta o ponteiro da tela em 2 (calcula 2 pixels por vez)
+		} while (--width > 0);
+		if (contador < 255)
+			contador2++;
+	} while (--height > 0); 
+}
 
 //Grupo 4
 void CSSE2Surface32Intrinsic::GrayScale()

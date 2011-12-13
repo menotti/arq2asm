@@ -28,6 +28,7 @@ public:
 	virtual void Azular();	// Grupo 5
 	virtual void Esverdear();	// Grupo 5
 	virtual void Envermelhar();	// Grupo 5
+	virtual void Gradient();	//Grupo 8
 protected:
 	virtual void OnCreated();
 private:
