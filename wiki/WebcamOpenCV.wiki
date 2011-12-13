@@ -16,4 +16,20 @@ Escolha a versão para Windows e, ao baixar, escolha OpenCV-2.3.1-win-superpack.
 <li>Siga os passos do seguinte tutorial para configuração do OpenCV em sua máquina: http://bit.ly/vdQd31
 <br>
 *Nota*: independentemente de seu SO ser x64 ou x86, siga o tutorial atentando-se para mudar onde houver "x64" para "x86" na especificação dos caminhos mostrados no tutorial. E *não* é necessário mudar o tipo de compilação para Active(x64). Basta deixar como está.
-<li>Descomentar a linha 18 do header stdafx.h e pronto! Quando selecionar a opção de Webcam no menu Mode, a captura terá início, sendo possível ainda aplicar as transformações feitas pelos outros grupos até o momento.
+<li>Descomentar a linha 18 do header stdafx.h e pronto! Quando selecionar a opção de Webcam no menu Mode, a captura terá início, sendo possível ainda aplicar as transformações feitas pelos outros grupos até o momento.<br><br>
+
+
+
+
+*Passos rápidos para o Linker:*<br>
+
+Na configuração do Linker, inclua o seguinte (para o OpenCV 2.30):
+
+"..\OpenCV2.3\build\x86\vc10\lib\opencv_core230d.lib"; "..\OpenCV2.3\build\x86\vc10\lib\opencv_highgui230d.lib"; "..\OpenCV2.3\build\x86\vc10\lib\opencv_video230d.lib"; "..\OpenCV2.3\build\x86\vc10\lib\opencv_ml230d.lib"; "..\OpenCV2.3\build\x86\vc10\lib\opencv_legacy230d.lib"; "..\OpenCV2.3\build\x86\vc10\lib\opencv_imgproc230d.lib"
+
+Para o OpenCV 2.31:
+
+"..\build\x86\vc10\lib\opencv_core231d.lib"; "..\build\x86\vc10\lib\opencv_highgui231d.lib"; "..\build\x86\vc10\lib\opencv_video231.lib"; "..\build\x86\vc10\lib\opencv_ml231d.lib"; "..\build\x86\vc10\lib\opencv_legacy231d.lib"; "..\build\x86\vc10\lib\opencv_imgproc231d.lib"
+
+Lembrando que é necessário substituir o ".." pelo caminho da pasta onde o OpenCV foi instalado.<br><br>
+Vale reforçar que não é necessário (e nem se deve) mudar o tipo de compilação para x64, pois o assembly inline não é reconhecido nesse modo. Se estiver faltando alguma explicação, por favor me informe, que irei responder da melhor maneira possível.
