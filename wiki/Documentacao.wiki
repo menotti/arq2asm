@@ -806,8 +806,10 @@ Implementar e descrever as nas versões Normal.
 
 O mecanismo de detecção de borda Sobel é elaborado com a finaliadde de encontrar os pixels onde há uma mudança no nível de intensidade, sendo está mudança uma característica relevante de uma borda em uma imagem. Assim quando esses pixel estão próximos podem ser destacados formando uma borda.
 A sua implementação consiste no cálculo do gradiente da imagem. Esse cálculo é feito definindo máscaras que caracterizam a variação de intensidade presente nas bordas de imagens, e em seguida fazer a convolução da imagem pela máscara.
+http://i41.tinypic.com/jhg42e.png
 
-=== _Naive_ ===
+
+<b>Naive</b>
 
 {{{
 
@@ -877,6 +879,8 @@ void CSurface::Sobel()
 == Azular ==
 
 O filtro azular deixa a imagem em tons de azul. Calculando o valor da média do RGB de um pixel, para então atribuir o valor da média ao B e zerar os valores de RGB.
+
+http://i42.tinypic.com/994caw.png
 
 <b>Naive</b>
 {{{
@@ -1022,6 +1026,8 @@ void CSSE2Surface32Intrinsic::Azular()
 == Esverdear ==
 
 O filtro esverdar deixa a imagem em tons de verde. Calculando o valor da média do RGB de um pixel, para então atribuir o valor da média ao G e zerar os valores de RGB.
+
+http://i43.tinypic.com/2i1no89.png 
 
 <b>Naive</b>
 {{{
@@ -1175,6 +1181,8 @@ void CSSE2Surface32Intrinsic::Esverdear()
 == Envermelhar ==
 
 O filtro envermelhar deixa a imagem em tons de vermelho. Calculando o valor da média do RGB de um pixel, para então atribuir o valor da média ao B e zerar os valores de RGB.
+
+http://i42.tinypic.com/2ip9j4.png 
 
 <b>Naive</b>
 {{{
