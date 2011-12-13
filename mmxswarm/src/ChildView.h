@@ -54,6 +54,9 @@ protected:
 	afx_msg void OnUpdateUseGray(CCmdUI* pCmdUI);	//Grupo 4
 	afx_msg void OnUpdateUseGradient(CCmdUI* pCmdUI);	//Grupo 8
 	afx_msg void OnUpdateUseSobel(CCmdUI* pCmdUI);//Grupo 5
+	afx_msg void OnUpdateUseAzular(CCmdUI* pCmdUI);	// Grupo 5
+	afx_msg void OnUpdateUseEsverdear(CCmdUI* pCmdUI);	// Grupo 5
+	afx_msg void OnUpdateUseEnvermelhar(CCmdUI* pCmdUI);	// Grupo 5
 	afx_msg void OnUpdateUsePosterize(CCmdUI* pCmdUI);//Grupo 9
 	afx_msg void OnUpdateUseGrayF(CCmdUI* pCmdUI);	//Grupo 12
 	afx_msg void OnUpdateUseRGBAdjust(CCmdUI* pCmdUI);	//Grupo 14
@@ -65,9 +68,10 @@ protected:
 	afx_msg void OnUpdateUseInvert(CCmdUI* pCmdUI); //grupo 7
 	afx_msg void OnUpdateModeWebcam(CCmdUI* pCmdUI); //grupo 16
 	afx_msg void OnUpdateUseRescale(CCmdUI* pCmdUI); //grupo 17
-	afx_msg void OnUpdateUseDither(CCmdUI* pCmdUI); //grupo 20
+	afx_msg void OnUpdateUseMirror(CCmdUI* pCmdUI); //grupo 18
 	afx_msg void OnUpdateResolution(CCmdUI* pCmdUI);
 	afx_msg void OnUpdateImageFormats(CCmdUI* pCmdUI);
+	afx_msg void OnUpdateMode(CCmdUI* pCmdUI);
 	afx_msg void OnFileOpen();
 	afx_msg void OnFileSave();
 	afx_msg void OnFileOpenStatic();  //abrir unica imagem - grupo 7
@@ -77,7 +81,10 @@ protected:
 	afx_msg void OnViewUseFade();
 	afx_msg void OnViewUseGray();	//Grupo 4
 	afx_msg void OnViewUseGradient();	//Grupo 8
-	afx_msg void OnViewUseSobel();//Grupo 5
+	afx_msg void OnViewUseSobel(); //Grupo 5
+	afx_msg void OnViewUseAzular(); //Grupo 5
+	afx_msg void OnViewUseEsverdear(); //Grupo 5
+	afx_msg void OnViewUseEnvermelhar(); //Grupo 5
 	afx_msg void OnViewUsePosterize();	//Grupo 9
 	afx_msg void OnViewUseGrayF();	//Grupo 12
 	afx_msg void OnViewUseRGBAdjust(); //Grupo 14
@@ -87,7 +94,7 @@ protected:
 	afx_msg void OnViewUseThreshold(); //grupo 13
 	afx_msg void OnViewUseChannelmix(); //Grupo 11
 	afx_msg void OnViewUseInvert(); //grupo 7
-	afx_msg void OnViewUseDither(); //grupo 20
+	afx_msg void OnViewUseMirror(); //grupo 18
 	afx_msg void OnModeWebcam();	//grupo 16
 	afx_msg void OnViewUseRescale(); //grupo 17
 	afx_msg void OnImageFormats(UINT nID);
@@ -107,10 +114,17 @@ private:
 		e32BitMMXIntrin		= IDD_32BIT_MMXINTRINSICS,
 		e32BitGeneric		= IDD_32BIT_GENERICCBLUR,
 	};
+	enum EMode {		
+		eSwarm		= ID_MODE_SWARM,		
+		eFade		= ID_MODE_FADE,		
+		eImage		= ID_MODE_IMAGE,		
+		eWebcam		= ID_MODE_WEBCAM,		
+	};
 
 	void CreateSurface();
 
 	ESurface  m_eSurf;
+	EMode     m_eMode;
 	CSurface *m_pSurface;
 	CSwarm	  m_swarm;
 
@@ -126,22 +140,25 @@ private:
 	bool	m_bUseGray;  //Grupo 4
 	bool	m_bUseGradient;  //Grupo 8
 	bool	m_bUseSobel;//Grupo 5
+	bool	m_bUseAzular;	// Grupo 5
+	bool	m_bUseEsverdear;	// Grupo 5
+	bool	m_bUseEnvermelhar;	// Grupo 5
 	bool	m_bUsePosterize;//Grupo 9
 	bool	m_bUseGrayF;  //Grupo 12
 	bool	m_bUseRGBAdjust; //Grupo 14
 	bool	m_bUseMask; //Grupo 15
 	bool	m_bUseMandel; //Grupo 6
 	bool	m_bUseSolarize;//Grupo 18
-	bool m_bUseThreshold; //grupo 13
+	bool	m_bUseThreshold; //grupo 13
+    bool	m_bUseInvert; //grupo 7
+	bool	m_bUseMirror; //grupo 18
+	bool	m_bTimerPopped;
 	bool m_bUseChannelmix; //Grupo 11
-	bool m_bUseInvert; //grupo 7
-	bool m_bTimerPopped;
 	bool	execSobel;//Grupo 5 - Verifica se executou o Sobel alguma vez quando fadeIn estEoff
 	bool	execGray; //grupo 12
 	bool m_bUseStatic; //STATIC MODE - grupo 7
 	bool m_bUseWebcam;	// Grupo 16
 	bool m_bUseRescale;  // Grupo 17
-	bool m_bUseDither; //Grupo 20
 
 	static const UINT_PTR m_kTimerID = 31;
 	static const UINT m_kTimerDelay = 1500;

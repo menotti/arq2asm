@@ -25,7 +25,11 @@ public:
 	virtual void Mask();	// Grupo 15
 	virtual void Invert(); //GRUPO 7
 	virtual void Rescale(); //grupo 17
-	virtual void Dither(); //grupo 20
+	virtual void Azular();	// Grupo 5
+	virtual void Esverdear();	// Grupo 5
+	virtual void Envermelhar();	// Grupo 5
+	//virtual void Solarize();	// Grupo 18
+	virtual void Gradient();	//Grupo 8
 protected:
 	virtual void OnCreated();
 private:
