@@ -68,6 +68,7 @@ protected:
 	afx_msg void OnUpdateUseInvert(CCmdUI* pCmdUI); //grupo 7
 	afx_msg void OnUpdateModeWebcam(CCmdUI* pCmdUI); //grupo 16
 	afx_msg void OnUpdateUseRescale(CCmdUI* pCmdUI); //grupo 17
+	afx_msg void OnUpdateUseMirror(CCmdUI* pCmdUI); //grupo 18
 	afx_msg void OnUpdateResolution(CCmdUI* pCmdUI);
 	afx_msg void OnUpdateImageFormats(CCmdUI* pCmdUI);
 	afx_msg void OnUpdateMode(CCmdUI* pCmdUI);
@@ -93,6 +94,7 @@ protected:
 	afx_msg void OnViewUseThreshold(); //grupo 13
 	afx_msg void OnViewUseChannelmix(); //Grupo 11
 	afx_msg void OnViewUseInvert(); //grupo 7
+	afx_msg void OnViewUseMirror(); //grupo 18
 	afx_msg void OnModeWebcam();	//grupo 16
 	afx_msg void OnViewUseRescale(); //grupo 17
 	afx_msg void OnImageFormats(UINT nID);
@@ -147,10 +149,11 @@ private:
 	bool	m_bUseMask; //Grupo 15
 	bool	m_bUseMandel; //Grupo 6
 	bool	m_bUseSolarize;//Grupo 18
-	bool m_bUseThreshold; //grupo 13
+	bool	m_bUseThreshold; //grupo 13
+    bool	m_bUseInvert; //grupo 7
+	bool	m_bUseMirror; //grupo 18
+	bool	m_bTimerPopped;
 	bool m_bUseChannelmix; //Grupo 11
-	bool m_bUseInvert; //grupo 7
-	bool m_bTimerPopped;
 	bool	execSobel;//Grupo 5 - Verifica se executou o Sobel alguma vez quando fadeIn estEoff
 	bool	execGray; //grupo 12
 	bool m_bUseStatic; //STATIC MODE - grupo 7
