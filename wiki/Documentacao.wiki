@@ -879,7 +879,7 @@ void CSurface::Sobel()
 O filtro azular deixa a imagem em tons de azul. Calculando o valor da média do RGB de um pixel, para então atribuir o valor da média ao B e zerar os valores de RGB.
 
 <b>Naive</b>
-
+{{{
 void CSurface::Azular()
 {
    // Azular
@@ -901,9 +901,51 @@ void CSurface::Azular()
   //Quando terminar, copia o resultado para a imagem corrente
   Copy(t_image);
 }
-
+}}}
 <b>MMX</b>
+{{{
+void CMMXSurface32Intrinsic::Azular() {
+	int height = GetVisibleHeight()*2;	
+	DWORD *pCur  = (DWORD *)GetPixelAddress(0,0);	
 
+
+	ULONGLONG mascara = 0xFF;	
+	ULONGLONG pixel;	
+	ULONGLONG next;		
+
+	pixel = *(ULONGLONG *)pCur;	
+
+	do {
+		int width = m_width;
+		do {
+
+			next = *(ULONGLONG *)(pCur+1);	
+
+			//Calcula média dos pixels
+			__asm{
+				movq mm0, pixel		
+					pand mm0, mascara	
+					movq mm1, mm0		
+					movq mm0, pixel	
+					psrlq mm0, 8	
+					pand mm0, mascara
+					paddd mm1, mm0	
+					movq mm0, pixel	
+					psrlq mm0, 16	
+					pand mm0, mascara
+					paddd mm1,mm0	
+					movq pixel, mm1	
+			}
+
+			pixel /= 3;	
+			// Atribui valor
+			*(ULONGLONG *)pCur = pixel;
+			pixel = next;		
+			pCur++;							
+		} while (--width > 0);
+	} while (--height > 0);
+}
+}}}
 <b>SSE</b>
 
 == Esverdear ==
@@ -911,7 +953,7 @@ void CSurface::Azular()
 O filtro esverdar deixa a imagem em tons de verde. Calculando o valor da média do RGB de um pixel, para então atribuir o valor da média ao G e zerar os valores de RGB.
 
 <b>Naive</b>
-
+{{{
 void CSurface::Esverdear()
 {
    // Esverdear
@@ -933,7 +975,55 @@ void CSurface::Esverdear()
   //Quando terminar, copia o resultado para a imagem corrente
   Copy(t_image);
 }
+}}}
 <b>MMX</b>
+void CMMXSurface32Intrinsic::Esverdear() {
+	int height = GetVisibleHeight()*2;	
+	DWORD *pCur  = (DWORD *)GetPixelAddress(0,0);	
+
+
+	ULONGLONG mascara = 0xFF;	
+	ULONGLONG pixel;	
+	ULONGLONG next;		
+
+	pixel = *(ULONGLONG *)pCur;	
+
+	do {
+		int width = m_width;
+		do {
+
+			next = *(ULONGLONG *)(pCur+1);	
+
+			//Calcula média dos pixels
+			__asm{
+				movq mm0, pixel		
+					pand mm0, mascara	
+					movq mm1, mm0		
+					movq mm0, pixel	
+					psrlq mm0, 8	
+					pand mm0, mascara
+					paddd mm1, mm0	
+					movq mm0, pixel	
+					psrlq mm0, 16	
+					pand mm0, mascara
+					paddd mm1,mm0	
+					movq pixel, mm1	
+			}
+
+			pixel /= 3;
+	                __asm{
+					movq mm0, pixel		
+					psllq mm0, 8
+					movq pixel, mm0		
+			}
+			// Atribui valor
+			*(ULONGLONG *)pCur = pixel;
+			pixel = next;		
+			pCur++;							
+		} while (--width > 0);
+	} while (--height > 0);
+}
+}}}
 
 <b>SSE</b>
 
@@ -942,6 +1032,7 @@ void CSurface::Esverdear()
 O filtro envermelhar deixa a imagem em tons de vermelho. Calculando o valor da média do RGB de um pixel, para então atribuir o valor da média ao B e zerar os valores de RGB.
 
 <b>Naive</b>
+{{{
 void CSurface::Envermelhar()
 {
    // Envermelhar
@@ -963,9 +1054,55 @@ void CSurface::Envermelhar()
   //Quando terminar, copia o resultado para a imagem corrente
   Copy(t_image);
 }
-
+}}}
 <b>MMX</b>
+void CMMXSurface32Intrinsic::Envermelhar() {
+	int height = GetVisibleHeight()*2;	
+	DWORD *pCur  = (DWORD *)GetPixelAddress(0,0);	
 
+
+	ULONGLONG mascara = 0xFF;	
+	ULONGLONG pixel;	
+	ULONGLONG next;		
+
+	pixel = *(ULONGLONG *)pCur;	
+
+	do {
+		int width = m_width;
+		do {
+
+			next = *(ULONGLONG *)(pCur+1);	
+
+			//Calcula média dos pixels
+			__asm{
+				movq mm0, pixel		
+					pand mm0, mascara	
+					movq mm1, mm0		
+					movq mm0, pixel	
+					psrlq mm0, 8	
+					pand mm0, mascara
+					paddd mm1, mm0	
+					movq mm0, pixel	
+					psrlq mm0, 16	
+					pand mm0, mascara
+					paddd mm1,mm0	
+					movq pixel, mm1	
+			}
+
+			pixel /= 3;
+	                __asm{
+					movq mm0, pixel		
+					psllq mm0, 16
+					movq pixel, mm0		
+			}
+			// Atribui valor
+			*(ULONGLONG *)pCur = pixel;
+			pixel = next;		
+			pCur++;							
+		} while (--width > 0);
+	} while (--height > 0);
+}
+}}}
 <b>SSE</b>
 
 == Posterize Filter ==
