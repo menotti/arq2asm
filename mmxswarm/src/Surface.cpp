@@ -597,22 +597,79 @@ void CSurface::inicializar()
 
 // GRUPO 18 - Filtro Solarize
 void CSurface::Solarize() {
+	// Função antiga - Naive normal
 	COLORREF cCur = PointColor(0,0);
-	BYTE r, g, b;
+    BYTE r, g, b;
 	//double rgb, a, b, c;
-	for (int i = 0; i < m_wndHeight; i++) {
-		for (int j = 0; j < m_wndWidth; j++) {
+    for (int i = 0; i < m_wndHeight; i++) {
+        for (int j = 0; j < m_wndWidth; j++) {
 			cCur = PointColor(j,i);
-			r = (BYTE)(Sol(GetRValue(cCur)/255.0)*0xFF);
-			g = (BYTE)(Sol(GetGValue(cCur)/255.0)*0xFF);
-			b = (BYTE)(Sol(GetBValue(cCur)/255.0)*0xFF);
-			//rgb = GetRValue(cCur) + GetGValue(cCur) + GetBValue(cCur);
+            r = Sol(GetRValue(cCur));
+            g = Sol(GetGValue(cCur));
+            b = Sol(GetBValue(cCur));
+/*            r = (BYTE)(Sol(GetRValue(cCur)/255.0)*0xFF);
+            g = (BYTE)(Sol(GetGValue(cCur)/255.0)*0xFF);
+            b = (BYTE)(Sol(GetBValue(cCur)/255.0)*0xFF);
+*/			//rgb = GetRValue(cCur) + GetGValue(cCur) + GetBValue(cCur);
 			//Sol(rgb);
-			PointColor(j, i, RGB(b,g,r)); // RGBs are physically inverted
+            PointColor(j, i, RGB(b,g,r)); // RGBs are physically inverted
+        }
+    }
+}
+/*	// Função nova - Naive melhorada com Assembly
+	DWORD *pCur = (DWORD *)GetPixelAddress(0,0);
+	for (int i = 0; i < m_wndHeight; i++) {
+        for (int j = 0; j < m_wndWidth; j++) {
+			// Inline assembly
+			__asm {
+				mov ecx, 3			// Move 3 para fazer loop nos 3 canais, RGB
+				mov esi, pCur
+			SOLARIZANDO:
+				mov al, BYTE ptr [esi]
+				sub al, 80h			// Subtrai o canal por 128 e modifica o flag de sinal (ou não)
+				jns POSITIVO		// Se for positivo, pula
+				neg al				// Senão, faz complemento de 2
+				inc al
+			POSITIVO:
+				add al, al			// Dobra o valor
+				mov [esi], al
+				inc esi
+				loop SOLARIZANDO
+			}
+			pCur++;
 		}
 	}
 }
 
+// Função utilizada pela função antiga do Solarize
+/*double CSurface::Sol(double v) {
+	return (v > 0.5) ? (2*(v-0.5)) : (2*(0.5-v));
+}*/
+byte CSurface::Sol(byte v) {
+	return (v > 128) ? (2*((byte)(v-128))) : (2*((byte)(128-v)));
+}
+
+// GRUPO 18 - Filtro Mirror
+void CSurface::Mirror() {	
+	COLORREF cCur = PointColor(0,0);
+    BYTE r1, g1, b1, r2, g2, b2;
+	int wid = m_wndWidth-1;
+
+    for (int i = 0; i < m_wndHeight; i++) {
+        for (int j = 0; j < wid/2; j++) {
+			cCur = PointColor(j,i);
+            r1 = (BYTE)(GetRValue(cCur));
+            g1 = (BYTE)(GetGValue(cCur));
+            b1 = (BYTE)(GetBValue(cCur));
+			cCur = PointColor(wid-j,i);
+            r2 = (BYTE)(GetRValue(cCur));
+            g2 = (BYTE)(GetGValue(cCur));
+            b2 = (BYTE)(GetBValue(cCur));
+            PointColor(j, i, RGB(b2,g2,r2)); // RGBs are physically inverted
+			PointColor(wid-j, i, RGB(b1,g1,r1)); // RGBs are physically inverted
+        }
+    }
+}
 
 //grupo 13
 void CSurface::Threshold()
@@ -657,12 +714,6 @@ void CSurface::ChannelMix()
 		}
 	}
 }
-
-
-double CSurface::Sol(double v) {
-	return (v > 0.5) ? (2*(v-0.5)) : (2*(0.5-v));
-}
-
 
 //Grupo 7
 void CSurface::Invert(){
