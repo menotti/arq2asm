@@ -32,4 +32,4 @@ Para o OpenCV 2.31:
 "..\build\x86\vc10\lib\opencv_core231d.lib"; "..\build\x86\vc10\lib\opencv_highgui231d.lib"; "..\build\x86\vc10\lib\opencv_video231.lib"; "..\build\x86\vc10\lib\opencv_ml231d.lib"; "..\build\x86\vc10\lib\opencv_legacy231d.lib"; "..\build\x86\vc10\lib\opencv_imgproc231d.lib"
 
 Lembrando que é necessário substituir o ".." pelo caminho da pasta onde o OpenCV foi instalado.<br><br>
-Vale reforçar que não é necessário (e nem se deve) mudar o tipo de compilação para x64, pois o assembly inline não é reconhecido nesse modo. Se estiver faltando alguma explicação, por favor me informe, que irei responder da melhor maneira possível.
+Vale reforçar que não é necessário (e nem se deve) mudar o tipo de compilação para x64, pois o assembly inline não é reconhecido nesse modo. 
