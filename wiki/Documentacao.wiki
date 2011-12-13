@@ -1201,6 +1201,7 @@ void CSurface::Envermelhar()
 }
 }}}
 <b>MMX</b>
+{{{
 void CMMXSurface32Intrinsic::Envermelhar() {
 	int height = GetVisibleHeight()*2;	
 	DWORD *pCur  = (DWORD *)GetPixelAddress(0,0);	
@@ -1249,6 +1250,7 @@ void CMMXSurface32Intrinsic::Envermelhar() {
 }
 }}}
 <b>SSE</b>
+{{{
 void CSSE2Surface32Intrinsic::Envermelhar()
 {
 	int height = GetVisibleHeight()*2;
