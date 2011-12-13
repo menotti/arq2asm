@@ -1377,6 +1377,8 @@ void CSSE2Surface32Intrinsic::Mask()
 || *32 bits (320x240)* || 169 || 1142 || 1606 ||
 || *32 bits (680x340)* || 58 || 384 || 452 ||
 
+http://chart.apis.google.com/chart?chxl=1:|32+bits+(320x240)|32+bits+(680x340)&chxr=0,0,1606&chxs=0,676767,13.5,0,lt,676767&chxt=y,x&chbh=50&chs=600x300&cht=bvg&chco=FF0000,00FF00,0000FF&chds=0,1606,0,1606,5,1606&chd=t:169,58|1142,384|1606,452&chdl=Naive|MMX|SS3&chtt=Gr%C3%A1fico+de+Desempenho+(FPS)&name=grupo15.jpg
+
 ----
 
 = RGB Adjust Filter =
