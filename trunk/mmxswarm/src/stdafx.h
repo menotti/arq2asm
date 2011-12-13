@@ -15,7 +15,7 @@
 
 // Grupo 16
 // ATENÇÃO: Defina esta macro APENAS se tiver o Opencv instalado e configurado em sua máquina!
-//#define USE_OPENCV
+#define USE_OPENCV
 
 #ifndef VC_EXTRALEAN
 #define VC_EXTRALEAN		// Exclude rarely-used stuff from Windows headers
