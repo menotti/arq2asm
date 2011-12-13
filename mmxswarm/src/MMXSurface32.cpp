@@ -630,28 +630,101 @@ void CMMXSurface32Intrinsic::Solarize()
 	int i, j;
 	int hei = GetVisibleHeight(), wid = GetVisibleWidth();
 
-	for(i=0;i<hei;i++)
+	ULONGLONG meio = 0x7F7F7F7F7F7F7F7F;
+	//ULONGLONG meio = 0x8080808080808080;
+
+	for(i=0;i<hei/2;i++)
 		for(j=0;j<wid;j++) {
+			ULONGLONG pixels = *(ULONGLONG *)pCur;	//faz um casting 64 bits dos dados do ponto atual na variável pixel
 
 			// Inline assembly
 			__asm {
-				mov ecx, 3			// Move 3 para fazer loop nos 3 canais, RGB
-					mov esi, pCur
-SOLARIZANDO:
-				mov al, BYTE ptr [esi]
-				sub al, 80h			// Subtrai o canal por 128 e modifica o flag de sinal (ou não)
-					jns POSITIVO		// Se for positivo, pula
-					neg al				// Senão, faz complemento de 2
-					inc al
-POSITIVO:
-				add al, al			// Dobra o valor
-					mov [esi], al
-					inc esi
-					loop SOLARIZANDO
+				movq mm0, pixels	// mm0 recebe os dois pixels
+				movq mm1, meio		// mm1 recebe 128
+				psubb mm0, mm1		// distancia de mm0 a mm1
+
+				movq mm2, mm0		// calcula o bit mais significativo do byte 1
+				pslld mm2, 24
+				psrld mm2, 31
+				movq mm3, mm2
+				movq mm2, mm0		// calcula o bit mais significativo do byte 2
+				pslld mm2, 16
+				psrld mm2, 31
+				pslld mm2, 8
+				paddd mm3, mm2
+				movq mm2, mm0		// calcula o bit mais significativo do byte 3
+				pslld mm2, 8
+				psrld mm2, 31
+				pslld mm2, 16
+				paddd mm3, mm2
+				movq mm2, mm0		// calcula o bit mais significativo do byte 4
+				psrld mm2, 31
+				pslld mm2, 24
+				paddd mm3, mm2
+
+				movq mm4, mm0
+				paddb mm4, mm4
+				pxor mm4, mm3
+				psubb mm4, mm3
+				psubb mm0, mm4
+				paddb mm0, mm0
+
+				movq pixels, mm0
 			}
-			pCur++;
+
+			*(ULONGLONG *)pCur = pixels;
+			pCur+=2;
 		}
 }
+
+// GRUPO 18 - Filtro Mirror
+/*
+void CMMXSurface32Intrinsic::Mirror()
+{
+	DWORD *pCur  = (DWORD *)GetPixelAddress(0,0);			// Ponteiro para o início dos pixels
+	int i, j, k = 1;
+	int hei = GetVisibleHeight(), wid = GetVisibleWidth()-1;
+	ULONGLONG pixels1, pixels2;
+
+	for(i=0;i<hei;i++)
+		for(j=0;j<wid/2;j++) {
+			pixels1 = *(ULONGLONG *)pCur;	//faz um casting 64 bits dos dados do ponto atual na variável pixel
+			pCur = (DWORD *)GetPixelAddress(wid-k,i);
+			pixels2 = *(ULONGLONG *)pCur;	//faz um casting 64 bits dos dados do ponto atual na variável pixel
+			//pCur = (DWORD *)GetPixelAddress(j,i);
+			// Inline assembly
+			__asm {
+				movq mm0, pixels1
+				movq mm1, pixels2
+				movq mm2, mm0
+				//psrld mm2, 32
+				//punpckldq mm0, mm2
+				psllq mm2, 32
+				psrlq mm0, 32
+				movq mm3, mm0
+				paddd mm2, mm3
+				movq mm4, mm1
+				//psrld mm4, 32
+				//punpckldq mm1, mm4
+				movq mm4, mm1
+				psllq mm4, 32
+				psrlq mm1, 32
+				movq mm4, mm1
+				paddd mm4, mm3
+				movq pixels1, mm1
+				movq pixels2, mm0
+			}
+
+			*(ULONGLONG *)pCur = pixels1;
+			pCur = (DWORD *)GetPixelAddress(j,i);
+			//pCur += wid-(j*4)-4;
+			*(ULONGLONG *)pCur = pixels2;
+			//pCur = (DWORD *)GetPixelAddress(j+1,i);
+			//pCur = (DWORD *)GetPixelAddress(j,i);
+			pCur += 2;
+			k++;
+		}
+}*/
 
 void CMMXSurface32Intrinsic::MandelBrot()
 {
@@ -711,5 +784,3 @@ void CMMXSurface32Intrinsic::Rescale()
 	} while (--height > 0);
 
 }
-
- 
