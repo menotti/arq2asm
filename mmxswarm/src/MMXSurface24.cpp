@@ -71,69 +71,6 @@ void CMMXSurface24Intrinsic::BlurBits()
 	} while (--height > 0);
 }
 
-// Grupo5
-void CMMXSurface24Intrinsic::Sobel() {
-	CMMX cCur;
-	//ULONGLONG *pCur  = (ULONGLONG *)GetPixelAddress(0,0);
-
-	sumX = 0;
-	sumY = 0;
-	SUM = 0;
-	//WORD *pwCur = (WORD *)pCur;
-	//Percorre toda imagem
-	for (y = 0; y < GetVisibleHeight(); y++) {
-		for (x = 0; x < GetVisibleWidth(); x++) {
-			sumX = 0;
-			sumY = 0;
-
-			//Se for boada, atribui o valor 0(preto)
-			if((y==0) || (y == (GetVisibleHeight() - 1))){
-				SUM = 0;
-			}
-			else {
-				if((x==0) || (x == (GetVisibleWidth() - 1))){
-					SUM = 0;
-				}
-				else
-				{
-
-					for(I=-1; I<=1; I++)  {
-						for(J=-1; J<=1; J++)  {
-
-							piX = J + x;
-							piY = I + y;
-
-							//Pega o valor da imagem corrente
-							cCur = PointColor(piX,piY);
-
-							r = GetRValue(cCur);
-							g = GetGValue(cCur);
-							b = GetBValue(cCur);
-
-							NC = (r+g+b)/3;
-
-							sumX = sumX + (NC) * GXS[J+1][I+1];
-							sumY = sumY + (NC) * GYS[J+1][I+1];
-						}
-					}
-
-					SUM = abs(sumX) + abs(sumY);
-				}
-			}
-
-			if(SUM>127)
-				SUM=255;
-			if(SUM<=127)
-				SUM=0;
-			newPixel = (255-(unsigned char)(SUM));
-
-			PointColorT(x,y,RGB(newPixel,newPixel,newPixel));
-		}
-	}
-
-	//Quando terminar, copia o resultado para a imagem corrente
-	Copy(t_image);
-}
 
 // GRUPO 9 - Filtro Posterize
 //sobrescreve o Posterize do Surface

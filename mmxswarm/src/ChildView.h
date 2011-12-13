@@ -54,6 +54,9 @@ protected:
 	afx_msg void OnUpdateUseGray(CCmdUI* pCmdUI);	//Grupo 4
 	afx_msg void OnUpdateUseGradient(CCmdUI* pCmdUI);	//Grupo 8
 	afx_msg void OnUpdateUseSobel(CCmdUI* pCmdUI);//Grupo 5
+	afx_msg void OnUpdateUseAzular(CCmdUI* pCmdUI);	// Grupo 5
+	afx_msg void OnUpdateUseEsverdear(CCmdUI* pCmdUI);	// Grupo 5
+	afx_msg void OnUpdateUseEnvermelhar(CCmdUI* pCmdUI);	// Grupo 5
 	afx_msg void OnUpdateUsePosterize(CCmdUI* pCmdUI);//Grupo 9
 	afx_msg void OnUpdateUseGrayF(CCmdUI* pCmdUI);	//Grupo 12
 	afx_msg void OnUpdateUseRGBAdjust(CCmdUI* pCmdUI);	//Grupo 14
@@ -67,7 +70,6 @@ protected:
 	afx_msg void OnUpdateUseRescale(CCmdUI* pCmdUI); //grupo 17
 	afx_msg void OnUpdateResolution(CCmdUI* pCmdUI);
 	afx_msg void OnUpdateImageFormats(CCmdUI* pCmdUI);
-	afx_msg void OnUpdateMode(CCmdUI* pCmdUI);
 	afx_msg void OnFileOpen();
 	afx_msg void OnFileSave();
 	afx_msg void OnFileOpenStatic();  //abrir unica imagem - grupo 7
@@ -77,7 +79,10 @@ protected:
 	afx_msg void OnViewUseFade();
 	afx_msg void OnViewUseGray();	//Grupo 4
 	afx_msg void OnViewUseGradient();	//Grupo 8
-	afx_msg void OnViewUseSobel();//Grupo 5
+	afx_msg void OnViewUseSobel(); //Grupo 5
+	afx_msg void OnViewUseAzular(); //Grupo 5
+	afx_msg void OnViewUseEsverdear(); //Grupo 5
+	afx_msg void OnViewUseEnvermelhar(); //Grupo 5
 	afx_msg void OnViewUsePosterize();	//Grupo 9
 	afx_msg void OnViewUseGrayF();	//Grupo 12
 	afx_msg void OnViewUseRGBAdjust(); //Grupo 14
@@ -107,17 +112,9 @@ private:
 		e32BitGeneric		= IDD_32BIT_GENERICCBLUR,
 	};
 
-	enum EMode {
-		eSwarm		= ID_MODE_SWARM,
-		eFade		= ID_MODE_FADE,
-		eImage		= ID_MODE_IMAGE,
-		eWebcam		= ID_MODE_WEBCAM,
-	};
-
 	void CreateSurface();
 
 	ESurface  m_eSurf;
-	EMode     m_eMode;
 	CSurface *m_pSurface;
 	CSwarm	  m_swarm;
 
@@ -133,6 +130,9 @@ private:
 	bool	m_bUseGray;  //Grupo 4
 	bool	m_bUseGradient;  //Grupo 8
 	bool	m_bUseSobel;//Grupo 5
+	bool	m_bUseAzular;	// Grupo 5
+	bool	m_bUseEsverdear;	// Grupo 5
+	bool	m_bUseEnvermelhar;	// Grupo 5
 	bool	m_bUsePosterize;//Grupo 9
 	bool	m_bUseGrayF;  //Grupo 12
 	bool	m_bUseRGBAdjust; //Grupo 14
