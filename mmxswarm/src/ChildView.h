@@ -70,6 +70,7 @@ protected:
 	afx_msg void OnUpdateUseRescale(CCmdUI* pCmdUI); //grupo 17
 	afx_msg void OnUpdateResolution(CCmdUI* pCmdUI);
 	afx_msg void OnUpdateImageFormats(CCmdUI* pCmdUI);
+	afx_msg void OnUpdateMode(CCmdUI* pCmdUI);
 	afx_msg void OnFileOpen();
 	afx_msg void OnFileSave();
 	afx_msg void OnFileOpenStatic();  //abrir unica imagem - grupo 7
@@ -111,10 +112,17 @@ private:
 		e32BitMMXIntrin		= IDD_32BIT_MMXINTRINSICS,
 		e32BitGeneric		= IDD_32BIT_GENERICCBLUR,
 	};
+	enum EMode {		
+		eSwarm		= ID_MODE_SWARM,		
+		eFade		= ID_MODE_FADE,		
+		eImage		= ID_MODE_IMAGE,		
+		eWebcam		= ID_MODE_WEBCAM,		
+	};
 
 	void CreateSurface();
 
 	ESurface  m_eSurf;
+	EMode     m_eMode;
 	CSurface *m_pSurface;
 	CSwarm	  m_swarm;
 
