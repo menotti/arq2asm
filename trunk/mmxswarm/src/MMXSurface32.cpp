@@ -218,70 +218,159 @@ void CMMXSurface32Intrinsic::GrayScale()
 }
 
 // Grupo5
-void CMMXSurface32Intrinsic::Sobel() {
-	CMMX cCur;
-	//ULONGLONG *pCur  = (ULONGLONG *)GetPixelAddress(0,0);
+void CMMXSurface32Intrinsic::Azular() {
+	int height = GetVisibleHeight()*2;	//altura multiplicada por 2 pois são pixels de 32 bits em variáveis de 64 bits (2x maior)
+	DWORD *pCur  = (DWORD *)GetPixelAddress(0,0);	// cada pixel tem 32bits, 1byte para cada canal de cor: alfa, red, green, blue
 
-	sumX = 0;
-	sumY = 0;
-	SUM = 0;
-	//WORD *pwCur = (WORD *)pCur;
-	//Percorre toda imagem
-	for (y = 0; y < GetVisibleHeight(); y++) {
-		for (x = 0; x < GetVisibleWidth(); x++) {
-			sumX = 0;
-			sumY = 0;
+	// Variaveis do tipo unsigned long long, de 64 bits
+	ULONGLONG mascara = 0xFF;	//seleciona um byte de alguma variável (utilizada para pegar valores individuais de RGB)	
+	ULONGLONG pixel;	//recebe os valores referentes a um ponto da tela
+	ULONGLONG next;		//recebe os valores do próximo ponto a partir de pixel 
 
-			//Se for borda, atribui o valor 0(preto)
-			if((y==0) || (y == (GetVisibleHeight() - 1))){
-				SUM = 0;
-			}
-			else {
-				if((x==0) || (x == (GetVisibleWidth() - 1))){
-					SUM = 0;
-				}
-				else
-				{
+	pixel = *(ULONGLONG *)pCur;	//faz um casting 64 bits dos dados do ponto atual na variável pixel
 
-					for(I=-1; I<=1; I++)  {
-						for(J=-1; J<=1; J++)  {
+	//loops para percorrer toda a tela
+	do {
+		int width = m_width;
+		do {
 
-							piX = J + x;
-							piY = I + y;
+			next = *(ULONGLONG *)(pCur+1);	//próximo ponto recebe o ponteiro que aponta para um ponto na tela + 1
 
-							//Pega o valor da imagem corrente
-							cCur = PointColor(piX,piY);
-
-							r = GetRValue(cCur);
-							g = GetGValue(cCur);
-							b = GetBValue(cCur);
-
-							NC = (r+g+b)/3;
-
-							sumX = sumX + (NC) * GXS[J+1][I+1];
-							sumY = sumY + (NC) * GYS[J+1][I+1];
-						}
-					}
-
-					SUM = abs(sumX) + abs(sumY);
-				}
+			//utilização dos registradores mmx 64 bits com inline assembly 
+			__asm{
+				movq mm0, pixel		//registrador mm0 reebe o valor do pixel atual
+					pand mm0, mascara	//valor de mm0 recebe uma mascara para selecionar seu 1 byte menos significativo (B)
+					movq mm1, mm0		//guarda o valor calculado acima em mm1
+					movq mm0, pixel		//recarrega o valor do pixel em mm0
+					psrlq mm0, 8		//realiza um shift lógico para a direita para pegar o próximo byte
+					pand mm0, mascara	//utilizar mascara para isolar um byte (G)
+					paddd mm1, mm0		//soma o valor calculado anteriormente em mm1 (B+G)
+					movq mm0, pixel		//recarrega o valor do pixel em mm0
+					psrlq mm0, 16		//realiza um shift lógico para direita para pegar o 3 byte
+					pand mm0, mascara	//utiliza mascara para isolar um byte (R)
+					paddd mm1,mm0		//soma o valor calculado acima em mm1 (B+G+R)
+					movq pixel, mm1		//move para a variável pixel a soma dos valores RGB calculados nos registradores mmx
 			}
 
-			if(SUM>255)
-				SUM=255;
-			if(SUM<0)
-				SUM=0;
-			newPixel = (255-(unsigned char)(SUM));
-
-			PointColorT(x,y,RGB(newPixel,newPixel,newPixel));
-		}
-	}
-
-	//Quando terminar, copia o resultado para a imagem corrente
-	Copy(t_image);
+			pixel /= 3;				//realiza media dos valores RGB ((R+G+B)/3)
+			/*
+			__asm{
+				movq mm0, pixel		//mm0 recebe a media dos valores RGB
+					movq mm1, mm0		//copia mm0 em mm1
+					psllq mm0, 8		//realiza um shift lógico para esquerda em 1 byte
+					pxor mm2,mm2
+					paddd mm1, mm2		//soma a (media<<8) em mm1 
+					psllq mm0, 8		//novamente um shift para esquerda em 1 byte
+					paddd mm1, mm2		//soma a (media<<16) em mm1
+					movq pixel, mm1		//mm1 agora possui os valores médios RGB (GrayScale), então salva isso em pixel
+			}
+			*/
+			*(ULONGLONG *)pCur = pixel;		//joga o resultado no ponto apontado da tela
+			pixel = next;					//recebe o próximo pixel a ser processado
+			pCur++;							//avança o ponteiro sobre a tela
+		} while (--width > 0);
+	} while (--height > 0);
 }
 
+// Grupo5
+void CMMXSurface32Intrinsic::Esverdear() {
+	int height = GetVisibleHeight()*2;	//altura multiplicada por 2 pois são pixels de 32 bits em variáveis de 64 bits (2x maior)
+	DWORD *pCur  = (DWORD *)GetPixelAddress(0,0);	// cada pixel tem 32bits, 1byte para cada canal de cor: alfa, red, green, blue
 
+	// Variaveis do tipo unsigned long long, de 64 bits
+	ULONGLONG mascara = 0xFF;	//seleciona um byte de alguma variável (utilizada para pegar valores individuais de RGB)	
+	ULONGLONG pixel;	//recebe os valores referentes a um ponto da tela
+	ULONGLONG next;		//recebe os valores do próximo ponto a partir de pixel 
+
+	pixel = *(ULONGLONG *)pCur;	//faz um casting 64 bits dos dados do ponto atual na variável pixel
+
+	//loops para percorrer toda a tela
+	do {
+		int width = m_width;
+		do {
+
+			next = *(ULONGLONG *)(pCur+1);	//próximo ponto recebe o ponteiro que aponta para um ponto na tela + 1
+
+			//utilização dos registradores mmx 64 bits com inline assembly 
+			__asm{
+				movq mm0, pixel		//registrador mm0 reebe o valor do pixel atual
+					pand mm0, mascara	//valor de mm0 recebe uma mascara para selecionar seu 1 byte menos significativo (B)
+					movq mm1, mm0		//guarda o valor calculado acima em mm1
+					movq mm0, pixel		//recarrega o valor do pixel em mm0
+					psrlq mm0, 8		//realiza um shift lógico para a direita para pegar o próximo byte
+					pand mm0, mascara	//utilizar mascara para isolar um byte (G)
+					paddd mm1, mm0		//soma o valor calculado anteriormente em mm1 (B+G)
+					movq mm0, pixel		//recarrega o valor do pixel em mm0
+					psrlq mm0, 16		//realiza um shift lógico para direita para pegar o 3 byte
+					pand mm0, mascara	//utiliza mascara para isolar um byte (R)
+					paddd mm1,mm0		//soma o valor calculado acima em mm1 (B+G+R)
+					movq pixel, mm1		//move para a variável pixel a soma dos valores RGB calculados nos registradores mmx
+			}
+
+			pixel /= 3;				//realiza media dos valores RGB ((R+G+B)/3)
+
+			__asm{
+					movq mm0, pixel		//mm0 recebe a media dos valores RGB
+					psllq mm0, 8
+					movq pixel, mm0		//mm1 agora possui os valores médios RGB (GrayScale), então salva isso em pixel
+			}
+
+			*(ULONGLONG *)pCur = pixel;		//joga o resultado no ponto apontado da tela
+			pixel = next;					//recebe o próximo pixel a ser processado
+			pCur++;							//avança o ponteiro sobre a tela
+		} while (--width > 0);
+	} while (--height > 0);
+}
+
+// Grupo5
+void CMMXSurface32Intrinsic::Envermelhar() {
+	int height = GetVisibleHeight()*2;	//altura multiplicada por 2 pois são pixels de 32 bits em variáveis de 64 bits (2x maior)
+	DWORD *pCur  = (DWORD *)GetPixelAddress(0,0);	// cada pixel tem 32bits, 1byte para cada canal de cor: alfa, red, green, blue
+
+	// Variaveis do tipo unsigned long long, de 64 bits
+	ULONGLONG mascara = 0xFF;	//seleciona um byte de alguma variável (utilizada para pegar valores individuais de RGB)	
+	ULONGLONG pixel;	//recebe os valores referentes a um ponto da tela
+	ULONGLONG next;		//recebe os valores do próximo ponto a partir de pixel 
+
+	pixel = *(ULONGLONG *)pCur;	//faz um casting 64 bits dos dados do ponto atual na variável pixel
+
+	//loops para percorrer toda a tela
+	do {
+		int width = m_width;
+		do {
+
+			next = *(ULONGLONG *)(pCur+1);	//próximo ponto recebe o ponteiro que aponta para um ponto na tela + 1
+
+			//utilização dos registradores mmx 64 bits com inline assembly 
+			__asm{
+				movq mm0, pixel		//registrador mm0 reebe o valor do pixel atual
+					pand mm0, mascara	//valor de mm0 recebe uma mascara para selecionar seu 1 byte menos significativo (B)
+					movq mm1, mm0		//guarda o valor calculado acima em mm1
+					movq mm0, pixel		//recarrega o valor do pixel em mm0
+					psrlq mm0, 8		//realiza um shift lógico para a direita para pegar o próximo byte
+					pand mm0, mascara	//utilizar mascara para isolar um byte (G)
+					paddd mm1, mm0		//soma o valor calculado anteriormente em mm1 (B+G)
+					movq mm0, pixel		//recarrega o valor do pixel em mm0
+					psrlq mm0, 16		//realiza um shift lógico para direita para pegar o 3 byte
+					pand mm0, mascara	//utiliza mascara para isolar um byte (R)
+					paddd mm1,mm0		//soma o valor calculado acima em mm1 (B+G+R)
+					movq pixel, mm1		//move para a variável pixel a soma dos valores RGB calculados nos registradores mmx
+			}
+
+			pixel /= 3;				//realiza media dos valores RGB ((R+G+B)/3)
+
+			__asm{
+					movq mm0, pixel		//mm0 recebe a media dos valores RGB
+					psllq mm0, 16
+					movq pixel, mm0		//mm1 agora possui os valores médios RGB (GrayScale), então salva isso em pixel
+			}
+
+			*(ULONGLONG *)pCur = pixel;		//joga o resultado no ponto apontado da tela
+			pixel = next;					//recebe o próximo pixel a ser processado
+			pCur++;							//avança o ponteiro sobre a tela
+		} while (--width > 0);
+	} while (--height > 0);
+}
 
 // GRUPO 9 - Filtro Posterize
 //sobrescreve o Posterize do Surface

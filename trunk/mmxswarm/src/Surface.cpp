@@ -287,6 +287,78 @@ void CSurface::Sobel()
 	Copy(t_image);
 }
 
+void CSurface::Azular()
+{
+	// Azular
+	COLORREF cCur;
+	
+
+	//Percorre toda imagem
+    for (int y = 0; y < m_wndHeight; y++) {
+        for (int x = 0; x < m_wndWidth; x++) {
+			cCur = PointColorD(x,y);
+			int R = GetRValue(cCur);
+			int G = GetGValue(cCur);
+			int B = GetBValue(cCur);
+			int NC = (R+G+B)/3;
+			COLORREF newPixCol =  RGB(0,0,NC);
+			PointColorT(x,y,newPixCol);
+		}
+     
+    }
+
+	//Quando terminar, copia o resultado para a imagem corrente
+	Copy(t_image);
+}
+
+void CSurface::Esverdear()
+{
+	// Azular
+	COLORREF cCur;
+	
+
+	//Percorre toda imagem
+    for (int y = 0; y < m_wndHeight; y++) {
+        for (int x = 0; x < m_wndWidth; x++) {
+			cCur = PointColorD(x,y);
+			int R = GetRValue(cCur);
+			int G = GetGValue(cCur);
+			int B = GetBValue(cCur);
+			int NC = (R+G+B)/3;
+			COLORREF newPixCol =  RGB(0,NC,0);
+			PointColorT(x,y,newPixCol);
+		}
+     
+    }
+
+	//Quando terminar, copia o resultado para a imagem corrente
+	Copy(t_image);
+}
+
+void CSurface::Envermelhar()
+{
+	// Azular
+	COLORREF cCur;
+	
+
+	//Percorre toda imagem
+    for (int y = 0; y < m_wndHeight; y++) {
+        for (int x = 0; x < m_wndWidth; x++) {
+			cCur = PointColorD(x,y);
+			int R = GetRValue(cCur);
+			int G = GetGValue(cCur);
+			int B = GetBValue(cCur);
+			int NC = (R+G+B)/3;
+			COLORREF newPixCol =  RGB(NC,0,0);
+			PointColorT(x,y,newPixCol);
+		}
+     
+    }
+
+	//Quando terminar, copia o resultado para a imagem corrente
+	Copy(t_image);
+}
+
 //Grupo 12
 void CSurface::GrayFilter()
 {

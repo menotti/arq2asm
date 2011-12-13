@@ -79,10 +79,13 @@ public:
 	 virtual void Threshold();
 
 	 //Grupo 11
-	virtual void ChannelMix();
+	 virtual void ChannelMix();
 
 	 //Grupo 5
 	 virtual void Sobel(); // neste método está a implementação do Sobel
+	 virtual void Azular();
+	 virtual void Esverdear();
+	 virtual void Envermelhar();
 
 	 //Grupo 12
 	 virtual void GrayFilter();
