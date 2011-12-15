@@ -753,3 +753,27 @@ void CSurface::Rescale() {
 		}
 	}
 }
+// Grupo 20
+void CSurface::Amarelar()
+{	
+	// Azular
+	COLORREF cCur;
+	
+
+	//Percorre toda imagem
+    for (int y = 0; y < m_wndHeight; y++) {
+        for (int x = 0; x < m_wndWidth; x++) {
+			cCur = PointColorD(x,y);
+			int R = GetRValue(cCur);
+			int G = GetGValue(cCur);
+			int B = GetBValue(cCur);
+			int NC = (R+G+B)/3;
+			COLORREF newPixCol =  RGB(NC,NC,0);
+			PointColorT(x,y,newPixCol);
+		}
+     
+    }
+
+	//Quando terminar, copia o resultado para a imagem corrente
+	Copy(t_image);
+}

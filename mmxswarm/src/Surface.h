@@ -109,6 +109,9 @@ public:
 	 //Grupo 17
 	 virtual void Rescale();
 
+	 //Grupo 20
+	 virtual void Amarelar();
+
 	 // These methods compensate for m_kDelta
 	 void PointColor(int x, int y, COLORREF c);
 
