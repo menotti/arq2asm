@@ -53,6 +53,7 @@
 #define ID_INDICATOR_USE_ESVERDEAR		59163
 #define ID_INDICATOR_USE_ENVERMELHAR	59164
 #define ID_INDICATOR_USE_MIRROR         59165 //grupo 18
+#define ID_INDICATOR_USE_AMARELAR       59166 //grupo 20
 #define ID_VIEW_PAUSE_SWARM             59394
 #define ID_VIEW_PAUSE_BLUR              59395
 #define ID_VIEW_PAUSE_BLIT              59396
@@ -77,6 +78,7 @@
 #define ID_VIEW_USE_ESVERDEAR			59415
 #define ID_VIEW_USE_ENVERMELHAR			59416
 #define ID_VIEW_USE_MIRROR				59417
+#define ID_VIEW_USE_AMARELAR		    59418
 
 // Next default values for new objects
 // 
