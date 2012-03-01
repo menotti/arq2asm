@@ -177,6 +177,7 @@ private:
 		bool m_bUseSWARM;
 		bool m_bUseFADE;
 		bool m_bUseIMG;
+		bool first;
 
 	static const UINT_PTR m_kTimerID = 31;
 	static const UINT m_kTimerDelay = 1500;
