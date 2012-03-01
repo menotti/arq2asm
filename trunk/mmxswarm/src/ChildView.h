@@ -67,6 +67,12 @@ protected:
 	afx_msg void OnUpdateUseChannelmix(CCmdUI* pCmdUI); //Grupo 11
 	afx_msg void OnUpdateUseInvert(CCmdUI* pCmdUI); //grupo 7
 	afx_msg void OnUpdateModeWebcam(CCmdUI* pCmdUI); //grupo 16
+
+	
+	afx_msg void OnUpdateModeSwarm(CCmdUI* pCmdUI); //grupo 16
+	afx_msg void OnUpdateModeFADE(CCmdUI* pCmdUI); //grupo 16
+	afx_msg void OnUpdateModeIMG(CCmdUI* pCmdUI); //grupo 16
+
 	afx_msg void OnUpdateUseRescale(CCmdUI* pCmdUI); //grupo 17
 	afx_msg void OnUpdateUseMirror(CCmdUI* pCmdUI); //grupo 18
 	afx_msg void OnUpdateUseAmarelar(CCmdUI* pCmdUI); //grupo 20
@@ -99,6 +105,11 @@ protected:
 	afx_msg void OnModeWebcam();	//grupo 16
 	afx_msg void OnViewUseRescale(); //grupo 17
 	afx_msg void OnViewUseAmarelar(); //grupo 20
+
+
+	afx_msg void OnModeSWARM(); 
+	afx_msg void OnModeFADE(); 
+	afx_msg void OnModeIMG(); 
 	afx_msg void OnImageFormats(UINT nID);
 	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
 	//}}AFX_MSG
@@ -162,6 +173,10 @@ private:
 	bool m_bUseStatic; //STATIC MODE - grupo 7
 	bool m_bUseWebcam;	// Grupo 16
 	bool m_bUseRescale;  // Grupo 17
+
+		bool m_bUseSWARM;
+		bool m_bUseFADE;
+		bool m_bUseIMG;
 
 	static const UINT_PTR m_kTimerID = 31;
 	static const UINT m_kTimerDelay = 1500;
