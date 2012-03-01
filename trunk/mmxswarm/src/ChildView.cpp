@@ -959,7 +959,7 @@ void CChildView::OnUpdateUseSobel(CCmdUI* pCmdUI)
         pCmdUI->Enable(TRUE); 
     }
 
-		    if(m_bUseSWARM == false  ||  m_bUseFADE == true ||  m_bUseIMG == true || m_bUseWebcam == true) 
+		    if(m_bUseSWARM == false  &&(  m_bUseFADE == true ||  m_bUseIMG == true || m_bUseWebcam == true) )
             pCmdUI->Enable(TRUE); 
     else 
  
