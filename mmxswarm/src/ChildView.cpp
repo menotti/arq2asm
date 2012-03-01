@@ -63,7 +63,10 @@ BEGIN_MESSAGE_MAP(CChildView, CWnd)
     ON_COMMAND(ID_VIEW_USE_MIRROR, OnViewUseMirror)//Grupo 18 
     ON_COMMAND(ID_VIEW_USE_AMARELAR, OnViewUseAmarelar)    //Grupo 20 
      
- 
+     ON_COMMAND(ID_MODE_SWARM, OnModeSWARM)
+     ON_COMMAND(ID_MODE_FADE, OnModeFADE)
+     ON_COMMAND(ID_MODE_IMAGE, OnModeIMG)
+
     ON_UPDATE_COMMAND_UI(ID_VIEW_PAUSE_BLUR, OnUpdatePauseBlur) 
     ON_UPDATE_COMMAND_UI(ID_VIEW_PAUSE_SWARM, OnUpdatePauseSwarm) 
     ON_UPDATE_COMMAND_UI(ID_VIEW_PAUSE_BLIT, OnUpdatePauseBlit) 
@@ -109,6 +112,10 @@ BEGIN_MESSAGE_MAP(CChildView, CWnd)
     ON_UPDATE_COMMAND_UI(ID_INDICATOR_FPS, OnUpdateFPS) 
     ON_UPDATE_COMMAND_UI(ID_INDICATOR_RESOLUTION, OnUpdateResolution) 
     ON_UPDATE_COMMAND_UI(ID_INDICATOR_USE_WEBCAM, OnUpdateModeWebcam) //Grupo 16 
+
+	ON_UPDATE_COMMAND_UI(ID_INDICATOR_USE_SWARM, OnUpdateModeSwarm)
+	ON_UPDATE_COMMAND_UI(ID_INDICATOR_USE_FADE, OnUpdateModeFADE)
+	ON_UPDATE_COMMAND_UI(ID_INDICATOR_USE_IMAGE, OnUpdateModeIMG)
      
  
     ON_COMMAND_RANGE(IDD_16BIT_MMXINTRINSICS, IDD_32BIT_GENERICCBLUR, OnImageFormats) 
@@ -154,6 +161,9 @@ CChildView::CChildView()
     m_bUseWebcam = false;    // Grupo 16 
     m_bUseRescale = false;  //GRUPO 17 
     m_bUseAmarelar = false;  //GRUPO 20 
+	    m_bUseSWARM = false;
+		m_bUseIMG = false;
+		m_bUseFADE = false;
 } 
  
 CChildView::~CChildView() 
@@ -443,6 +453,21 @@ void CChildView::OnModeWebcam()
 { 
     m_bUseWebcam = !m_bUseWebcam; 
 } 
+
+void CChildView::OnModeSWARM() 
+{ 
+    m_bUseSWARM = !m_bUseSWARM; 
+}
+
+void CChildView::OnModeFADE() 
+{ 
+    m_bUseFADE = !m_bUseFADE; 
+}
+
+void CChildView::OnModeIMG() 
+{ 
+    m_bUseIMG = !m_bUseIMG; 
+}
  
 //Grupo 17 
 void CChildView::OnViewUseRescale(){ 
@@ -836,7 +861,7 @@ void CChildView::OnUpdatePauseSwarm(CCmdUI* pCmdUI)
         pCmdUI->SetCheck(m_bPauseSwarm ? 1 : 0); 
         pCmdUI->Enable(TRUE); 
     } 
-		    if(m_bUseWebcam)
+		    if(m_bUseWebcam || m_bUseSWARM == false || m_bUseIMG == false)
             pCmdUI->Enable(FALSE); 
     else 
  
@@ -871,7 +896,7 @@ void CChildView::OnUpdateUseFade(CCmdUI* pCmdUI)
         pCmdUI->Enable(TRUE); 
     } 
 
-	    if(m_bUseWebcam || m_bUseThreshold)
+	    if(m_bUseWebcam || m_bUseThreshold || m_bUseFADE == false)
             pCmdUI->Enable(FALSE); 
     else 
  
@@ -934,6 +959,12 @@ void CChildView::OnUpdateUseSobel(CCmdUI* pCmdUI)
         pCmdUI->Enable(TRUE); 
     }
 
+		    if(m_bUseSWARM == false  ||  m_bUseFADE == true ||  m_bUseIMG == true || m_bUseWebcam == true) 
+            pCmdUI->Enable(TRUE); 
+    else 
+ 
+            pCmdUI->Enable(FALSE); 
+
 } 
  
 //Grupo 5 
@@ -947,7 +978,7 @@ void CChildView::OnUpdateUseAzular(CCmdUI* pCmdUI)
         pCmdUI->SetCheck(m_bUseAzular ? 1 : 0); 
         pCmdUI->Enable(TRUE); 
     } 
-		    if(m_bUseThreshold || m_bUseGrayF ||  m_bUseGray  || m_bUseThreshold) 
+		    if(m_bUseThreshold || m_bUseGrayF ||  m_bUseGray) 
             pCmdUI->Enable(FALSE); 
     else 
  
@@ -1202,6 +1233,42 @@ void CChildView::OnUpdateModeWebcam(CCmdUI* pCmdUI)
         ASSERT(pCmdUI->m_nID == ID_MODE_WEBCAM); 
         pCmdUI->SetCheck(m_bUseWebcam ? 1 : 0); 
         pCmdUI->Enable(TRUE); 
+    }
+} 
+
+void CChildView::OnUpdateModeSwarm(CCmdUI* pCmdUI) 
+{ 
+    if (pCmdUI->m_nID == ID_INDICATOR_USE_SWARM) { 
+        pCmdUI->Enable(m_bUseSWARM ? FALSE : TRUE); 
+    } 
+    else { 
+        ASSERT(pCmdUI->m_nID == ID_MODE_SWARM); 
+        pCmdUI->SetCheck(m_bUseSWARM ? 1 : 0); 
+        pCmdUI->Enable(TRUE); 
+    } 
+} 
+
+void CChildView::OnUpdateModeFADE(CCmdUI* pCmdUI) 
+{ 
+    if (pCmdUI->m_nID == ID_INDICATOR_USE_FADE) { 
+        pCmdUI->Enable(m_bUseFADE ? FALSE : TRUE); 
+    } 
+    else { 
+        ASSERT(pCmdUI->m_nID == ID_MODE_FADE); 
+        pCmdUI->SetCheck(m_bUseFADE ? 1 : 0); 
+        pCmdUI->Enable(TRUE); 
+    } 
+} 
+
+void CChildView::OnUpdateModeIMG(CCmdUI* pCmdUI) 
+{ 
+    if (pCmdUI->m_nID == ID_INDICATOR_USE_IMAGE) { 
+        pCmdUI->Enable(m_bUseIMG ? FALSE : TRUE); 
+    } 
+    else { 
+        ASSERT(pCmdUI->m_nID == ID_MODE_IMAGE); 
+        pCmdUI->SetCheck(m_bUseIMG ? 1 : 0); 
+        pCmdUI->Enable(TRUE); 
     } 
 } 
  
@@ -1257,13 +1324,40 @@ void CChildView::OnUpdateImageFormats(CCmdUI* pCmdUI)
              
 void CChildView::OnUpdateMode(CCmdUI* pCmdUI)         
 {                         
-    m_eMode = EMode(pCmdUI->m_nID);         
+/*    m_eMode = EMode(pCmdUI->m_nID); 
+
          
     if (ESurface(pCmdUI->m_nID) == m_eMode)         
         pCmdUI->SetCheck(1);         
     else         
         pCmdUI->SetCheck(0);                 
-    pCmdUI->Enable(true);         
+    pCmdUI->Enable(true); */
+	
+		if(m_bUseWebcam && pCmdUI->m_nID == ID_MODE_WEBCAM){
+			pCmdUI->SetCheck(1);
+			//pCmdUI->Enable(FALSE);
+			}
+		else{
+			if(m_bUseSWARM && pCmdUI->m_nID == ID_MODE_SWARM){
+				pCmdUI->SetCheck(1);
+				//pCmdUI->Enable(FALSE);
+			}
+			else{
+							if(m_bUseFADE && pCmdUI->m_nID == ID_MODE_FADE){
+								pCmdUI->SetCheck(1);
+								//pCmdUI->Enable(FALSE);
+							}
+							else{
+											if(m_bUseIMG && pCmdUI->m_nID == ID_MODE_IMAGE){
+												pCmdUI->SetCheck(1);
+												//pCmdUI->Enable(FALSE);
+											}
+											else{
+												pCmdUI->SetCheck(0);
+											}
+							}
+			}
+		}
 } 
  
 BOOL CChildView::OnEraseBkgnd(CDC*)  //pDC 
