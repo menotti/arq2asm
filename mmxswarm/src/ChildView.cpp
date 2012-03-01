@@ -164,6 +164,7 @@ CChildView::CChildView()
 	    m_bUseSWARM = false;
 		m_bUseIMG = false;
 		m_bUseFADE = false;
+		first = true;
 } 
  
 CChildView::~CChildView() 
@@ -1333,23 +1334,33 @@ void CChildView::OnUpdateMode(CCmdUI* pCmdUI)
         pCmdUI->SetCheck(0);                 
     pCmdUI->Enable(true); */
 	
+	if(first == true && pCmdUI->m_nID == ID_MODE_SWARM){
+
+		pCmdUI->SetCheck(1);
+	}else{
+
+
 		if(m_bUseWebcam && pCmdUI->m_nID == ID_MODE_WEBCAM){
 			pCmdUI->SetCheck(1);
+			first = false;
 			//pCmdUI->Enable(FALSE);
 			}
 		else{
 			if(m_bUseSWARM && pCmdUI->m_nID == ID_MODE_SWARM){
 				pCmdUI->SetCheck(1);
+		first = false;
 				//pCmdUI->Enable(FALSE);
 			}
 			else{
 							if(m_bUseFADE && pCmdUI->m_nID == ID_MODE_FADE){
 								pCmdUI->SetCheck(1);
+		first = false;
 								//pCmdUI->Enable(FALSE);
 							}
 							else{
 											if(m_bUseIMG && pCmdUI->m_nID == ID_MODE_IMAGE){
 												pCmdUI->SetCheck(1);
+		first = false;
 												//pCmdUI->Enable(FALSE);
 											}
 											else{
@@ -1358,6 +1369,7 @@ void CChildView::OnUpdateMode(CCmdUI* pCmdUI)
 							}
 			}
 		}
+	}
 } 
  
 BOOL CChildView::OnEraseBkgnd(CDC*)  //pDC 
