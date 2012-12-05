@@ -1,4 +1,4 @@
-#summary Documentação das funcionalidades implementadas no programa.
+#summary Documentação das funcionalidades implementadas no programa MMXSwarm.
 #labels Phase-Design
 
 = Introdução =
@@ -12,11 +12,10 @@ O código original do programa pode ser baixado em [http://msdn.microsoft.com/en
 = Versões 16, 24 e 32 bits =
 
 <wiki:comment>
-Grupo 1
 Descrever as diferenças de desempenho e em quais implementações se aplicam. (Normal, MMX e SSE)
 </wiki:comment>
 
-A análise de desempenho entre as versões de 16, 24 e 32 bits é feita a partir dos códigos-fonte das implementações: Naive, MMX e SSE2.
+A análise de desempenho entre as versões de 16, 24 e 32 bits é feita a partir dos códigos-fonte das implementações: Naive, MMX e SSE.
 
 Primeiramente é importante conhecer a parte teórica referente a cada conjunto de instruções. 
 
@@ -29,13 +28,13 @@ Trata-se da implementação básica, pois não utiliza um conjunto de instruçõ
 Conjunto de instruções criado pela Intel para aplicações multimídia com a finalidade de aumentar performance. Ele é voltado para a melhora na execução de operações em grandes vetores de dados.
 Implementa o modelo de execução SIMD (Single Instruction Multiple Data) pois assim quando se trabalha com arquivos multimídia são utilizados grandes vetores de dados de modo a agilizar a leitura e processamento devido aos registradores de 64 bits.
 
-<b>SSE2</b>
+<b>SSE</b>
 
 Trata-se do sucessor do MMX e permite aumentar performance em operações de ponto flutuante. Extende as operações do MMX para registradores XMM (64 bits) o que permite ao programador evitar os registradores MM, que não possuem suporte específico para operações de ponto flutuante, fornecendo maior precisão.
 
 ===Análise de performance===
 
-Os programas em MMX e SSE2 usam recursos para aumentar a performance das operações e movimentações de informações: utilizam os registradores estendidos de 64 bits para executar várias instruções em um grande vetor de dados em um tempo reduzido, em comparação com os registradores usuais da linguagem. No caso do programa em questão, os registradores são usados para obtenção de vários pixels na tela de uma só vez, e baseado nessas localizações, fazer as operações necessárias em todos estes lugares.
+Os programas em MMX e SSE usam recursos para aumentar a performance das operações e movimentações de informações: utilizam os registradores estendidos de 64 bits para executar várias instruções em um grande vetor de dados em um tempo reduzido, em comparação com os registradores usuais da linguagem. No caso do programa em questão, os registradores são usados para obtenção de vários pixels na tela de uma só vez, e baseado nessas localizações, fazer as operações necessárias em todos estes lugares.
 
 *MMX-16*
 
@@ -140,7 +139,6 @@ Por fim, podemos afirmar que a implementação Naive possuí uma performance aci
 = Implementações =
 
 <wiki:comment>
-Grupo 2
 Descrever Blur, Blit e Swarm nas três versões (Normal, MMX e SSE).
 </wiki:comment>
 
@@ -583,7 +581,6 @@ Desta maneira, ao pausar o SWARM, o líder e suas lhamas param de se movimentar,
 == Fade In/Out (Transição) ==
 
 <wiki:comment>
-Grupo 3
 Implementar e descrever as nas versões Normal, MMX e SSE.
 </wiki:comment>
 
@@ -657,7 +654,6 @@ TODO: implementar e descrever aqui
 == Grayscale (Tons de cinza) ==
 
 <wiki:comment>
-Grupo 4
 Implementar e descrever as nas versões Normal, MMX e SSE.
 </wiki:comment>
 
@@ -843,7 +839,6 @@ Para uma imagem estática de 1498x935 esta implementação consegue calcular 23 
 == Sobel (Detecção de bordas) ==
 
 <wiki:comment>
-Grupo 5
 Implementar e descrever as nas versões Normal.
 </wiki:comment>
 
@@ -1378,7 +1373,6 @@ void CSSE2Surface32Intrinsic::Envermelhar()
 == Posterize Filter ==
 
 <wiki:comment>
-Grupo 9
 Implementar e descrever algum filtro do site http://www.jhlabs.com/ip/filters/as nas versões Normal, MMX e SSE.
 </wiki:comment>
 
@@ -1520,7 +1514,6 @@ TODO: descrever aqui
 == Mandelbrot ==
 
 <wiki:comment>
-Grupo 6
 Implementar e descrever as nas versões Normal, MMX e SSE.
 </wiki:comment>
 
@@ -1533,7 +1526,6 @@ Implementar e descrever as nas versões Normal, MMX e SSE.
 = GPU (OpenCL) =
 
 <wiki:comment>
-Grupo 7
 Implementar e descrever a função InvertImage nas versões Normal, MMX e SSE
 </wiki:comment>
 
@@ -1542,7 +1534,7 @@ Implementar e descrever a função InvertImage nas versões Normal, MMX e SSE
 = Threshold filter =
 
 <wiki:comment>
-Threshold Filter Grupoe 13
+Threshold Filter 
 </wiki:comment>
 
 O filtro de threshold converte uma imagem A, multispectral, primeiramente para uma imagem no padrão em cinza I, mediante a média aritmética das cores no formato RGB,  para uma imagem binária A'. A imagem de saida A' substitui todos os pixels p(i,j) da imagem intermediaria I com valor maior que um limiar L predefinido, para o valor/classe 1(255 em decimal e FF em hexadecial) e substitui os pixels com valor menor ou igual para o valor/classe 0.
@@ -1747,7 +1739,7 @@ Portanto, através de análises dos dados anteriores, podemos notar uma grande v
 = Mask filter =
 
 <wiki:comment>
-Mask Filter Grupo 15
+Mask Filter 
 </wiki:comment>
 
 O Mask Filter consiste basicamente na aplicação de uma máscara de 32-bits para cada pixel, podendo ser utilizado para filtrar uma porcentagem ou totalidade de 1 ou mais cores.
@@ -1878,20 +1870,19 @@ void CSSE2Surface32Intrinsic::Mask()
 || *32 bits (320x240)* || 169 || 1142 || 1606 ||
 || *32 bits (680x340)* || 58 || 384 || 452 ||
 
-http://chart.apis.google.com/chart?chxl=1:|32+bits+(320x240)|32+bits+(680x340)&chxr=0,0,1606&chxs=0,676767,13.5,0,lt,676767&chxt=y,x&chbh=50&chs=600x300&cht=bvg&chco=FF0000,00FF00,0000FF&chds=0,1606,0,1606,5,1606&chd=t:169,58|1142,384|1606,452&chdl=Naive|MMX|SS3&chtt=Gr%C3%A1fico+de+Desempenho+(FPS)&name=grupo15.jpg
+http://chart.apis.google.com/chart?chxl=1:|32+bits+(320x240)|32+bits+(680x340)&chxr=0,0,1606&chxs=0,676767,13.5,0,lt,676767&chxt=y,x&chbh=50&chs=600x300&cht=bvg&chco=FF0000,00FF00,0000FF&chds=0,1606,0,1606,5,1606&chd=t:169,58|1142,384|1606,452&chdl=Naive|MMX|SS3&chtt=Gr%C3%A1fico+de+Desempenho+(FPS)&name=grafico.jpg
 
 ----
 
 = RGB Adjust Filter =
 
 <wiki:comment>
-RGB Adjust Filter Grupo 14
+RGB Adjust Filter 
 </wiki:comment>
 
 O RGB Adjust Filter, basicamente, multiplica os valores de cada um dos 3 bytes de cor (R,G,B) por um fator pré-definido. Em nossa aplicação, decidimos escolher os valores 1 para multiplicar o valor preexistente para o byte representante da cor Vermelha (R - ou seja, não será modificada), o valor 0.5 para multiplicar o byte representante da cor verde (G) e 0.25 para multiplicar o byte representante da cor azul (B).
 Nesta implementação que realizamos, a cada vez em que o filto é acionado, a multiplicação das cores de cada pixel pelos valores pré-estabelecidos ocorre, o que implica que para análise da eficiência de cada uma das implementações, basta retirarmos uma linha do código na implementação do {{{ChildView.cpp}}}, próximo à linha 460, deixando-se assim:
 {{{
-	//Grupo 14
 	if (m_bUseRGBAdjust) {
 		m_pSurface->RGBAdjust();
 		bContinue = TRUE;
@@ -2092,7 +2083,7 @@ http://img580.imageshack.us/img580/8223/chartqs.png
 = Gradient Filter =
 
 <wiki:comment>
-Gradient Filter Grupo 8
+Gradient Filter 
 </wiki:comment>
 
 O Filtro Gradiente pode escurecer ou clarear uma parte da imagem (de forma gradiente e não completamente), dependendo da implementação feita.  Esse filtro tem como objetivo alterar a variação da luz na imagem, sendo que a transformação aplicada depende sempre da luminosidade no objeto, e assim o filtro pode ser aplicado de forma coerente.
@@ -2210,7 +2201,7 @@ void CMMXSurface32Intrinsic::Gradient()
 = Channel Mix Filter =
 
 <wiki:comment>
-ChannelMix Grupo 11
+ChannelMix 
 </wiki:comment>
 
 O filtro Channel Mix pode ser definido como a mistura dos canais RGB de uma imagem. Neste filtro, cada canal recebe a mistura dos outros dois canais, alterando as cores finais da imagem.
@@ -2306,7 +2297,7 @@ void CMMXSurface32Intrinsic::ChannelMix() {
 = Rescale Filter =
 
 <wiki:comment>
-Rescale Filter Grupo 17
+Rescale Filter 
 </wiki:comment>
 
 http://img163.imageshack.us/img163/4590/efeitorescale.jpg
@@ -2513,7 +2504,7 @@ http://img35.imageshack.us/img35/1246/graficocomparativo.jpg
 
 = Invert Filter =
 <wiki:comment>
-Invert Filter Grupo 7
+Invert Filter 
 </wiki:comment>
 http://img860.imageshack.us/img860/7507/invertfilter.jpg
 <br />
@@ -2630,7 +2621,7 @@ http://img705.imageshack.us/img705/1984/chartaz.png
 
 = Gray Filter =
 <wiki:comment>
-Gray Filter - Grupo 12
+Gray Filter 
 </wiki:comment>
 
 Este filtro produz um efeito “desabilitado” na imagem, o que por vezes
@@ -2847,7 +2838,6 @@ Ocorreram problemas quando colocamos uma imagem e utilizamos o filtro com o Swar
 {{{
 BOOL CChildView::OnIdle(LONG /*lCount*/)
 {
-	//Grupo 12
 	if (m_bUseGrayF && !execGray) {
 		if(m_bPauseSwarm){
 			execGray = true;
@@ -2882,7 +2872,6 @@ http://img97.imageshack.us/img97/8538/chart1.png
 
 = Sepia =
 <wiki:comment>
-Grupo 19
 Implementar e descrever as nas versões Normal, MMX e SSE.
 </wiki:comment>
 
@@ -2912,7 +2901,6 @@ http://www.correctmyphotos.com/wp-content/uploads/2010/02/Tree-CP-sepia-BA550.jp
 
 = Solarize =
 <wiki:comment>
-Grupo 18
 Implementar e descrever as versões Naive, MMX e SSE.
 </wiki:comment>
 Nesta implementação o valor de cada canal (RGB), que pode ir de 0 a 255, é subtraído da média entre o valor máximo e o mínimo, correspondente a 128. Isso significa o mesmo que obter a distância do valor dos canais até o meio (128). Essa distância posteriormente é multiplicada por 2, o que deixa o valor de cada canal mais distante de valores pequenos, acentuando sua tonalidade.
