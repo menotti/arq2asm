@@ -1,11 +1,12 @@
 TITLE MASM Games						(main.asm)
 
 ; Description: Menu para implementacao de jogos em assembly
+; Versao 16 bits para execucao no processador Zet
 
-INCLUDE Irvine32.inc
+INCLUDE Irvine16.inc
 
 ; Inclua um arquivo para implementacao do seu jogo aqui
-INCLUDE forca.asm
+;INCLUDE forca.asm
 
 .data
 
@@ -22,20 +23,18 @@ main PROC
 
 menu:
 	call Clrscr
-	mov edx, offset myMenu
+	mov dx, offset myMenu
 	call WriteString
 	call ReadInt
-	cmp eax, 0
+	cmp ax, 0
 	jz fim
 
-mforca:
-	cmp eax, 1
-	jne mforca
-	call forca
-grupo1:
+grupoX:
+	; novas opcoes
 
 	jmp menu
 fim:
+
 	exit
 main ENDP
 
