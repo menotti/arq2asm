@@ -5,12 +5,12 @@ TITLE MASM Games						(main.asm)
 INCLUDE Irvine32.inc
 
 ; Inclua um arquivo para implementacao do seu jogo aqui
-INCLUDE forca.asm
+;INCLUDE forca.asm
 
 .data
 
 myMenu	BYTE	80 dup ('='),
-				'Laboratorio de Arquitetura e Organizacao de Computadores 2', 13, 10,
+				'Laboratorio de Arquitetura e Organizacao de Computadores II', 13, 10,
 				80 dup ('='),
 				'Jogos em assembly do MASM para x86:', 13, 10,
 				'1 - Forca', 13, 10,
@@ -31,7 +31,7 @@ menu:
 mforca:
 	cmp eax, 1
 	jne mforca
-	call forca
+;	call forca
 grupo1:
 
 	jmp menu
