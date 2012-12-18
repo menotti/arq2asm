@@ -10,7 +10,7 @@ INCLUDE forca.asm
 .data
 
 myMenu	BYTE	80 dup ('='),
-				'Laboratorio de Arquitetura e Organizacao de Computadores II', 13, 10,
+				'Laboratorio de Arquitetura e Organizacao de Computadores 2', 13, 10,
 				80 dup ('='),
 				'Jogos em assembly do MASM para x86:', 13, 10,
 				'1 - Forca', 13, 10,
