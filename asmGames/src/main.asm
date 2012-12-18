@@ -29,7 +29,7 @@ menu:
 	call WriteString
 	call ReadInt
 	cmp eax, 0
-	jz Geecko
+	jz fim
 
 mforca:
 	cmp eax, 1
@@ -46,6 +46,7 @@ Grupo2:
 	;call Grupo3.asm 
 Grupo3: ;seguir exemplo acima
 	jmp menu
+
 fim:
 	exit
 main ENDP
