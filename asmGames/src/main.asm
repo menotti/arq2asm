@@ -45,7 +45,7 @@ Geecko:
 Grupo2:
 	cmp eax, 3
 	jne SpaceInvaders
-	call Space_Invaders.asm 
+	call Space_Invaders
 SpaceInvaders: 
 
 cmp eax, 4
