@@ -7,6 +7,7 @@ INCLUDE Irvine32.inc
 ; Inclua um arquivo para implementacao do seu jogo aqui
 INCLUDE forca/forca.asm
 INCLUDE GeeckoGames/GeeckoGamesSokoban.asm
+INCLUDE SpaceInvaders/Space_Invaders.asm
 
 .data
 
@@ -16,7 +17,8 @@ myMenu	BYTE	80 dup ('='),
 				'Jogos em assembly do MASM para x86:', 13, 10,
 				'1 - Forca', 13, 10,
 				'2 - Sokoban', 13, 10,
-				'3 - Grupo...', 13, 10,
+				'3 - Space Invaders', 13, 10,
+				'4 - Grupo...', 13, 10,
 				'0 - Sair!', 13, 10,
 				'Opcao:', 0
 .code
@@ -42,9 +44,16 @@ Geecko:
 
 Grupo2:
 	cmp eax, 3
-	jne Grupo3
+	jne SpaceInvaders
+	call Space_Invaders.asm 
+SpaceInvaders: 
+
+cmp eax, 4
+	jne Grupo4
 	;call Grupo3.asm 
-Grupo3: ;seguir exemplo acima
+Grupo4: ;seguir exemplo acima
+
+
 	jmp menu
 
 fim:
