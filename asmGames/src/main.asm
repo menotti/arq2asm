@@ -47,10 +47,10 @@ Grupo2:
 	jne SpaceInvaders
 	call Space_Invaders
 SpaceInvaders: 
-
-cmp eax, 4
+	
+	cmp eax, 4
 	jne Grupo4
-	;call Grupo3.asm 
+	;call Grupo4.asm 
 Grupo4: ;seguir exemplo acima
 
 
