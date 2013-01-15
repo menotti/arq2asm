@@ -1,7 +1,7 @@
-TITLE Data Transfer Examples       (Moves.asm)
+TITLE Space_Invaders
 
 
-INCLUDE Irvine32.inc
+;INCLUDE Irvine32.inc
 .data
 	heroTop BYTE 219, 0				;Essas sao as strings que formam o desenho do nosso personagem
 	heroBottom BYTE 219,219,219, 0		
@@ -47,10 +47,11 @@ INCLUDE Irvine32.inc
 	frasePontuacaoFinal BYTE "PONTUACAO FINAL: ",0
 
 	gameOver BYTE 0					;Variavel de fim de jogo.
-.code
-main PROC
 
-		
+.code
+Space_Invaders PROC
+
+		call ClrScr
 		call GetMseconds		;Inicializa a variavel do tempo do gerador.
 		mov geradorTime, eax
 		
@@ -283,8 +284,8 @@ GAME_OVER:
 	call WaitMsg
 	
 	
-	exit
-main ENDP
+	ret
+Space_Invaders ENDP
 
 
 
@@ -571,4 +572,3 @@ verificaScore PROC
 
 	ret
 verificaScore ENDP
-END main
