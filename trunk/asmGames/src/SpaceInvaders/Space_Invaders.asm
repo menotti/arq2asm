@@ -130,6 +130,8 @@ GameLoop:
 	NAO_GERA_INIMIGO:
 
 ; ------------------------------------------- LEITURA CONSTANTE DOS BOTÕES
+	mov eax, 10
+	call Delay					;TENTATIVA DE MELHORAR LEITURA DE TECLAS, o delay ajuda a pegar as teclas corretamente!
 	call ReadKey				;Le sem esperar, direto do buffer do teclado.
 	jz NO_KEY_READ				;Nenhuma tecla apertada, pular para processamento
 	push eax				
