@@ -1,13 +1,156 @@
-#summary One-sentence summary of this page.
+ = Introdução: =
 
-= Introduction =
+Como os PC’s não param de evoluir, a arquitetura também continua a evoluir, nesse caso para um PC de 64bits, que é genericamente conhecido como x64, a primeira empresa a cria-lo foi a AMD, hoje é conhecido por AMD64, a Intel também criou a dela e chamou de EMT64, ambas possuem apenas algumas pequenas diferenças, mas a maioria do código pode ser implementado em ambos, e a esse tipo de código foi dado o nome de flavor x64.
+É necessário um bom conhecimento de Assembly, pois boa parte do programa será escrito nele e além do mais é útil na hora de debuggar o código, pois o código em C++ pode produzir um código incorreto em Assembly e comprometer o funcionamento do programa, nesse caso um bom conhecimento da linguagem ajudará o programador a encontrar e consertar o erro.
 
-Add your content here.
+ = Arquitetura: =
+
+Inicialmente agora temos mais bits para trabalhar, além dos já conhecidos da versão de 32 bits, agora temos um Double Quadword de 128 bits para utilizarmos. Antes havia a letra “E” ligada aos registradores para indicar que eram de 32 bits, agora utiliza-se a letra “R” para tal, com isso os oito registadores já conhecidos permanecem do mesmo modo, mas como um R no inicio.
+Com o aumento na capacidade também foram criados 8 novos registadores, que diferente dos outros 8, não possuem um nome, mas sim uma indicação numérica, vão de R8 até R15, uma diferença entre os dois “grupos” de registadores é que para utilizar as partes com menos bits, nos 8 primeiros permanece igual, substitui o R por E ou o X por H ou L, já nos novos registradores para se usar os outros tamanhos deve-se seguir a seguinte notação R8(quadword), R8D(lower dword), R8W(lowest word) e R8B(lowest byte) equivale ao R8L na arquitetura Intel e não existe R8H.
+Para poder acessar a parte alta, AH, por exemplo, é necessário usar o prefixo REX seguido de BPL, SPL, DIL ou SIL para acessar AH, BH, CH e DH respectivamente.
+O instruction pointer, RIP, funciona do mesmo modo que o de 32 bits, mas agora para 64 bits, o stack pointer, RSP aponta para o ultimo item a sofre um push na pilha e serve para guardar endereços de retorno para sub-rotinas, para passar parâmetros para linguagens de alto nível.
+Temos ainda o RFLAGS que como o próprio nome diz, guarda os flags do programa, os flags mais importantes são:
+Carry, bit 0                Operação necessita ou gera um carry.
+Paridade, bit 2          O ultimo byte tem um numero igual de 1’s, senão 0.
+Ajuste, bit 4               Denota código binário convertido para decimal no byte de  carry.
+Zero, bit 6                 Se o resultado for igual a zero.
+Sinal, bit 7                 Se o bit mais significativo for 1.
+Overflow, bit 11         Se ocorreu overflow em uma operação com sinal.
+Direção, bit 10           A direção que as instruções operam, incremental ou decremental.
+Identificação, bit 21   Sua alteração denota a presença de uma instrução CPUID.
+
+A unidade de ponto flutuante(FPU) possui 8 registradores próprios FPR0 – FPR7, registradores de status e controle, e outros mais especializados, o registrador FPR7 pode guardar um dos valore mostrados na tabela abaixo:
+
+Os últimos registradores incluem, registradores de segmento, quase não utilizados em x64, registradores de controle, gerenciamento de memoria, registradores de debug, registrador de virtualização, registrador de performance que busca todo tipo de parâmetro interno.
+
+ = Arquitetura SIMD =
+
+Instruções individuais que executam muitos dados, SIMD, são instruções executadas por meio de um único comando que atua em varias partes de dados em paralelo e é mais comumente utilizada na linguagem Assembly.
+MMZ e SSE suportam os comandos SIMD e podem acessar até 8 partes diferentes da memoria com apenas um comando.
+Existem 8 registadores MMX de 64 bits, chamados de MMX0 – MMX7 que estão logo em seguida do FPR0-7, o que significa que deve-se tomar cuidado para não utilizar os registradores errados quando for realizar algum tipo de operação, não houveram alterações quanto ao uso ou nomenclatura das instruções MMX em relação a versão de 32 bits.
+Instruções SSE são instruções utilizadas por registradores XMM de 128 bits e podem realizar comparações, cálculos aritméticos, moves, entre outras funções e introduziu instruções para realizar uma busca prévia na memoria, visando uma melhor performance e “cercas” de memoria para aumentar a segurança.
+
+ = Ferramentas =
+
+ = Assembly: =
+Existem alguns tipos diferentes, o MASM que é o que estamos acostumados a usar, NASM que é usado para trabalhar em rede, FASM que é mais rápido que os outros. Iremos nos focar somente no MASM de 64 bits.
+
+ = Compiladores C/C++: =
+Inicialmente não existe mais o comando inline, ele foi removido na versão de 64 bits para deixar o código mais otimizado, então é recomendado que seja utilizado um header como o código assembly dentro dele.
+
+ = Instruções Básicas: =
+Nenhuma delas sofreu alteração alguma, o MOV é do mesmo jeito, tal como MUL, DIV, ADD, etc.
+
+ = Calling Convention: =
+São bibliotecas que trabalham com a interface na hora de passar parâmetros ou trabalhar com a pilha. O x64 da Microsoft para a linguagem C possui algumas regras:
+•	RCX, RDX, R8 e R9 são usados para números inteiros e ponteiros da esquerda para a direita.
+•	XMM0, 1, 2 e 3 são usados para ponto flutuante.
+•	Argumentos adicionais são colocados na pilha da esquerda para a direita.
+•	Parâmetros com menos de 64 bits não são estendidos com zero, a parte alta ficará com lixo.
+•	É responsabilidade da função de chamada alocar 32 bits de espaço vazio antes de chamar as funções.
+•	Também é sua função limpar a pilha depois de utiliza-la.
+•	Os valores inteiros são retornados no RAX se possuírem 64 bits ou menos.
+•	Os valores do ponto flutuante são retornados no registrador XMM0.
+•	A pilha é alinhada em 16 bits.
+•	Os registradores RAX, RCX, RDX, R8, R9, R10 e R11 são considerados voláteis e por isso devem ser considerados destuidos em funções de chamada.
+•	Os registradores RBX, RBP, RDI, RSI, R12, R13, R14 e R15 devem ser salvos nas funções que os usam.
+•	Não há uma calling convention para ponto flutuante e nem para seus registradores.
+•	Existem outras regras que não serão tratadas nesse documento. 
+
+ = Exemplos de Programas: =
+Neste exemplo é feito uma chamada de função em C e outra em assembly usando instruções de ponto flutuante.
+É usado dois arquivos diferentes pois a arquitetura x64 não suporta inline assembly .
+
+ = Main.cpp =
+
+#include<iostream>
+#include<conio.h>
+
+using namespace std;
+
+/*função em C que recebe os valores e realiza o calculo*/
+
+double CombineC(int a,int b,int c,int d,int e, double f)
+{
+	return (a+b+c+d+e)/(f+1.5);
+}
+
+/* o extern "C" é usado para "avisar" que sera usado um arquivo externo e evitar a name mangling ou decoração de nomes*/
+
+extern "C"  double CombineA(int a,int b,int c,int d,int e,double f);
 
 
-= Details =
+int main()
+{
+	
+	cout <<"CombineC: "<<CombineC(1,2,3,4,5,6.1)<<endl;
+	cout<<"CombineA: "<<CombineA(1,2,3,4,5,6.1)<<endl;
+	system("pause");
+	
+	return 0;
+---------------------------------------------------------------------------------
+ = CombineA.asm =
+.data
 
-Add your content here.  Format your content with:
-  * Text in *bold* or _italic_
-  * Headings, paragraphs, and lists
-  * Automatic links to other wiki pages
+realVal REAL8 +1.5
+
+.code
+PUBLIC CombineA
+CombineA proc
+
+   ADD    ECX,DWORD PTR [RSP+28h]
+   ADD    ECX, R9D                 
+   ADD    ECX, R8D                 
+   ADD    ECX, EDX                 
+   MOVD   XMM0, ECX                
+   CVTDQ2PD  XMM0, XMM0            
+   MOVSD  XMM1, realVal            
+   ADDSD  XMM1, MMWORD PTR [RSP+30H]  
+   DIVSD  XMM0, XMM1               
+   RET                             
+CombineA ENDP
+End
+
+Exemplo extraído do site http://software.intel.com/en-us/articles/introduction-to-x64-assembly
+Uma tabuada onde o calculo é feito em assembly
+
+ = Main.cpp =
+
+#include<iostream>
+#include<conio.h>
+
+using namespace std;
+int i;
+
+extern "C"  int testeAsm();
+int main()
+{
+	for (i=0;i<11;i++)
+	{
+		
+		cout<<" "<<testeAsm()<<endl;
+	}
+	system("pause");
+	
+	return 0;
+
+}
+
+ = Teste.asm =
+.data
+
+val1 WORD ?
+
+
+.code
+testeAsm proc
+
+mov eax,0
+mov bx,val1
+add eax,ebx
+add val1,2	
+
+
+ret
+testeAsm endp
+end
