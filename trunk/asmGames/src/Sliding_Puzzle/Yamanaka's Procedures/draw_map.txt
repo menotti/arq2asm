@@ -1,0 +1,76 @@
+;-----------------------------------------
+draw_map PROC USES eax ebx ecx edx
+;
+;Receives: eax= map's offset
+;Returns: just a map, EGENDARILY drawn
+;
+;AUTOR: LUCAS Y
+;-----------------------------------------
+.data
+EG_WALL BYTE 9 DUP(0B1h)
+
+EG_PIECE_1 BYTE 0C9h, 0CAh, 0BBh, 0C8h, 0CBh, 0BCh
+EG_PIECE_2 BYTE 0CAh, 0BBh, 0CCh, 0CBh, 0CBh, 0CAh, 0CBh, 0CAh, 0CAh, 0B9h, 0C8h, 0CBh
+EG_PIECE_3 BYTE 0C9h, 0CEh, 0BBh, 0BCh, 0BAh, 0C8h, 0BBh, 0BAh, 0C9h, 0C8h, 0CEh, 0BCh
+EG_MASTERPIECE BYTE 0CEh, 0CAh, 0CAh, 0CAh, 0CAh, 0CEh, 0B9h, 0F4h, 0Ch, 20h, 20h, 0CCh, 0B9h, 20h, 0Eh, 20h, 20h, 0CCh, 0CEh, 0CBh, 0CBh, 0CBh, 0CBh, 0CEh
+.code
+;desenha os objetos do mapa
+mov ecx, 0
+draw_map_L1:
+	cmp ch, 8
+	je draw_map_SAIRL1
+
+	draw_map_L2:
+		cmp cl, 8
+		je draw_map_SAIRL2
+
+		mov bl, [eax]	;bl recebe o conteudo de eax
+
+		cmp bl, 0
+		je draw_map_END
+
+		;poe as coordenadas em dx e as multiplica pela dimensao dos tiles para encontrar a posicao na tela
+		mov dx, cx
+		shl dx, 1	;dx * 2
+		add dl, cl	;dl + cl
+		add dx, 0208h
+
+		cmp bl, 1
+		jne dm_NOTWALL
+			INVOKE draw_matrix, OFFSET EG_WALL, 0302h, dx, BROWN + 16*RED
+			jmp draw_map_END
+		dm_NOTWALL:
+		cmp bl, 2
+		jne dm_NP1
+			INVOKE draw_matrix, OFFSET EG_PIECE_1, 0302h, dx, GRAY + 16*WHITE
+			jmp draw_map_END
+		dm_NP1:
+		cmp bl, 3
+		jne dm_NP2
+			INVOKE draw_matrix, OFFSET EG_PIECE_2, 0602h, dx, GRAY + 16*WHITE
+			jmp draw_map_END
+		dm_NP2:
+		cmp bl, 4
+		jne dm_NP3
+			INVOKE draw_matrix, OFFSET EG_PIECE_3, 0304h, dx, GRAY + 16*WHITE
+			jmp draw_map_END
+		dm_NP3:
+
+		cmp bl, 5
+		jne draw_map_END
+			INVOKE draw_matrix, OFFSET EG_MASTERPIECE, 0604h, dx, GRAY + 16*WHITE
+
+		draw_map_END:
+		add eax, SIZEOF BYTE
+		inc cl
+		jmp draw_map_L2
+	draw_map_SAIRL2:
+	mov cl, 0
+
+	inc ch
+	jmp draw_map_L1
+draw_map_SAIRL1:
+
+ret
+draw_map ENDP
+;-----------------------------------------

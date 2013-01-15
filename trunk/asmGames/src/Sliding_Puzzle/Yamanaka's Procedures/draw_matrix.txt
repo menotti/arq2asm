@@ -1,15 +1,27 @@
 ;------------------------------------------------------------------
 draw_matrix PROC USES eax ebx ecx edx esi,
 	matrix_ptr:DWORD, dimension:WORD, position:WORD, color:BYTE
+; Desenha uma matriz na tela com a cor especificada. 0FFh significa
+; que, naquela posicao, o programa devera pular o caractere.
+;
+;Recebe: matrix_ptr: endereco do vetor contendo a matriz
+;		 dimension: dimensoes da matriz, parte alta recebe width
+;		 position: posicao na tela, parte alta recebe a coord Y
+;		 color: cores escolhidas. Ex: BLACK + (WHITE*16)
+;
+;AUTOR: LUCAS Y
 ;------------------------------------------------------------------
+;passa os parametros para registradores
 mov esi, matrix_ptr
 mov bx, dimension
 mov dx, position
 movzx ax, color
-call SetTextColor
+
+call SetTextColor	;muda as cores da letra e do fundo para as escolhidas
+
 mov eax, 0
 mov ecx, 0
-call Gotoxy			;go to position stored in dx
+call Gotoxy			;vai para a posicao guardada em dx
 P01L1:
 	cmp cl, bl
 	jae P01SAIRLOOPEXTERNO
@@ -22,6 +34,9 @@ P01L1:
 		movzx ax, bh
 		mul cl
 		add al, ch
+		jnc dmx_NAOAJUSTA
+		inc ah
+		dmx_NAOAJUSTA:
 		mov al, [esi + eax * TYPE BYTE]
 		cmp al, 0FFh
 		jne P01CHARNAOVAZIO
@@ -46,3 +61,4 @@ mov ax, WHITE + (BLACK*16)
 call SetTextColor
 ret
 draw_matrix ENDP
+;--------------------------------------------------------------
