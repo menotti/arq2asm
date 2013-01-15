@@ -1,0 +1,57 @@
+;OBS: Custo alto, pois escreve caracter por caracter
+;-------------------------------------------------------
+draw_each PROC USES eax ebx ecx edx esi,
+	matrixPtr:PTR DWORD, dimension:WORD, position:WORD
+; Este procedimento eh utilizado para desenhar na tela.
+; Deve-se passar como parametros o endereco da matriz de
+; WORDS e o tamanho dela (largura e comprimento).
+; A parte alta da WORD sera utilizada como ascii desejado,
+; e a parte baixa como a cor de letra e de fundo.
+; O parametro position recebera a posicao para desenhar 
+; na tela, a coordenada x estara na parte alta e a y na
+; parte baixa da WORD.
+;-------------------------------------------------------
+.code
+mov esi, matrixPtr									;armazena o endereco da matriz
+mov eax, 0									
+mov bx, dimension									;guarda as dimensoes da matriz no registrador bh
+mov ecx, 0											;zera o registrador ecx
+mov dx, position									;guarda a posicao para desenhar a matriz
+call Gotoxy											;aponta o cursor para a posicao desejada
+
+L1: cmp cl, bl										;while (cl < m_height)
+	jae SAIRLOOPEXTERNO
+	push dx
+	L2: cmp ch, bh									;while(ch < m_width)
+		jae SAIRLOOPINTERNO
+		inc dx
+
+		movzx ax, bh
+		mul cl
+		add al, ch
+		mov ax, [esi + eax * TYPE WORD]		;ax recebe o valor da matriz correspondente
+		cmp ax, 0FFFFh
+		jne CHARNAOVAZIO
+			call Gotoxy						;se os dados forem "nulos" (FFFFh) pula-se um espaco
+			jmp FIMLOOP
+		CHARNAOVAZIO:
+			shl eax, 8									;joga o caracter para a parte alta de eax
+			shr ax, 8									;o que sobra em ax (os dados das cores) eh jogado para o comeco do registrador
+			call SetTextColor							;as cores sao alteradas
+			shr eax, 16									;o caracter eh rotacionado para o comeco do registrador (al)
+			call WriteChar								;al eh escrito na tela
+		FIMLOOP:
+		inc ch
+		jmp L2
+	SAIRLOOPINTERNO:
+	pop dx
+	mov ch, 0
+	inc dh
+	call Gotoxy								;muda o cursor para a linha de baixo, na coordenada x correta.
+
+	inc cl
+	jmp L1
+
+SAIRLOOPEXTERNO:
+ret
+draw_each ENDP
