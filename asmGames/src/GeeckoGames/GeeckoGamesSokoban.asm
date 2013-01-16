@@ -5,7 +5,7 @@ LoadMap PROTO, destinationMap : PTR BYTE
 CursorInfoA DWORD 1 
 CursorInfoB DWORD 0
 useArrows BYTE "Use the w,a,s,d keys to move your character."
-mapFileName BYTE "C:\\Irvine\\Examples\\ProjectoFinalArq2\\TestSokobanMap.map", 0
+mapFileName BYTE "Code\\GeeckoGames\\Maps\\TestSokobanMap.map", 0
 currentMap BYTE 400 DUP (?), 0
 
 .code
