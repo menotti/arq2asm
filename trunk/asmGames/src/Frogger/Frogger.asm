@@ -619,11 +619,3 @@ FROG_InitJogo proc
     call FROG_Clock
 
 endp FROG_InitJogo
-
-main PROC
-    call FROG_InitJogo
-
-    exit
-main ENDP
-
-END main

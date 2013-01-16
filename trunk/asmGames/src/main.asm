@@ -3,12 +3,14 @@ TITLE MASM Games						(main.asm)
 ; Description: Menu para implementacao de jogos em assembly
 
 INCLUDE Irvine32.inc
+INCLUDE macros.inc
 
 ; Inclua um arquivo para implementacao do seu jogo aqui
 INCLUDE forca/forca.asm
 INCLUDE GeeckoGames/GeeckoGamesSokoban.asm
 INCLUDE SpaceInvaders/Space_Invaders.asm
 INCLUDE Labirinto/labirinto.asm
+INCLUDE Frogger/Frogger.asm
 
 .data
 
@@ -21,6 +23,7 @@ myMenu	BYTE	80 dup ('='),
 				'3 - Space Invaders', 13, 10,
 				'4 - Labirinto da Morte', 13, 10,
 				'5 - Grupo...', 13, 10,
+				'6 - Frogger', 13, 10,
 				'0 - Sair!', 13, 10,
 				'Opcao:', 0
 .code
@@ -56,10 +59,14 @@ Labirinto:
 
 Grupo5: ;seguir exemplo acima	
 	cmp eax, 5
-	;jne Grupo5
+	jne Frogger
 	;call Grupo5.asm 
 
-	jmp menu
+Frogger:
+	cmp eax, 6
+	jne menu
+
+	call FROG_InitJogo
 
 fim:
 	exit
