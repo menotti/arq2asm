@@ -8,6 +8,7 @@ INCLUDE Irvine32.inc
 INCLUDE forca/forca.asm
 INCLUDE GeeckoGames/GeeckoGamesSokoban.asm
 INCLUDE SpaceInvaders/Space_Invaders.asm
+INCLUDE Labirinto/labirinto.asm
 
 .data
 
@@ -18,7 +19,8 @@ myMenu	BYTE	80 dup ('='),
 				'1 - Forca', 13, 10,
 				'2 - Sokoban', 13, 10,
 				'3 - Space Invaders', 13, 10,
-				'4 - Grupo...', 13, 10,
+				'4 - Labirinto da Morte', 13, 10,
+				'5 - Grupo...', 13, 10,
 				'0 - Sair!', 13, 10,
 				'Opcao:', 0
 .code
@@ -39,20 +41,23 @@ mforca:
 	call forca
 Geecko:
 	cmp eax, 2
-	jne Grupo2
+	jne SpaceInv
 	call GeeckoGamesSokoban
 
-Grupo2:
+SpaceInv:
 	cmp eax, 3
-	jne SpaceInvaders
+	jne Labirinto
 	call Space_Invaders
-SpaceInvaders: 
-	
-	cmp eax, 4
-	jne Grupo4
-	;call Grupo4.asm 
-Grupo4: ;seguir exemplo acima
 
+Labirinto: 	
+	cmp eax, 4
+	jne Grupo5
+	call jogaLabirinto 
+
+Grupo5: ;seguir exemplo acima	
+	cmp eax, 5
+	;jne Grupo5
+	;call Grupo5.asm 
 
 	jmp menu
 
