@@ -5,7 +5,9 @@ LoadMap PROTO, destinationMap : PTR BYTE
 CursorInfoA DWORD 1 
 CursorInfoB DWORD 0
 useArrows BYTE "Use the w,a,s,d keys to move your character."
-mapFileName BYTE "Code\\GeeckoGames\\Maps\\TestSokobanMap.map", 0
+mapFileName BYTE "Code\\GeeckoGames\\Maps\\Map"
+mapNumber BYTE "02", 0
+mapNumberMask BYTE "0000"
 currentMap BYTE 400 DUP (?), 0
 
 .code
@@ -18,8 +20,8 @@ menu:
 	INVOKE GetStdHandle, STD_OUTPUT_HANDLE
 	INVOKE SetConsoleCursorInfo, EAX, ADDR CursorInfoA
 	call ClrScr
+	call updateMapName
 	mov EDX, OFFSET mapFileName
-
 	INVOKE LoadMap, ADDR currentMap
 	
 	mov ECX, 1
@@ -107,3 +109,18 @@ X:  and cl, 0FEh
 	jmp LV
 LV:	ret
 UpdateGame ENDP
+
+updateMapName PROC USES ax
+
+	mov ax, WORD PTR mapNumber
+	inc ah
+
+	;If the first digit is over 10
+	cmp ah, 3Ah
+	jne Finish
+	mov ah, 30h
+	inc al	
+Finish:
+	mov WORD PTR mapNumber, ax
+	ret
+updateMapName ENDP
