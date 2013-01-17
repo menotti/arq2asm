@@ -8,6 +8,30 @@ DrawFinishedGame PROTO
 movesSTR BYTE "MOVES: ", 0
 bestSTR BYTE "	BEST: ", 0
 
+mainScreen1				BYTE		"********************************************", 0Ah
+mainScreen2				BYTE		"*                                          *", 0Ah
+mainScreen3				BYTE		"*                                          *", 0Ah
+mainScreen4				BYTE		"*               S O K O B A N              *", 0Ah
+mainScreen5				BYTE		"*                                          *", 0Ah
+mainScreen6				BYTE		"*             by: Geeecko Games            *", 0Ah
+mainScreen7				BYTE		"*                                          *", 0Ah
+mainScreen8				BYTE		"*                                          *", 0Ah
+mainScreen9				BYTE		"*     w: UP s : DOWN a : LEFT d : RIGHT    *", 0Ah
+mainScreen10			BYTE		"*                                          *", 0Ah
+mainScreen11			BYTE		"*            x : go to game menu           *", 0Ah
+mainScreen12			BYTE		"*                                          *", 0Ah
+mainScreen13			BYTE		"*             ESC : leave game             *", 0Ah
+mainScreen14			BYTE		"*                                          *", 0Ah
+mainScreen15			BYTE		"*                                          *", 0Ah
+mainScreen16			BYTE		"*                                          *", 0Ah
+mainScreen17			BYTE		"*           PRESS ENTER TO START           *", 0Ah
+mainScreen18			BYTE		"*                                          *", 0Ah
+mainScreen19			BYTE		"*                                          *", 0Ah
+mainScreen20			BYTE		"*                                          *", 0Ah
+mainScreen21			BYTE		"*                                          *", 0Ah
+mainScreen22			BYTE		"*                                          *", 0Ah
+mainScreen23			BYTE		"********************************************",0
+
 .code
 
 DrawBackground PROC, mapPtr:PTR BYTE, lineSize:BYTE, mapSize:DWORD
@@ -67,7 +91,10 @@ NextC:
 RET
 DrawInteractive ENDP
 
-DrawMainScreen PROC
+DrawMainScreen PROC USES EDX
+	CALL ClrScr
+	MOV EDX, OFFSET mainScreen1
+	CALL WriteString
 	RET
 DrawMainScreen ENDP
 

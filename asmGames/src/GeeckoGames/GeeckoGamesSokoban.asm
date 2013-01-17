@@ -46,6 +46,7 @@ MainScreen:
 
 	;LOAD FIRST MAP AND START A NEW GAME
 LoadMap:
+	call ClrScr
 	INVOKE ReadMap, SIZEOF currentMapBg, ADDR mapFileName, ADDR currentMapBg
 	CMP EAX, INVALID_HANDLE_VALUE ; if loaded map does not exist the game has been beated
 	MOV moves, 0
