@@ -22,6 +22,8 @@ RESTART_LEVEL_FLAG = 100b
 NEXT_LEVEL_FLAG = 1000b
 END_GAME_FLAG = 10000b
 
+MAP_LINE_SIZE = 44
+
 .code
 
 GeeckoGamesSokoban PROC
@@ -50,8 +52,8 @@ LoadMap:
 	CMP EAX, INVALID_HANDLE_VALUE ; if loaded map does not exist the game has been beated
 	JE EndScreen
 LevelPlay:
-	CALL DrawBackground
-	CALL DrawInteractive
+	INVOKE DrawBackground, ADDR currentMapBg, MAP_LINE_SIZE, SIZEOF currentMapBg
+	;CALL DrawInteractive
 	CALL UpdateGame
 
 	TEST ECX, LEAVE_THE_GAME_FLAG
@@ -62,9 +64,16 @@ LevelPlay:
 	TEST ECX, RESTART_LEVEL_FLAG
 	JNZ LoadMap
 
+	OR ECX, NEXT_LEVEL_FLAG
+	MOV moves, 0
+
 	TEST ECX, NEXT_LEVEL_FLAG
 	JZ LevelPlay
 	CALL UpdateMapName
+	MOV EAX, moves
+	CMP EAX, best
+	JAE LoadMap
+	INVOKE SaveNewMapScore, ADDR mapFileName, EAX, SIZEOF currentMapBg
 	JMP LoadMap
 EndScreen:
 	CALL DrawFinishedGame
@@ -82,8 +91,6 @@ LeaveGame:
 
 	POPA
 	RET
-
-
 GeeckoGamesSokoban ENDP
 
 ;RECEIVES THE ADDRESS OF THE MAP IN ESI AND THE NUMBER OF CHARS IN IT IN ECX
@@ -136,7 +143,7 @@ ENTER_PRESSED:
 	OR ECX, LEVEL_PLAY_FLAG
 	JMP LeaveProc
 X_PRESSED:
-	AND ECX, 0
+	MOV ECX, 0
 	JMP LeaveProc
 R_PRESSED:
 	JMP CheckForInput
@@ -151,18 +158,3 @@ PRESSED_D:
 LeaveProc:
 	RET
 UpdateGame ENDP
-
-updateMapName PROC USES ax
-
-	mov ax, WORD PTR mapNumber
-	inc ah
-
-	;If the first digit is over 10
-	cmp ah, 3Ah
-	jne Finish
-	mov ah, 30h
-	inc al	
-Finish:
-	mov WORD PTR mapNumber, ax
-	ret
-updateMapName ENDP

@@ -101,3 +101,18 @@ SaveNewMapScore PROC USES ECX EDX ESI,
 ErrorOpenningFile:
 	RET
 SaveNewMapScore ENDP
+
+UpdateMapName PROC USES ax
+
+	mov ax, WORD PTR mapNumber
+	inc ah
+
+	;If the first digit is over 10
+	cmp ah, 3Ah
+	jne Finish
+	mov ah, 30h
+	inc al	
+Finish:
+	mov WORD PTR mapNumber, ax
+	ret
+UpdateMapName ENDP
