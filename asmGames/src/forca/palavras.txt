@@ -1,0 +1,9 @@
+8
+arquitetura
+computador
+intel
+pentium
+disciplina
+projeto
+trabalho
+grupo
