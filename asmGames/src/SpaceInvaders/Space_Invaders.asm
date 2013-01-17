@@ -4,11 +4,19 @@ TITLE Space_Invaders
 ;INCLUDE Irvine32.inc
 .data
 	fHighscore BYTE "highscore.txt", 0
-	fDificuldades BYTE "SpaceInvaders\dificuldades.txt", 0
+	fDificuldades BYTE "src\SpaceInvaders\dificuldades.txt", 0
 
 	bufferHighscore BYTE 4096 DUP(0)
 	bufferConversaoHighscore BYTE 10 DUP(?)
 	erroDificuldades BYTE "ARQUIVO DE DIFICULDADES NAO ENCONTRADO",0
+
+	enemyTop BYTE 219,"    ", 219, 0
+	enemyMid BYTE 6 DUP(219), 0
+	enemyBottom BYTE 219,219, 0
+
+	enemyTopEmpty BYTE "      ", 0
+	enemyMidEmpty BYTE "      ",0
+	enemyBottomEmpty BYTE "  ",0
 
 	heroTop BYTE 219, 0				;Essas sao as strings que formam o desenho do nosso personagem
 	heroBottom BYTE 219,219,219, 0		
@@ -18,7 +26,7 @@ TITLE Space_Invaders
 									;	este valor eh muito importante, e seu uso se da na parte de processamento do codigo.
 	scoreLabel BYTE "SCORE: ",0
 	livesLabel BYTE "VIDAS: ",0
-	countLives BYTE 2				;Contagem de "vidas" do personagem
+	countLives BYTE 0				;Contagem de "vidas" do personagem
 	countScore BYTE 0				;Contagem dos pontos do personagem
 	placarBool BYTE 0				;Verifica se o placar precisa ser atualizado
 
@@ -29,16 +37,19 @@ TITLE Space_Invaders
 	tiroHitBool BYTE 0, 0			;Vetor de variaveis utilizadas para verificar se existe o "tiro" ou nao e se existe algum tiro que atingiu o inimigo.
 	tiroBool BYTE 0, 0				;	Usados para rastrear e atualizar os tiros
 				
-	tiroTime DWORD 0, 0				;Vetor de "Tempos" dos tiros, utilizados para regular a velocidade de atualização dos tiros.
+	tiroTime DWORD 0, 0			;Vetor de "Tempos" dos tiros, utilizados para regular a velocidade de atualização dos tiros.
 
 ;	teclaTime DWORD 0
 	setaEsquerdaBool DWORD 0		;Variaveis utilizadas para rastreamento das teclas do teclado. 
 	setaDireitaBool DWORD 0			;	A implementação desta maneira buscava melhor desempenho e resposta do teclado.
 
+
 	enemyX BYTE 10, 24, 45, 60, 64		;Vetores de coordenadas X e Y dos inimigos
 	enemyY BYTE 5 DUP(1)
 	enemyBool BYTE 5 DUP(0)			;Vetor de variaveis de controle de existencia
 	enemyTime DWORD 5 DUP(0)		;Vetor de variaveis de controle de tempo de atualização (similar aos tiros)
+	enemyHitBool BYTE 5 DUP(0)		;Vetor de variáveis de controle de colisão do inimigo
+	enemyHitLabel BYTE -1		;Indica qual o inimigo (indice) atingido pelo ultimo tiro, com -1 sendo NENHUM
 
 	personagemX BYTE 39				;Coordenadas do personagem principal
 	personagemY BYTE 24
@@ -60,8 +71,9 @@ Space_Invaders PROC
 
 	
 		call ClrScr
-		call GetMseconds		;Inicializa a variavel do tempo do gerador.
+		call GetMseconds		;Inicializa a variavel do tempo do gerador e as vidas
 		mov geradorTime, eax
+		mov countLives, 2
 		
 ;--------------------------------------------- Escreve personagem na tela pela primeira vez
 		
@@ -126,10 +138,13 @@ Space_Invaders PROC
 	cmp eax, INVALID_HANDLE_VALUE
 	je NAO_CARREGOU_DIFICULDADES
 
+	push eax						;Guarda na pilha o valor de manipular arquivo.
+
 	;se carregou:
 	mov edx, OFFSET bufferHighscore
 	mov ecx, 4096					;Tamanho do arquivo
 	call ReadFromFile
+
 
 	mov esi, OFFSET bufferHighscore	;esi aponta para primeira dificuldade
 	mov edi, OFFSET bufferConversaoHighscore
@@ -160,6 +175,9 @@ LOOP_CARREGA_STRING:
 	ja FIM_CARREGAR_DIFICULDADES
 	jmp LOOP_CARREGA_STRING
 FIM_CARREGAR_DIFICULDADES:
+
+	pop eax							;recupera em eax o valor de manipular aquivos
+	call CloseFile					;fecha arquivo de dificuldades
 
 	
 ;-------------------------------FIM CARREGAR DIFICULDADES
@@ -212,7 +230,7 @@ GameLoop:
 		mov heroUpdateBool, 1
 		jmp PROCESSAMENTO
 	BarraEspaco:					
-		mov ecx, 2			;numero de tiros possiveis	
+		mov ecx, LENGTHOF tiroBool			;numero de tiros possiveis	
 		mov esi, 0			;indice para controlar qual tiro estamos verificando
 		LOOP1:				;Loop que busca um tiro livre (que nao esta em uso na tela)
 			cmp tiroBool[esi], 1
@@ -259,11 +277,13 @@ LOOP_INIMIGOS:
 	add esi, 1
 loop LOOP_INIMIGOS
 
+
+
 ;==================FIM DA ATUALIZACAO E ESCRITA DE INIMIGOS
 
 ;==================ATUALIZA E ESCREVE TIROS
-mov ecx, 2		;Numero max de tiros
-mov esi, 0		;indice dos tiros
+mov ecx, LENGTHOF tiroBool		;Numero max de tiros
+mov esi, 0						;indice dos tiros
 LOOP_TIROS:
 	cmp tiroBool[esi], 0		;Verifica se tiro esta ativo
 		je NO_TIRO_UPDATE
@@ -321,8 +341,9 @@ NO_UPDATE_PLACAR:
 ;==================FIM ATUALIZAÇÃO DE PLACARE VIDA
 
 cmp countLives, 0
-je GAME_OVER
-	
+jne NAO_MORREU
+	mov gameOver, 1
+NAO_MORREU:	
 	jmp GameLoop	;Volta ao inicio das verificacoes, fechando assim nosso loop de jogo.
 
 NAO_CARREGOU_DIFICULDADES:
@@ -347,6 +368,7 @@ GAME_OVER:
 	call WaitMsg
 	
 FINAL_PROGRAMA:
+	mov gameOver, 0						;gameOver recebe zero novamente, caso jogo reinicie.
 	ret
 Space_Invaders ENDP
 
@@ -373,8 +395,8 @@ Space_Invaders ENDP
 
 ;---------------------------------------------------------------------------------------------
 escreveTiro1 PROC USES EBX EDX ECX EAX 
-;Funcao que atualiza um inimigo, modificando suas posicoes X e Y
-;	e escreve o inimigo na tela
+;Funcao que atualiza um tiro, modificando suas posicoes X e Y
+;	e escreve o tiro na tela
 ;Recebe: ESI <- indice do tiro a ser escrito
 ;Retorna: Nada
 ;---------------------------------------------------------------------------------------------
@@ -406,7 +428,7 @@ escreveTiro1 PROC USES EBX EDX ECX EAX
 
 	jmp FIM_TIRO
 
-ATINGIU_HIT:				;Desativa o tiro, e apaga da tela o tiro e o inimigo atingido, caso seja o caso.
+ATINGIU_HIT:				;Desativa o tiro, e apaga da tela o tiro
 	mov tiroBool[esi], 0
 	mov tiroHitBool[esi], 0
 	mov dh, tiroY[esi]
@@ -415,6 +437,7 @@ ATINGIU_HIT:				;Desativa o tiro, e apaga da tela o tiro e o inimigo atingido, c
 	mov al, " "
 	call WriteChar
 	mov tiroTime[esi * 4], 0
+
 jmp FIM_TIRO
 
 FIM_TIRO:
@@ -504,6 +527,9 @@ escreveInimigo1 PROC USES EBX EDX EAX
 ;Recebe: ESI <- Indice do inimigo [0...n-1]
 ;Retorna: Nada
 ;---------------------------------------------------------------------------------------------
+	
+	cmp enemyHitBool[esi], 1
+	je ATINGIU_HIT
 
 	call GetMseconds
  	mov ebx, eax
@@ -511,34 +537,124 @@ escreveInimigo1 PROC USES EBX EDX EAX
 	cmp eax, 500
 	jb FIM_ENEMY
 	
+	
 	cmp enemyY[esi], 24					;Verifica se atingiu a base da tela
 	je ATINGIU_CHAO
 	
 	;=======================Atualiza posicao e escreve
 	add enemyY[esi], 1
 	mov enemyTime[esi * 4], ebx
+	
 	mov dh, enemyY[esi]
 	mov dl, enemyX[esi]
-	call GotoXY
-	mov al, "W"
-	call WriteChar
+	mov ebx, edx				;Guarda posicao em EBX, pois EDX é usado em WriteString
+
+	;Primeiro, apaga o desenho anterior
+	mov edx, ebx
 	sub dh,1
 	call GotoXY
-	mov al, " "
-	call WriteChar
+	mov edx, OFFSET enemyBottomEmpty
+	call WriteString
+
+	mov edx, ebx
+	sub dh,2
+	sub dl,2
+	call GotoXY
+	mov edx, OFFSET enemyMidEmpty
+	call WriteString
+
+	mov edx, ebx
+	sub dh,3
+	sub dl,2
+	call GotoXY
+	mov edx, OFFSET enemyTopEmpty
+	call WriteString
+
+
+	;Agora escreve o novo desenho
+	mov edx, ebx
+	call GotoXY
+	mov edx, OFFSET enemyBottom
+	call WriteString
+
+	mov edx, ebx				;Recupera posicao
+	sub dh,1
+	sub dl,2					;Vai para meio do inimigo
+	call GotoXY
+	mov edx, OFFSET enemyMid
+	call WriteString
+
+	mov edx, ebx
+	sub dh,2
+	sub dl,2
+	call GotoXY
+	mov edx, OFFSET enemyTop
+	call WriteString
+	
 	jmp FIM_ENEMY
 
+ATINGIU_HIT:
+	mov dh, enemyY[esi]
+	mov dl, enemyX[esi]
+	mov ebx, edx
+	call GotoXY
 
+	mov edx, ebx
+	call GotoXY
+	mov edx, OFFSET enemyBottomEmpty
+	call WriteString
+
+	mov edx, ebx
+	sub dh,1
+	sub dl,2
+	call GotoXY
+	mov edx, OFFSET enemyMidEmpty
+	call WriteString
+
+	mov edx, ebx
+	sub dh,2
+	sub dl,2
+	call GotoXY
+	mov edx, OFFSET enemyTopEmpty
+	call WriteString
+	mov dh, enemyY[esi]
+	mov dl, enemyX[esi]
+	mov ebx, edx
+	call GotoXY
+	
+	mov enemyBool[esi], 0
+	add countScore, 1						;Quando um inimigo é deletado, a pontuação é contada
+	mov placarBool, 1
+	jmp FIM_ENEMY
 ATINGIU_CHAO:				;Realiza a "delecao" do inimigo
 	sub countLives, 1
 	mov placarBool, 1
 	mov enemyBool[esi], 0
 	mov dh, enemyY[esi]
 	mov dl, enemyX[esi]
+	mov ebx, edx
 	call GotoXY
-	mov al, " "
+	
+	mov edx, ebx
+	call GotoXY
+	mov edx, OFFSET enemyBottomEmpty
+	call WriteString
+
+	mov edx, ebx
+	sub dh,1
+	sub dl,2
+	call GotoXY
+	mov edx, OFFSET enemyMidEmpty
+	call WriteString
+
+	mov edx, ebx
+	sub dh,2
+	sub dl,2
+	call GotoXY
+	mov edx, OFFSET enemyTopEmpty
+	call WriteString
+
 	mov enemyTime[esi * 4], 0
-	call WriteChar
 
 FIM_ENEMY:
 
@@ -559,22 +675,23 @@ gerarInimigos PROC USES ECX EDX EAX ESI
 		cmp enemyBool[esi], 1
 		je JA_EXISTE
 			mov enemyBool[esi], 1
-			mov enemyY[esi], 0
+			mov enemyHitBool[esi], 0
+			mov enemyY[esi], 2
 			
 			mov eax, 80
 			call RandomRange
 			
 			mov enemyX[esi], al
-			cmp al, 0
-			je SAIU_ZERO			; A posicao X = 0 fica inacessivel pelo jogador!!
-				cmp al, 79
-				je SAIU_SETENTA_NOVE
+			cmp al, 2
+			jbe SAIU_DOIS			; A posicao X = 2 e X = 77 dá problema no grafico!!
+				cmp al, 77
+				jae SAIU_SETENTA_SETE
 					jmp INIMIGO_GERADO
-			SAIU_ZERO:
-				mov enemyX[esi], 1
+			SAIU_DOIS:
+				mov enemyX[esi], 3
 				jmp INIMIGO_GERADO
-			SAIU_SETENTA_NOVE:
-				mov enemyX[esi], 78
+			SAIU_SETENTA_SETE:
+				mov enemyX[esi], 76
 				jmp INIMIGO_GERADO
 		JA_EXISTE:
 		add esi, 1
@@ -588,27 +705,38 @@ gerarInimigos PROC USES ECX EDX EAX ESI
 	ret
 gerarInimigos ENDP
 
+;-----------------------------------------------------------
 checaColisoes PROC USES ECX EBX ESI
-mov ecx, 2	;Numero de tiros max
+;
+;
+;-----------------------------------------------------------
+mov ecx, LENGTHOF tiroBool	;Numero de tiros max
 mov ebx, 0	;Indice dos tiros
 CHECAGEM_COLISOES:
 	push ecx	;Loop aninhado
 	mov esi, 0	;indice dos inimigos
-	mov ecx, 5
+	mov ecx, 5	;numero de inimigos max
 	L1:	cmp enemyBool[esi], 0
 		je NO_COLISION		;Inimigo está inativo, não pode colidir.
 		cmp tiroBool[ebx], 0
 		je NO_COLISION
 		mov al, enemyX[esi]
-		cmp tiroX[ebx], al
-		jne NO_COLISION
+		cmp tiroX[ebx], al	;verifica se atingiu a cabeça na esquerda
+		jne NO_COLISION_CABECA_ESQUERDA	
+			jmp ACERTOU_X
+		NO_COLISION_CABECA_ESQUERDA:
+		add al, 1			;verifica se atingiu a cabeça na direita
+		cmp tiroX[ebx], al	
+		jne NO_COLISION_CABECA_DIREITA
+			jmp ACERTOU_X
+		NO_COLISION_CABECA_DIREITA:
+			jmp NO_COLISION
+			ACERTOU_X:
 			mov al, enemyY[esi]
 			cmp tiroY[ebx], al
 			jne NO_COLISION
-				mov enemyBool[esi], 0		;Colisao encontrada, deleta o inimigo
-				mov tiroHitBool[ebx], 1		;	e avisa que o tiro atingiu inimigo
-				add countScore, 1
-				mov placarBool, 1
+				mov enemyHitBool[esi], 1		;Colisao encontrada, indica colisao no inimigo
+				mov tiroHitBool[ebx], 1			;	e avisa que o tiro atingiu inimigo
 		NO_COLISION:
 		add esi, 1							;Vai para prox inimigo
 	loop L1
@@ -640,3 +768,9 @@ verificaScore PROC
 
 	ret
 verificaScore ENDP
+
+deletaInimigo PROC
+;Procedimento chamado dentro do escreveTiro, para ir até o inimigo atingido e apagar seu grafico
+;Recebe:
+;Retorna: Nada
+deletaINIMIGO ENDP
