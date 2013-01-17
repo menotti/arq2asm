@@ -32,6 +32,31 @@ mainScreen21			BYTE		"*                                          *", 0Ah
 mainScreen22			BYTE		"*                                          *", 0Ah
 mainScreen23			BYTE		"********************************************",0
 
+
+endScreen1				BYTE		"********************************************", 0Ah
+endScreen2				BYTE		"*                                          *", 0Ah
+endScreen3				BYTE		"*                                          *", 0Ah
+endScreen4				BYTE		"*               S O K O B A N              *", 0Ah
+endScreen5				BYTE		"*                                          *", 0Ah
+endScreen6				BYTE		"*             by: Geeecko Games            *", 0Ah
+endScreen7				BYTE		"*                                          *", 0Ah
+endScreen8				BYTE		"*                                          *", 0Ah
+endScreen9				BYTE		"*                                          *", 0Ah
+endScreen10				BYTE		"*                                          *", 0Ah
+endScreen11				BYTE		"*              Congratulation!!            *", 0Ah
+endScreen12				BYTE		"*                                          *", 0Ah
+endScreen13				BYTE		"*                                          *", 0Ah
+endScreen14				BYTE		"*                                          *", 0Ah
+endScreen15				BYTE		"*                                          *", 0Ah
+endScreen16				BYTE		"*            You Finished the Game!!       *", 0Ah
+endScreen17				BYTE		"*                                          *", 0Ah
+endScreen18				BYTE		"*                                          *", 0Ah
+endScreen19				BYTE		"*                                          *", 0Ah
+endScreen20				BYTE		"*                                          *", 0Ah
+endScreen21				BYTE		"*                                          *", 0Ah
+endScreen22				BYTE		"*                                          *", 0Ah
+endScreen23				BYTE		"********************************************",0
+
 .code
 
 DrawBackground PROC, mapPtr:PTR BYTE, lineSize:BYTE, mapSize:DWORD
@@ -99,5 +124,8 @@ DrawMainScreen PROC USES EDX
 DrawMainScreen ENDP
 
 DrawFinishedGame PROC
+	CALL ClrScr
+	MOV EDX, OFFSET endScreen1
+	CALL WriteString
 	RET
 DrawFinishedGame ENDP
