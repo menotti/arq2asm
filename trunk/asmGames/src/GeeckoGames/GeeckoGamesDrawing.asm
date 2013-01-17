@@ -58,11 +58,11 @@ NextC:
 	CALL gotoXY
 	MOV EDX, OFFSET movesSTR
 	CALL WriteString
-	MOV EAX, DWORD PTR [ESI]
+	MOV EAX, DWORD PTR [ESI + 4]
 	CALL WriteDec
 	MOV EDX, OFFSET bestSTR
 	CALL WriteString
-	MOV EAX, DWORD PTR [ESI + 4]
+	MOV EAX, DWORD PTR [ESI]
 	CALL WriteDec
 RET
 DrawInteractive ENDP
