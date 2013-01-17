@@ -10,7 +10,7 @@ INCLUDE forca/forca.asm
 INCLUDE GeeckoGames/GeeckoGamesSokoban.asm
 INCLUDE SpaceInvaders/Space_Invaders.asm
 INCLUDE Labirinto/labirinto.asm
-INCLUDE Frogger/Frogger.asm
+;INCLUDE Frogger/Frogger.asm
 
 .data
 
@@ -66,7 +66,7 @@ Frogger:
 	cmp eax, 6
 	jne menu
 
-	call FROG_InitJogo
+	;call FROG_InitJogo
 
 fim:
 	exit
