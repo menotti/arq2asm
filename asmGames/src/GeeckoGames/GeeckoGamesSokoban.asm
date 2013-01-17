@@ -8,8 +8,6 @@ CursorInfoA DWORD 1
 CursorInfoB DWORD 0
 mapFileName BYTE "Code\\GeeckoGames\\Maps\\Map"
 mapNumber BYTE "00", 0
-movesSTR BYTE "MOVES: ", 0
-bestSTR BYTE "\tBEST: ", 0
 currentMapBg BYTE 880 DUP (?)
 currentMapFg BYTE 880 DUP (?)
 best DWORD ?
