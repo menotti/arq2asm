@@ -48,10 +48,11 @@ MainScreen:
 LoadMap:
 	INVOKE ReadMap, SIZEOF currentMapBg, ADDR mapFileName, ADDR currentMapBg
 	CMP EAX, INVALID_HANDLE_VALUE ; if loaded map does not exist the game has been beated
+	MOV moves, 0
 	JE EndScreen
 LevelPlay:
 	INVOKE DrawBackground, ADDR currentMapBg, MAP_LINE_SIZE, SIZEOF currentMapBg
-	;CALL DrawInteractive
+	INVOKE DrawInteractive, ADDR currentMapFg, MAP_LINE_SIZE, SIZEOF currentMapFg
 	CALL UpdateGame
 
 	TEST ECX, LEAVE_THE_GAME_FLAG
@@ -67,11 +68,11 @@ LevelPlay:
 
 	TEST ECX, NEXT_LEVEL_FLAG
 	JZ LevelPlay
-	CALL UpdateMapName
 	MOV EAX, moves
 	CMP EAX, best
 	JAE LoadMap
 	INVOKE SaveNewMapScore, ADDR mapFileName, EAX, SIZEOF currentMapBg
+	CALL UpdateMapName
 	JMP LoadMap
 EndScreen:
 	CALL DrawFinishedGame
