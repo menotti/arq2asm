@@ -33,7 +33,7 @@ ReadMap PROC USES ecx edx,
 	;Read the correct amount of data from the right file
 	MOV EDX, mapAddress
 	MOV ECX, mapSize
-	SHL ECX, 2
+	SHL ECX, 1
 	ADD ECX, 4
 	CALL ReadFromFile
 	
@@ -49,14 +49,6 @@ SaveNewMapScore PROC USES ECX EDX ESI,
 	newScore:DWORD,
 	mapSize:DWORD
 
-	;Calculate the file size
-	MOV ECX, mapSize
-	SHL ECX, 2
-	ADD ECX, 4
-
-	SUB ESP, ECX
-	PUSH ECX
-
 	;Open the file
 	MOV EDX, mapFileName
 	CALL OpenInputFile
@@ -64,10 +56,18 @@ SaveNewMapScore PROC USES ECX EDX ESI,
 	CMP EAX, INVALID_HANDLE_VALUE
 	JE ErrorOpenningFile
 
+	;Calculate the file size
+	MOV ECX, mapSize
+	SHL ECX, 1
+	ADD ECX, 4
+
+	SUB ESP, ECX
+	PUSH ECX
+
 	PUSH EAX
 	;Read the correct amount of data from the right file
-	MOV EDX, EBP
-	ADD EDX, 16
+	MOV EDX, ESP
+	ADD EDX, 8
 	CALL ReadFromFile
 	
 	POP EAX
@@ -76,19 +76,19 @@ SaveNewMapScore PROC USES ECX EDX ESI,
 
 	;Change the score at the memory
 	MOV ESI, newScore
-	MOV DWORD PTR [ESP - 8], ESI
+	MOV DWORD PTR [EBP - 16], ESI
 
 	;Write everything back to the file
 	MOV EDX, mapFileName
-	CALL OpenInputFile
+	CALL CreateOutputFile
 
 	CMP EAX, INVALID_HANDLE_VALUE
 	JE ErrorOpenningFile
 
 	PUSH EAX
 	;Read the correct amount of data from the right file
-	MOV EDX, EBP
-	ADD EDX, 16
+	MOV EDX, ESP
+	ADD EDX, 8
 	CALL WriteToFile
 	
 	POP EAX
@@ -104,15 +104,15 @@ SaveNewMapScore ENDP
 
 UpdateMapName PROC USES ax
 
-	mov ax, WORD PTR mapNumber
-	inc ah
+	MOV AX, WORD PTR mapNumber
+	INC AH
 
 	;If the first digit is over 10
-	cmp ah, 3Ah
-	jne Finish
-	mov ah, 30h
-	inc al	
+	CMP AH, 3Ah
+	JNE Finish
+	MOV AH, 30h
+	INC AL	
 Finish:
-	mov WORD PTR mapNumber, ax
-	ret
+	MOV WORD PTR mapNumber, AX
+	RET
 UpdateMapName ENDP
