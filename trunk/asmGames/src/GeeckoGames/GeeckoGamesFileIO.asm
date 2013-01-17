@@ -26,6 +26,7 @@ ReadMap PROC USES ecx edx,
 	CMP EAX, INVALID_HANDLE_VALUE
 	JE ErrorOpenningFile
 
+	PUSH EAX
 	;Read the correct amount of data from the right file
 	MOV EDX, mapAddress
 	MOV ECX, mapSize
@@ -33,6 +34,7 @@ ReadMap PROC USES ecx edx,
 	ADD ECX, 4
 	CALL ReadFromFile
 	
+	POP EAX
 	;Close the file
 	CALL CloseFile
 ErrorOpenningFile:

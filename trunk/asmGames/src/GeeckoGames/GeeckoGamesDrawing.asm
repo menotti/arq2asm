@@ -8,3 +8,19 @@ DrawFinishedGame PROTO
 
 
 .code
+
+DrawBackground PROC
+	RET
+DrawBackground ENDP
+
+DrawInteractive PROC	
+	RET
+DrawInteractive ENDP
+
+DrawMainScreen PROC
+	RET
+DrawMainScreen ENDP
+
+DrawFinishedGame PROC
+	RET
+DrawFinishedGame ENDP
