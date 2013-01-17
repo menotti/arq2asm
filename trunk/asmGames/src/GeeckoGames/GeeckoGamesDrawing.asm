@@ -15,6 +15,7 @@ DrawBackground PROC, mapPtr:PTR BYTE, lineSize:BYTE, mapSize:DWORD
 	MOV ESI, mapPtr	
 WriteC:
 	MOV EAX, [ESI]
+	call GoToXY
 	CALL WriteChar
 	INC ESI
 	INC DL
