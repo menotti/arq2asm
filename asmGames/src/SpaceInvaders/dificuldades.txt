@@ -1,0 +1,6 @@
+4000/3500/3000/2500/2000/1500/1000/500/
+#Primeira linha:
+Primeiro numero obrigatóriamente sem o '/' antes.
+Todos os outros numeros devem ter o '/' antes e depois
+Total de numeros que podem ser escritos: 7 (as sete dificuldades do jogo)
+Cada numero corresponde aos milisegundos entre a criação de um novo inimigo.

@@ -3,6 +3,13 @@ TITLE Space_Invaders
 
 ;INCLUDE Irvine32.inc
 .data
+	fHighscore BYTE "highscore.txt", 0
+	fDificuldades BYTE "SpaceInvaders\dificuldades.txt", 0
+
+	bufferHighscore BYTE 4096 DUP(0)
+	bufferConversaoHighscore BYTE 10 DUP(?)
+	erroDificuldades BYTE "ARQUIVO DE DIFICULDADES NAO ENCONTRADO",0
+
 	heroTop BYTE 219, 0				;Essas sao as strings que formam o desenho do nosso personagem
 	heroBottom BYTE 219,219,219, 0		
 	heroTopEmpty BYTE " ", 0		;Essas sao as strings que usamos para apagar nosso personagem, apenas espaços em branco
@@ -38,7 +45,7 @@ TITLE Space_Invaders
 	
 	geradorTime DWORD 0				;Variavel de controle do tempo do "gerador aleatório" de inimigos
 
-	tempoGeracaoEnemy DWORD 4000, 3500, 3000, 2500, 2000, 1500, 1000
+	tempoGeracaoEnemy DWORD 0, 0, 0, 0, 0, 0, 0, 0
 	dificuldade BYTE 0
 
 	linhaFundo BYTE 80 DUP("-"), 0
@@ -51,6 +58,7 @@ TITLE Space_Invaders
 .code
 Space_Invaders PROC
 
+	
 		call ClrScr
 		call GetMseconds		;Inicializa a variavel do tempo do gerador.
 		mov geradorTime, eax
@@ -109,6 +117,52 @@ Space_Invaders PROC
 		
 ;-----------------------------------------------	
 
+;-------------------------------CARREGA DIFICULDADES DO ARQUIVO
+	mov eax, OFFSET bufferConversaoHighscore
+	mov eax, OFFSET tempoGeracaoEnemy
+
+	mov edx, OFFSET fDificuldades
+	call OpenInputFile
+	cmp eax, INVALID_HANDLE_VALUE
+	je NAO_CARREGOU_DIFICULDADES
+
+	;se carregou:
+	mov edx, OFFSET bufferHighscore
+	mov ecx, 4096					;Tamanho do arquivo
+	call ReadFromFile
+
+	mov esi, OFFSET bufferHighscore	;esi aponta para primeira dificuldade
+	mov edi, OFFSET bufferConversaoHighscore
+	mov ebx, 0						;ebx será o índice para acessar o vetor das dificuldades
+
+LOOP_CARREGA_STRING:
+	mov al, [esi]
+	cmp al, '/'
+	je FIM_NUMERO_STRING
+		mov [edi], al
+		add edi, 1
+		add esi, 1
+	jmp LOOP_CARREGA_STRING
+
+	FIM_NUMERO_STRING:
+	add esi, 1
+	mov al, 'K'
+	mov [edi], al					;Caractere para que o PROC ParseDecimal32 pare a conversao
+	
+	mov edx, OFFSET bufferConversaoHighscore
+	mov ecx, SIZEOF bufferConversaoHighscore
+	call ParseDecimal32
+
+	mov tempoGeracaoEnemy[ebx*4], eax
+	mov edi, OFFSET bufferConversaoHighscore		;edi recebe novamente a string de conversao
+	add ebx,1
+	cmp ebx, 7						;Verifica se o índice ultrapassou a ultima posicao no vetor dos temposde geracao
+	ja FIM_CARREGAR_DIFICULDADES
+	jmp LOOP_CARREGA_STRING
+FIM_CARREGAR_DIFICULDADES:
+
+	
+;-------------------------------FIM CARREGAR DIFICULDADES
 
 
 ;Aqui começa o GameLoop, que é nossa verificacao constante de todos os elementos, e atualizacao dos mesmos.
@@ -271,6 +325,15 @@ je GAME_OVER
 	
 	jmp GameLoop	;Volta ao inicio das verificacoes, fechando assim nosso loop de jogo.
 
+NAO_CARREGOU_DIFICULDADES:
+	call ClrScr
+	mov edx, OFFSET erroDificuldades
+	call WriteString
+	call Crlf
+	call WaitMsg
+jmp FINAL_PROGRAMA
+	
+
 GAME_OVER:
 	call ClrScr
 	mov edx, OFFSET fraseGameOver
@@ -283,7 +346,7 @@ GAME_OVER:
 	call Crlf
 	call WaitMsg
 	
-	
+FINAL_PROGRAMA:
 	ret
 Space_Invaders ENDP
 
@@ -558,17 +621,22 @@ checaColisoes ENDP
 
 verificaScore PROC
 	cmp countScore, 15
-	jne NOT_10
+	jne NOT_15
 		mov dificuldade, 2
-	NOT_10:
+	NOT_15:
 	cmp countScore, 30
-	jne NOT_20
-		mov dificuldade, 4
-	NOT_20:
-	cmp countScore, 45
 	jne NOT_30
-		mov dificuldade, 6
+		mov dificuldade, 4
 	NOT_30:
+	cmp countScore, 45
+	jne NOT_45
+		mov dificuldade, 6
+	NOT_45:
+	cmp countScore, 60
+	jne NOT_60
+		mov dificuldade, 7
+	NOT_60:
+
 
 	ret
 verificaScore ENDP
