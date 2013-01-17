@@ -5,7 +5,10 @@ ReadMap PROTO,
 	mapAddress:PTR BYTE
 
 
-SaveNewMapScore PROTO
+SaveNewMapScore PROTO,
+	mapFileName:PTR BYTE,
+	newScore:DWORD,
+	mapSize:DWORD
 
 .data
 
@@ -38,9 +41,63 @@ ReadMap PROC USES ecx edx,
 	;Close the file
 	CALL CloseFile
 ErrorOpenningFile:
-	ret
+	RET
 ReadMap ENDP
 
-SaveNewMapScore PROC
+SaveNewMapScore PROC USES ECX EDX ESI,
+	mapFileName:PTR BYTE,
+	newScore:DWORD,
+	mapSize:DWORD
 
+	;Calculate the file size
+	MOV ECX, mapSize
+	SHL ECX, 2
+	ADD ECX, 4
+
+	SUB ESP, ECX
+	PUSH ECX
+
+	;Open the file
+	MOV EDX, mapFileName
+	CALL OpenInputFile
+
+	CMP EAX, INVALID_HANDLE_VALUE
+	JE ErrorOpenningFile
+
+	PUSH EAX
+	;Read the correct amount of data from the right file
+	MOV EDX, EBP
+	ADD EDX, 16
+	CALL ReadFromFile
+	
+	POP EAX
+	;Close the file
+	CALL CloseFile
+
+	;Change the score at the memory
+	MOV ESI, newScore
+	MOV DWORD PTR [ESP - 8], ESI
+
+	;Write everything back to the file
+	MOV EDX, mapFileName
+	CALL OpenInputFile
+
+	CMP EAX, INVALID_HANDLE_VALUE
+	JE ErrorOpenningFile
+
+	PUSH EAX
+	;Read the correct amount of data from the right file
+	MOV EDX, EBP
+	ADD EDX, 16
+	CALL WriteToFile
+	
+	POP EAX
+	;Close the file
+	CALL CloseFile
+
+	POP ECX
+	ADD ESP, ECX
+
+ErrorOpenningFile:
+	RET
 SaveNewMapScore ENDP
