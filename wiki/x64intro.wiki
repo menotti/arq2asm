@@ -63,6 +63,7 @@ Neste exemplo é feito uma chamada de função em C e outra em assembly usando i
 
  = Main.cpp =
 
+{{{
 #include<iostream>
 #include<conio.h>
 
@@ -88,8 +89,11 @@ int main()
 	system("pause");
 	
 	return 0;
+}
+}}}
 ---------------------------------------------------------------------------------
  = CombineA.asm =
+{{{
 .data
 
 realVal REAL8 +1.5
@@ -110,12 +114,12 @@ CombineA proc
    RET                             
 CombineA ENDP
 End
-
+}}}
 Exemplo extraído do site http://software.intel.com/en-us/articles/introduction-to-x64-assembly
 Uma tabuada onde o calculo é feito em assembly
 
  = Main.cpp =
-
+{{{
 #include<iostream>
 #include<conio.h>
 
@@ -135,8 +139,9 @@ int main()
 	return 0;
 
 }
-
+}}}
  = Teste.asm =
+{{{
 .data
 
 val1 WORD ?
@@ -154,3 +159,5 @@ add val1,2
 ret
 testeAsm endp
 end
+
+}}}
