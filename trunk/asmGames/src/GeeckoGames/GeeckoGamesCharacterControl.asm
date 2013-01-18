@@ -10,7 +10,13 @@ MoveChar PROTO,
 				lineSize : DWORD,
 				char : PTR DWORD,
 				dir : BYTE
-MoveDiamond PROTO
+MoveDiamond PROTO,
+				bgMap : PTR BYTE,
+				fgMap : PTR BYTE,
+				lineSize : DWORD,
+				X : DWORD,
+				Y: DWORD,
+				dir : BYTE
 
 .data
 
@@ -43,7 +49,8 @@ NEXT:
 GetCharPos ENDP
 
 
-MoveChar PROC USES ECX EAX ESI,	bgMap : PTR BYTE,
+MoveChar PROC USES ECX EAX ESI,	
+				bgMap : PTR BYTE,
 				fgMap : PTR BYTE,
 				lineSize : DWORD,
 				char : PTR DWORD,
@@ -126,6 +133,7 @@ YESDIAMOND:
 	;IF THERE IS A DIAMOND WE CHECK IF IT CAN MOVE, EAX = 0 IF IT CAN'T
 
 	;INVOKE MOVE DIAMOND HERE (REMEMBER TO RECEIVE THE POSITION OF THE DIAMOND, IT IS IN X, Y
+	INVOKE MoveDiamond, bgMap, fgMap, lineSize, X, Y, dir
 
 	CMP EAX, 0
 	JE FIN1
@@ -163,6 +171,81 @@ FIN2:
 	RET
 MoveChar ENDP
 
-MoveDiamond PROC
+MoveDiamond PROC,
+				bgMap : PTR BYTE,
+				fgMap : PTR BYTE,
+				lineSize : DWORD,
+				X : DWORD,
+				Y: DWORD,
+				dir : BYTE
+
+	CMP dir, 00b ;UP
+	JE MovingUp
+	CMP dir, 01b ;RIGHT
+	JE MovingRight
+	CMP dir, 10b ;DOWN
+	JE MovingDown
+	CMP dir, 11b ;LEFT
+	JE MovingLeft
+
+MovingUp:
+	DEC Y
+	JMP NEXT
+
+MovingRight:
+	INC X
+	JMP NEXT
+
+MovingDown:
+	INC Y
+	JMP NEXT
+
+MovingLeft:
+	DEC X
+	JMP NEXT
+NEXT:
+	
+	MOV EAX, Y
+	MUL lineSize
+	ADD EAX, X
+
+	MOV ESI, bgMap
+	ADD ESI, EAX
+
+	PUSH EAX
+
+	MOV AL, BYTE PTR [ESI]
+
+	CMP AL, '*'
+	JE FIN1
+
+	;HERE WE TEST FOR DIAMONDS ON THE WAY
+
+	POP EAX
+	PUSH EAX
+
+	MOV ESI, fgMap
+	ADD ESI, EAX
+
+	MOV AL, BYTE PTR [ESI]
+
+	CMP AL, '+'
+	JE FIN1
+
+	;IF CHARACTER CAN MOVE
+
+	;PAINT THE OLD POSITION WITH CHAR
+
+	POP EAX
+	ADD EAX, fgMap
+	
+	MOV BYTE PTR [EAX], '+'
+	MOV EAX, 1h
+	JMP FIN2
+
+FIN1:
+	MOV EAX, 0h
+FIN2:
+	
 	RET
 MoveDiamond ENDP
