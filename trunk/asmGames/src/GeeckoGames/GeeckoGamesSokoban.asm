@@ -35,10 +35,9 @@ menu:
 	INVOKE SetConsoleCursorInfo, EAX, ADDR CursorInfoA
 	CALL ClrScr
 	MOV EDX, OFFSET mapFileName
-	
-	MOV ECX, 0
 
 MainScreen:
+	MOV ECX, 0
 	CALL DrawMainScreen
 	CALL UpdateGame
 	TEST ECX, LEAVE_THE_GAME_FLAG
@@ -46,6 +45,10 @@ MainScreen:
 	TEST ECX, LEVEL_PLAY_FLAG
 	JZ MainScreen
 
+FirstMap:
+	MOV AL, '0'
+	MOV mapNumber, AL
+	MOV mapNumber[1], AL
 	;LOAD FIRST MAP AND START A NEW GAME
 LoadMap:
 	call ClrScr
@@ -54,6 +57,7 @@ LoadMap:
 	JE EndScreen
 
 	MOV moves, 0
+	MOV ECX, LEVEL_PLAY_FLAG
 
 	INVOKE GetCharPos, ADDR currentMapFg, SIZEOF currentMapFg, MAP_LINE_SIZE, ADDR charPos
 
@@ -89,6 +93,13 @@ EndScreen:
 	CALL DrawFinishedGame
 
 	CALL UpdateGame
+
+	TEST ECX, END_GAME_FLAG
+	JNZ EndScreen
+
+	TEST ECX, LEVEL_PLAY_FLAG
+	JZ MainScreen
+	JMP FirstMap
 
 	TEST ECX, LEAVE_THE_GAME_FLAG
 	JNZ LeaveGame
@@ -156,7 +167,8 @@ X_PRESSED:
 	MOV ECX, 0
 	JMP LeaveProc
 R_PRESSED:
-	JMP CheckForInput
+	OR ECX, RESTART_LEVEL_FLAG
+	JMP LeaveProc
 PRESSED_W:
 	INVOKE MoveChar, ADDR currentMapBg, ADDR currentMapFg, MAP_LINE_SIZE, ADDR charPos, 00b
 	CMP EAX, 0
