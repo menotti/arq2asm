@@ -13,21 +13,26 @@ CheckMapState PROC USES EBX ESI EDI EAX, mapPtrX:PTR BYTE, mapPtrD:PTR BYTE, map
 	MOV ESI, mapPtrX
 	MOV EDI, mapPtrD
 GetChar:
-	MOV AL, [EDI]
-	MOV AH, [ESI]
-	CMP AH, "x"
+	MOV AL, BYTE PTR[EDI]
+	MOV AH, BYTE PTR[ESI]
+	CMP AH, 'x'
 	JE CompareD
 	INC ESI
 	INC EDI
-	JMP	GetChar
-CompareD:
-	CMP AL, "+"
-	JNE NotDone
 	LOOP GetChar
+	POP ECX
+	JMP Done
+CompareD:
+	CMP AL, '+'
+	JNE NotDone
+	INC ESI
+	INC EDI
+	LOOP GetChar
+	POP ECX
 	JMP Done
 NotDone:
 	POP ECX
-	AND ECX, 0111b
+	AND ECX, 0FFFFFFF7h
 Done:
 	;next level ok = ECX
 RET

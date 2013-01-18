@@ -17,7 +17,7 @@ charPos DWORD ?, ?
 
 LEAVE_THE_GAME_FLAG = 1b
 LEVEL_PLAY_FLAG = 10b
-MAIN_MENU_ANTI_FLAG = 0FFFEh
+MAIN_MENU_ANTI_FLAG = 0FFFFFFFEh
 RESTART_LEVEL_FLAG = 100b
 NEXT_LEVEL_FLAG = 1000b
 END_GAME_FLAG = 10000b
@@ -58,14 +58,11 @@ LoadMap:
 	INVOKE GetCharPos, ADDR currentMapFg, SIZEOF currentMapFg, MAP_LINE_SIZE, ADDR charPos
 
 LevelPlay:
-	;MOV EAX, charPos
-	;CALL WriteDec
-	;CALL Crlf
-	;MOV EAX, [charPos + 4]
-	;CALL WriteDec
 	INVOKE DrawBackground, ADDR currentMapBg, MAP_LINE_SIZE, SIZEOF currentMapBg
 	INVOKE DrawInteractive, ADDR currentMapFg, MAP_LINE_SIZE, SIZEOF currentMapFg
 	CALL UpdateGame
+
+	INVOKE CheckMapState, ADDR currentMapBg, ADDR currentMapFg, SIZEOF currentMapBg
 
 	TEST ECX, LEAVE_THE_GAME_FLAG
 	JNZ LeaveGame
@@ -75,17 +72,19 @@ LevelPlay:
 	TEST ECX, RESTART_LEVEL_FLAG
 	JNZ LoadMap
 
-	;OR ECX, NEXT_LEVEL_FLAG
-	;MOV moves, 0
-
 	TEST ECX, NEXT_LEVEL_FLAG
 	JZ LevelPlay
+
 	MOV EAX, moves
 	CMP EAX, best
-	JAE LoadMap
+	JAE LOW_SCORE
+	CMP EAX, "AAAA"
+	JAE LOW_SCORE
 	INVOKE SaveNewMapScore, ADDR mapFileName, EAX, SIZEOF currentMapBg
+LOW_SCORE:
 	CALL UpdateMapName
 	JMP LoadMap
+
 EndScreen:
 	CALL DrawFinishedGame
 
@@ -160,15 +159,27 @@ R_PRESSED:
 	JMP CheckForInput
 PRESSED_W:
 	INVOKE MoveChar, ADDR currentMapBg, ADDR currentMapFg, MAP_LINE_SIZE, ADDR charPos, 00b
+	CMP EAX, 0
+	JE LeaveProc
+	INC moves
 	JMP LeaveProc
 PRESSED_A:
 	INVOKE MoveChar, ADDR currentMapBg, ADDR currentMapFg, MAP_LINE_SIZE, ADDR charPos, 11b
+	CMP EAX, 0
+	JE LeaveProc
+	INC moves
 	JMP LeaveProc
 PRESSED_S:
 	INVOKE MoveChar, ADDR currentMapBg, ADDR currentMapFg, MAP_LINE_SIZE, ADDR charPos, 10b
+	CMP EAX, 0
+	JE LeaveProc
+	INC moves
 	JMP LeaveProc
 PRESSED_D:
 	INVOKE MoveChar, ADDR currentMapBg, ADDR currentMapFg, MAP_LINE_SIZE, ADDR charPos, 01b
+	CMP EAX, 0
+	JE LeaveProc
+	INC moves
 	JMP LeaveProc
 LeaveProc:
 	RET
