@@ -10,7 +10,6 @@ TempoInicial dWord ?
 velocidade Dword 60
 direcaoAtual DWORD DIREITA
 
-
 .code
 Snake PROC
 	
