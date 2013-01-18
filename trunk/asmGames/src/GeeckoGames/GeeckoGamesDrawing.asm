@@ -7,6 +7,7 @@ DrawFinishedGame PROTO
 .data
 movesSTR BYTE "MOVES: ", 0
 bestSTR BYTE "	BEST: ", 0
+scoreTooHigh BYTE "----", 0
 
 mainScreen1				BYTE		"********************************************", 0Ah
 mainScreen2				BYTE		"*                                          *", 0Ah
@@ -87,8 +88,15 @@ NextC:
 	MOV EDX, OFFSET bestSTR
 	CALL WriteString
 	MOV EAX, DWORD PTR [ESI]
+	CMP EAX, "AAAA"
+	JAE NO_HIGH_DETECTED
 	CALL WriteDec
-RET
+	JMP FIN
+NO_HIGH_DETECTED:
+	MOV EDX, OFFSET scoreTooHigh
+	CALL WriteString
+FIN:
+	RET
 DrawInteractive ENDP
 
 DrawMainScreen PROC USES EDX

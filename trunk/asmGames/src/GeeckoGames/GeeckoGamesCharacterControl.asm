@@ -49,7 +49,7 @@ NEXT:
 GetCharPos ENDP
 
 
-MoveChar PROC USES ECX EAX ESI,	
+MoveChar PROC USES ECX ESI,	
 				bgMap : PTR BYTE,
 				fgMap : PTR BYTE,
 				lineSize : DWORD,
@@ -165,8 +165,10 @@ NODIAMOND:
 	MOV EAX, Y
 	MOV [ESI + 4], EAX
 	JMP FIN2
+	MOV EAX, 1
 FIN1:
 	POP EAX ;if character doesn't move we need to pop EAX out of the stack before returning
+	MOV EAX, 0
 FIN2:
 	RET
 MoveChar ENDP
