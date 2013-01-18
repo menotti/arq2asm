@@ -85,12 +85,13 @@ SaveNewMapScore PROC USES ECX EDX ESI,
 	CMP EAX, INVALID_HANDLE_VALUE
 	JE ErrorOpenningFile
 
+	POP ECX
+	PUSH ECX
 	PUSH EAX
 	;Read the correct amount of data from the right file
 	MOV EDX, ESP
 	ADD EDX, 8
 	CALL WriteToFile
-	
 	POP EAX
 	;Close the file
 	CALL CloseFile
