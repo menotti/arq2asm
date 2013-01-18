@@ -9,7 +9,8 @@ INCLUDE macros.inc
 INCLUDE forca/forca.asm
 INCLUDE GeeckoGames/GeeckoGamesSokoban.asm
 INCLUDE SpaceInvaders/Space_Invaders.asm
-INCLUDE Labirinto/labirinto.asm
+;INCLUDE Labirinto/labirinto.asm
+Include Snake/snake.asm
 ;INCLUDE Frogger/Frogger.asm
 
 .data
@@ -24,6 +25,7 @@ myMenu	BYTE	80 dup ('='),
 				'4 - Labirinto da Morte', 13, 10,
 				'5 - Grupo...', 13, 10,
 				'6 - Frogger', 13, 10,
+				'7 - Snake', 13, 10,
 				'0 - Sair!', 13, 10,
 				'Opcao:', 0
 .code
@@ -55,7 +57,7 @@ SpaceInv:
 Labirinto: 	
 	cmp eax, 4
 	jne Grupo5
-	call jogaLabirinto 
+	;call jogaLabirinto 
 
 Grupo5: ;seguir exemplo acima	
 	cmp eax, 5
@@ -64,9 +66,14 @@ Grupo5: ;seguir exemplo acima
 
 Frogger:
 	cmp eax, 6
-	jne menu
+	jne SnakeGame
 
 	;call FROG_InitJogo
+
+SnakeGame:
+	cmp eax, 7
+	jne menu
+	call snake
 
 fim:
 	exit
