@@ -75,6 +75,8 @@ SnakeGame:
 	jne menu
 	call snake
 
+jmp menu			;Para retornar ao menu depois q acabar algum jogo
+
 fim:
 	exit
 main ENDP
