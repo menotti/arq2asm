@@ -3,13 +3,15 @@ CIMA = 1
 DIREITA = 2
 BAIXO = 3
 ESQUERDA = 4
+YMAXIMO = 24
+XMAXIMO = 79
 quadrado BYTE 254, 0
 quadradoX BYTE 20
 quadradoY BYTE 5
 TempoInicial dWord ?
 velocidade Dword 60
 direcaoAtual DWORD DIREITA
-
+colidiu DWORD 0 
 .code
 Snake PROC
 	
@@ -24,8 +26,9 @@ Snake PROC
 		sub eax, tempoInicial
 		cmp eax, velocidade
 		jb GameLoop
-			call clrscr
 			call identificaDirecao
+			call verificaColisao
+			call terminaJogo
 			call movimenta
 			call desenha
 
@@ -67,7 +70,7 @@ movimenta ENDP
 
 desenha PROC
 
-	;call Clrscr
+	call clrscr
 	mov dh, quadradoY
 	mov dl, quadradoX
 	call gotoXY
@@ -79,7 +82,6 @@ desenha ENDP
 
 identificaDirecao PROC
 
-	;call ReadKeyFlush
 	call ReadKey
 
 	cmp ah, 48h
@@ -108,3 +110,51 @@ identificaDirecao PROC
 ret
 identificaDirecao ENDP
 
+
+verificaColisao PROC
+	cmp quadradoY,0d
+	je  PossivelColisaoCima
+	cmp quadradoX,0d
+	je  PossivelColisaoEsquerda
+	cmp quadradoY, YMAXIMO
+	je  PossivelColisaoBaixo
+	cmp quadradoX, XMAXIMO
+	je  PossivelColisaoDireita
+	ret
+
+PossivelColisaoCima:
+		cmp direcaoAtual,CIMA
+		jne NaoColidiu
+		mov colidiu,1 ; colidiu no limite de cima
+		ret
+PossivelColisaoEsquerda:
+		cmp direcaoAtual,ESQUERDA
+		jne NaoColidiu
+		mov colidiu,1 ; colidiu no limite da esquerda
+		ret
+PossivelColisaoBaixo:
+		cmp direcaoAtual,BAIXO
+		jne NaoColidiu
+		mov colidiu,1 ; colidiu no limite de baixo
+		ret
+PossivelColisaoDireita:
+		cmp direcaoAtual,DIREITA
+		jne NaoColidiu
+		mov colidiu,1 ; colidiu no limite da direita
+		ret
+NaoColidiu:
+		ret
+verificaColisao ENDP
+
+terminaJogo PROC
+	cmp colidiu,1
+	je FimDeJogo
+	ret
+
+FimDeJogo:
+		mov colidiu,0
+		mov direcaoAtual,DIREITA
+		mov quadradoX,20
+		mov quadradoY,5
+		ret
+terminaJogo ENDP
