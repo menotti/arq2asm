@@ -50,7 +50,7 @@ Snake PROC
 		mov cobraPrimeiroY,5
 		mov cobraUltimoX,20
 		mov cobraUltimoY,5
-		jmp GameLoop
+		
 ret
 Snake ENDP
 
@@ -134,13 +134,13 @@ identificaDirecao ENDP
 
 
 verificaColisao PROC
-	cmp quadradoY,0d
+	cmp cobraPrimeiroY,0d
 	je  PossivelColisaoCima
-	cmp quadradoX,0d
+	cmp cobraPrimeiroX,0d
 	je  PossivelColisaoEsquerda
-	cmp quadradoY, YMAXIMO
+	cmp cobraPrimeiroY, YMAXIMO
 	je  PossivelColisaoBaixo
-	cmp quadradoX, XMAXIMO
+	cmp cobraPrimeiroX, XMAXIMO
 	je  PossivelColisaoDireita
 	ret
 
