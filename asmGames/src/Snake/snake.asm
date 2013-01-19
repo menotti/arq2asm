@@ -19,12 +19,13 @@ Snake PROC
 
 	GameLoop:
 	
-		call identificaDirecao
+		
 		call GetMseconds
 		sub eax, tempoInicial
 		cmp eax, velocidade
 		jb GameLoop
 			call clrscr
+			call identificaDirecao
 			call movimenta
 			call desenha
 
@@ -40,7 +41,7 @@ movimenta PROC
 	
 	cmp direcaoAtual, CIMA
 		je direcaoCima
-	cmp direcaoAtual, Direita
+	cmp direcaoAtual, DIREITA
 		je direcaoDireita
 	cmp direcaoAtual, BAIXO
 		je direcaoBaixo
@@ -78,7 +79,7 @@ desenha ENDP
 
 identificaDirecao PROC
 
-	call ReadKeyFlush
+	;call ReadKeyFlush
 	call ReadKey
 
 	cmp ah, 48h
@@ -106,3 +107,4 @@ identificaDirecao PROC
 
 ret
 identificaDirecao ENDP
+
