@@ -6,8 +6,11 @@ ESQUERDA = 4
 YMAXIMO = 24
 XMAXIMO = 79
 quadrado BYTE 254, 0
-quadradoX BYTE 20
-quadradoY BYTE 5
+cobraPrimeiroX BYTE 20
+cobraPrimeiroY BYTE 5
+cobraUltimoX BYTE 20
+cobraUltimoY BYTE 5
+espacoBranco BYTE " ",0
 TempoInicial dWord ?
 velocidade Dword 60
 direcaoAtual DWORD DIREITA
@@ -40,15 +43,22 @@ Snake PROC
 	jmp GameLoop
 
 	FimDeJogo:
+		call  clrscr
 		mov colidiu,0
 		mov direcaoAtual,DIREITA
-		mov quadradoX,20
-		mov quadradoY,5
+		mov cobraPrimeiroX,20
+		mov cobraPrimeiroY,5
+		mov cobraUltimoX,20
+		mov cobraUltimoY,5
+		jmp GameLoop
 ret
 Snake ENDP
 
 movimenta PROC
-	
+	mov bh, cobraPrimeiroY
+	mov bl, cobraPrimeiroX
+	mov cobraUltimoY, bh
+	mov cobraUltimoX, bl
 	cmp direcaoAtual, CIMA
 		je direcaoCima
 	cmp direcaoAtual, DIREITA
@@ -59,17 +69,17 @@ movimenta PROC
 		je direcaoESQUERDA
 	ret
 	
-	DirecaoCima:
-		sub quadradoY, 1
+DirecaoCima:
+		sub cobraPrimeiroY, 1
 		ret
 	DirecaoBaixo:
-		add quadradoY, 1
+		add cobraPrimeiroY, 1
 		ret
 	DirecaoEsquerda:				
-		sub quadradoX, 1
+		sub cobraPrimeiroX, 1
 		ret
 	DirecaoDireita:
-		add quadradoX, 1
+		add cobraPrimeiroX, 1
 		ret
 	
 ret
@@ -77,9 +87,13 @@ movimenta ENDP
 
 desenha PROC
 
-	call clrscr
-	mov dh, quadradoY
-	mov dl, quadradoX
+	mov dh, cobraUltimoY
+	mov dl, cobraUltimoX
+	call gotoXY
+	mov edx, OFFSET espacoBranco
+	call writeString
+	mov dh, cobraPrimeiroY
+	mov dl, cobraPrimeiroX
 	call gotoXY
 	mov edx, OFFSET quadrado
 	call writeString
