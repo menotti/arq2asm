@@ -12,6 +12,8 @@ TempoInicial dWord ?
 velocidade Dword 60
 direcaoAtual DWORD DIREITA
 colidiu DWORD 0 
+
+
 .code
 Snake PROC
 	
@@ -21,14 +23,14 @@ Snake PROC
 
 	GameLoop:
 	
-		
 		call GetMseconds
 		sub eax, tempoInicial
 		cmp eax, velocidade
 		jb GameLoop
 			call identificaDirecao
 			call verificaColisao
-			call terminaJogo
+			cmp colidiu, 1
+				je FimDeJogo
 			call movimenta
 			call desenha
 
@@ -37,6 +39,11 @@ Snake PROC
 		
 	jmp GameLoop
 
+	FimDeJogo:
+		mov colidiu,0
+		mov direcaoAtual,DIREITA
+		mov quadradoX,20
+		mov quadradoY,5
 ret
 Snake ENDP
 
@@ -84,9 +91,10 @@ identificaDirecao PROC
 
 	call ReadKey
 
-	cmp ah, 48h
+	;Verifica quais teclas foram apertadas, pelo codigo em ax(retornado por ReadKey!)
+	cmp ah, 48h		
 		je SetaCima
-	cmp ah, 75				;Verifica quais teclas foram apertadas, pelo codigo em ax(retornado por ReadKey!)
+	cmp ah, 75				
 		je SetaEsquerda
 	cmp ah, 4Dh
 		je SetaDireita
@@ -145,16 +153,3 @@ PossivelColisaoDireita:
 NaoColidiu:
 		ret
 verificaColisao ENDP
-
-terminaJogo PROC
-	cmp colidiu,1
-	je FimDeJogo
-	ret
-
-FimDeJogo:
-		mov colidiu,0
-		mov direcaoAtual,DIREITA
-		mov quadradoX,20
-		mov quadradoY,5
-		ret
-terminaJogo ENDP
