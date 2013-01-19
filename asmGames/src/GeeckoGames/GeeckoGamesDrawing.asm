@@ -67,7 +67,19 @@ DrawBackground PROC USES ECX, mapPtr:PTR BYTE, lineSize:BYTE, mapSize:DWORD
 WriteC:
 	MOV AL, [ESI]
 	call GoToXY
+	CMP AL, '*'
+	JNE DRW1
+	MOV AL, 0B1h
+DRW1:
+	CMP AL, 'x'
+	JNE DRW2
+	MOV AX, gray + (white * 16)
+	CALL SetTextColor
+	MOV AL, 0F0h
+DRW2:
 	CALL WriteChar
+	MOV AX, black + (white * 16)
+	CALL SetTextColor
 	INC ESI
 	INC DL
 	CMP DL, lineSize
@@ -92,7 +104,7 @@ WriteC:
 
 	MOV AX, lightblue + (white * 16)
 	CALL SetTextColor
-	MOV AL, '0'
+	MOV AL, 01h
 	CALL WriteChar
 	MOV AX, black + (white * 16)
 	CALL SetTextColor
@@ -111,7 +123,7 @@ DarkRed:
 	MOV AX, red + (white * 16)
 	CALL SetTextColor
 DRAW:
-	MOV AL, '+'
+	MOV AL, 04h
 	CALL WriteChar
 	MOV AX, black + (white * 16)
 	CALL SetTextColor
