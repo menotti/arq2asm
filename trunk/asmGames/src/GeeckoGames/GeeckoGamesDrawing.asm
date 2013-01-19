@@ -1,6 +1,6 @@
 
 DrawBackground PROTO, mapPtr:PTR BYTE, lineSize:BYTE, mapSize:DWORD
-DrawInteractive PROTO, mapPtr:PTR BYTE, lineSize:BYTE, mapSize:DWORD
+DrawInteractive PROTO, mapPtr:PTR BYTE, mapBgPtr: PTR BYTE, lineSize:BYTE, mapSize:DWORD
 DrawMainScreen PROTO
 DrawFinishedGame PROTO
 
@@ -21,9 +21,9 @@ mainScreen9				BYTE		"*     w: UP s : DOWN a : LEFT d : RIGHT    *", 0Ah
 mainScreen10			BYTE		"*                                          *", 0Ah
 mainScreen11			BYTE		"*            x : go to game menu           *", 0Ah
 mainScreen12			BYTE		"*                                          *", 0Ah
-mainScreen13			BYTE		"*             ESC : leave game             *", 0Ah
+mainScreen13			BYTE		"*             r : restart level            *", 0Ah
 mainScreen14			BYTE		"*                                          *", 0Ah
-mainScreen15			BYTE		"*                                          *", 0Ah
+mainScreen15			BYTE		"*             ESC : leave game             *", 0Ah
 mainScreen16			BYTE		"*                                          *", 0Ah
 mainScreen17			BYTE		"*           PRESS ENTER TO START           *", 0Ah
 mainScreen18			BYTE		"*                                          *", 0Ah
@@ -79,23 +79,45 @@ NextC:
 RET
 DrawBackground ENDP
 
-DrawInteractive PROC USES EDX ECX, mapPtr:PTR BYTE, lineSize:BYTE, mapSize:DWORD	
+DrawInteractive PROC USES EDX ECX ESI EDI, mapPtr:PTR BYTE, mapBgPtr:PTR BYTE, lineSize:BYTE, mapSize:DWORD	
 	MOV ECX, mapSize
 	MOV DX, 0
 	MOV ESI, mapPtr	
+	MOV EDI, mapBgPtr
 WriteC:
 	MOV AL, [ESI]
 	CALL gotoXY
 	CMP AL,'0'
 	JNE DontWrite1
+
+	MOV AX, lightblue + (white * 16)
+	CALL SetTextColor
+	MOV AL, '0'
 	CALL WriteChar
+	MOV AX, black + (white * 16)
+	CALL SetTextColor
+
 	JMP DontWrite2
 DontWrite1:
 	CMP AL, '+'
 	JNE DontWrite2
+	MOV AL, BYTE PTR [EDI]
+	CMP AL, 'x'
+	JE DarkRed
+	MOV AX, lightred + (white * 16)
+	CALL SetTextColor
+	JMP DRAW
+DarkRed:
+	MOV AX, red + (white * 16)
+	CALL SetTextColor
+DRAW:
+	MOV AL, '+'
 	CALL WriteChar
+	MOV AX, black + (white * 16)
+	CALL SetTextColor
 DontWrite2:
 	INC ESI
+	INC EDI
 	INC DL
 	CMP DL, lineSize
 	JL NextC
@@ -109,7 +131,14 @@ NextC:
 	MOV EDX, OFFSET movesSTR
 	CALL WriteString
 	MOV EAX, DWORD PTR [ESI + 4]
+CMP EAX, "AAAA"
+	JAE NOT_GOOD_ENOUGH
 	CALL WriteDec
+	JMP BST
+NOT_GOOD_ENOUGH:
+	MOV EDX, OFFSET scoreTooHigh
+	CALL WriteString
+BST:
 	MOV EDX, OFFSET bestSTR
 	CALL WriteString
 	MOV EAX, DWORD PTR [ESI]

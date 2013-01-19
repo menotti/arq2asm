@@ -27,7 +27,8 @@ MAP_LINE_SIZE = 44
 .code
 
 GeeckoGamesSokoban PROC
-menu:
+	MOV AX, black + (white * 16)
+	CALL SetTextColor
 	PUSHA
 	MOV CursorInfoA, 1
 	MOV CursorInfoB, 0
@@ -63,7 +64,7 @@ LoadMap:
 
 LevelPlay:
 	INVOKE DrawBackground, ADDR currentMapBg, MAP_LINE_SIZE, SIZEOF currentMapBg
-	INVOKE DrawInteractive, ADDR currentMapFg, MAP_LINE_SIZE, SIZEOF currentMapFg
+	INVOKE DrawInteractive, ADDR currentMapFg, ADDR currentMapBg, MAP_LINE_SIZE, SIZEOF currentMapFg
 	CALL UpdateGame
 
 	INVOKE CheckMapState, ADDR currentMapBg, ADDR currentMapFg, SIZEOF currentMapBg
@@ -111,6 +112,10 @@ LeaveGame:
 	INVOKE SetConsoleCursorInfo, EAX, ADDR CursorInfoA
 
 	POPA
+
+	MOV AX, lightgray + (black * 16)
+	CALL SetTextColor
+
 	RET
 GeeckoGamesSokoban ENDP
 
@@ -173,11 +178,15 @@ PRESSED_W:
 	INVOKE MoveChar, ADDR currentMapBg, ADDR currentMapFg, MAP_LINE_SIZE, ADDR charPos, 00b
 	CMP EAX, 0
 	JE LeaveProc
+	CMP moves, "AAAA"
+	JE LeaveProc
 	INC moves
 	JMP LeaveProc
 PRESSED_A:
 	INVOKE MoveChar, ADDR currentMapBg, ADDR currentMapFg, MAP_LINE_SIZE, ADDR charPos, 11b
 	CMP EAX, 0
+	JE LeaveProc
+	CMP moves, "AAAA"
 	JE LeaveProc
 	INC moves
 	JMP LeaveProc
@@ -185,11 +194,15 @@ PRESSED_S:
 	INVOKE MoveChar, ADDR currentMapBg, ADDR currentMapFg, MAP_LINE_SIZE, ADDR charPos, 10b
 	CMP EAX, 0
 	JE LeaveProc
+	CMP moves, "AAAA"
+	JE LeaveProc
 	INC moves
 	JMP LeaveProc
 PRESSED_D:
 	INVOKE MoveChar, ADDR currentMapBg, ADDR currentMapFg, MAP_LINE_SIZE, ADDR charPos, 01b
 	CMP EAX, 0
+	JE LeaveProc
+	CMP moves, "AAAA"
 	JE LeaveProc
 	INC moves
 	JMP LeaveProc
