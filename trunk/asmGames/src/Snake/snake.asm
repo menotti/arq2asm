@@ -20,7 +20,7 @@ colidiu DWORD 0
 .code
 Snake PROC
 	
-	
+		call  clrscr
 		call GetMseconds
 		mov tempoInicial, eax
 
@@ -43,7 +43,7 @@ Snake PROC
 	jmp GameLoop
 
 	FimDeJogo:
-		call  clrscr
+		
 		mov colidiu,0
 		mov direcaoAtual,DIREITA
 		mov cobraPrimeiroX,20
