@@ -68,7 +68,8 @@ TITLE Space_Invaders
 
 .code
 Space_Invaders PROC
-
+		
+		call reinicializaVariaveis
 	
 		call ClrScr
 		call GetMseconds		;Inicializa a variavel do tempo do gerador e as vidas
@@ -769,8 +770,61 @@ verificaScore PROC
 	ret
 verificaScore ENDP
 
-deletaInimigo PROC
-;Procedimento chamado dentro do escreveTiro, para ir até o inimigo atingido e apagar seu grafico
-;Recebe:
-;Retorna: Nada
-deletaINIMIGO ENDP
+reinicializaVariaveis PROC
+	mov heroUpdateBool, 0			;Variavel utilizada para verificar se existe uma modificacao a ser feita no nosso personagem.
+									;	este valor eh muito importante, e seu uso se da na parte de processamento do codigo.
+	mov countLives, 0				;Contagem de "vidas" do personagem
+	mov countScore, 0				;Contagem dos pontos do personagem
+	mov placarBool, 0				;Verifica se o placar precisa ser atualizado
+	
+	mov tiroX[0], 0
+	mov tiroX[1], 0	
+									;Vetor de coordenadas X dos tiros correspondentes, i.e. tiroX[0] -> coord X do primeiro tiro
+	mov tiroY[0], 0
+	mov tiroY[1], 0					;Vetor de coordenadas Y dos tiros correspondentes, i.e. tiroY[0] -> coord Y do primeiro tiro
+									;PS: Coordenadas vao, em ordem crescente: X da esq. para a direita da tela.
+									;   Y de cima para baixo da tela.
+	mov tiroHitBool[0], 0
+	mov tiroHitBool[1], 0
+									;Vetor de variaveis utilizadas para verificar se existe o "tiro" ou nao e se existe algum tiro que atingiu o inimigo.
+	mov tiroBool[0], 0
+	mov tiroBool[1], 0				;	Usados para rastrear e atualizar os tiros
+				
+	mov tiroTime[0], 0
+	mov tiroTime[4], 0		;Vetor de "Tempos" dos tiros, utilizados para regular a velocidade de atualização dos tiros.
+
+;	teclaTime DWORD 0
+	mov setaEsquerdaBool, 0		;Variaveis utilizadas para rastreamento das teclas do teclado. 
+	mov setaDireitaBool, 0			;	A implementação desta maneira buscava melhor desempenho e resposta do teclado.
+
+	mov enemyBool[0], 0
+	mov enemyBool[1], 0
+	mov enemyBool[2], 0
+	mov enemyBool[3], 0
+	mov enemyBool[4], 0
+
+	mov enemyTime[0], 0
+	mov enemyTime[1], 0
+	mov enemyTime[2], 0
+	mov enemytime[3], 0
+	mov enemyTime[4], 0		
+									;Vetor de variaveis de controle de tempo de atualização (similar aos tiros)
+	mov enemyHitBool[0], 0
+	mov enemyHitBool[1], 0
+	mov enemyHitBool[2], 0
+	mov enemyHitBool[3], 0
+	mov enemyHitBool[4], 0			
+									;Vetor de variáveis de controle de colisão do inimigo
+	mov enemyHitLabel, -1			;Indica qual o inimigo (indice) atingido pelo ultimo tiro, com -1 sendo NENHUM
+
+	mov personagemX, 39				;Coordenadas do personagem principal
+	mov personagemY, 24
+	
+	mov geradorTime, 0				;Variavel de controle do tempo do "gerador aleatório" de inimigos
+
+	mov dificuldade, 0
+
+	mov gameOver, 0					;Variavel de fim de jogo.
+
+	ret
+reinicializaVariaveis ENDP
