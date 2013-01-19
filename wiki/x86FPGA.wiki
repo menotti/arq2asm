@@ -17,11 +17,25 @@ Vamos descrever abaixo passo a passo como deve ser realizado este procedimento, 
 ----
 
 == Antes de Começar ==
+=== Quartus II ===
+Utilizamos a versão do *Quartus II 12.1 _Web Edition_* disponível no site do [http://www.altera.com/index.jsp Altera] que pode ser encontrada [https://www.altera.com/download/dnl-index.jsp aqui]. 
+Basta clicar na versão Windows ou Linux, baixar o instalador e durante o processo de instalação mudar para a versão *free*! Lembrando que é necessário ter um cadastro para realizar o download e para utilizar o Quartus II, mesmo que seja na versão free, caso contrário o mesmo não fará a compilação dos seus projetos.
+
+_Observação: Para deixar sua licença funcional é necessário abrir o Quartus II, ir em *Tools/License Setup* clicar em Web License Update e escolher para realizar seu cadastro, após preencher todos os dados (será necessário inclusive o MAC Address da sua placa de rede) um arquivo .dat será enviado ao seu e-mail, baixe-o e atualize o arquivo dentro da opção License Setup do Quartus II._
+
 
 === Preparando os arquivos ===
 Recomendamos que seja criado uma pasta onde você deverá realizar o download de todos os arquivos necessários para que possamos implementar o Zet.
 
-  * *[http://zet.aluzina.org/images/f/f5/Zet-1.2.0.zip Processador Zet]*: _está localizado na [http://zet.aluzina.org/index.php/Zet_processor página inicial] do Zet (a versão utilizada neste tutorial é a 1.2.0)_
+  * *[http://zet.aluzina.org/images/f/f5/Zet-1.2.0.zip Processador Zet]*: _está localizado na [http://zet.aluzina.org/index.php/Zet_processor página inicial] do Zet (a versão utilizada neste tutorial é a 1.2.0)_.
     # Extrair o zip para uma pasta qualquer, neste tutorial vamos utilizar a pasta _Zet-1.2.0_ (nome padrão do arquivo .zip)
+    # Os arquivos utilizados serão: 
+      * *bios.rom*: _localizado em Zet-1.2.0\src\bios_
+      * *kotku.qpf*: _localizado em Zet-1.2.0\boards\altera-de2-115\syn_
 
-  * Cthulhu
+  
+  * *[http://zet.aluzina.org/images/e/e8/A-zet.zip Floppy Image]*: _Extrair o arquivo *a-zet.img* para a pasta._
+  
+  * *[http://zet.aluzina.org/images/9/9c/C.img.zip Hard Disk Image]*: _Extrair o arquivo *c.img* para a pasta._
+
+Estes são os arquivos necessários para fazer nosso processador Zet funcionar!
