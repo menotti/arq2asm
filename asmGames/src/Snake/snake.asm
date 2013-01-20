@@ -5,13 +5,12 @@ CIMA = 1
 DIREITA = 2
 BAIXO = 3
 ESQUERDA = 4
-YMAXIMO = 24
+YMAXIMO = 22
 XMAXIMO = 79
-quadrado BYTE 254, 0
-cobraPrimeiroX BYTE 20
-cobraPrimeiroY BYTE 5
-cobraUltimoX BYTE 20
-cobraUltimoY BYTE 5
+cobraPontosX BYTE 20, 21, 22, 1700 dup (?)
+cobraPontosY BYTE 5, 5, 5, 1700 dup (?)
+contPontosCobra WORD 3
+cobraIndiceUltimo WORD 0
 bufferPontuacoes BYTE 4096 DUP(0)
 pontuacao BYTE 12 DUP(0),0
 melhoresPontuacoes DWORD 0,0,0,0,0
@@ -45,7 +44,7 @@ Snake PROC
 	
 		call  clrscr
 		call exibeMelhoresPontuacoes
-leTecla:
+	leTecla:
 		call ReadKey
 		cmp ah, 1Ch
 		jne leTecla
@@ -59,37 +58,54 @@ leTecla:
 		sub eax, tempoInicial
 		cmp eax, velocidade
 		jb GameLoop
+			call GetMseconds
+			mov tempoInicial, eax
 			call identificaDirecao
 			call verificaColisao
 			cmp colidiu, 1
 				je FimDeJogo
-			call movimenta
-			call desenha
-
-			call GetMseconds
-			mov tempoInicial, eax
+			call movimentaEDesenha
 		
 	jmp GameLoop
 
 	FimDeJogo:
-		
+		;REINICIA PARÂMETROS PARA RECOMEÇAR O JOGO
 		mov colidiu,0
 		mov direcaoAtual,DIREITA
-		mov cobraPrimeiroX,20
-		mov cobraPrimeiroY,5
-		mov cobraUltimoX,20
-		mov cobraUltimoY,5
+		Mov cobraPontosX, 20
+		mov cobraPontosX[1], 21
+		mov cobraPontosX[2], 22
+		mov cobraPontosY, 5
+		mov cobraPontosY[1], 5
+		mov cobraPontosY[2], 5
+		mov contPontosCobra, 3
 		call atualizaMelhoresPontuacoes
 		call escreveArquivoPontuacao
 		
 ret
 Snake ENDP
 
-movimenta PROC
-	mov bh, cobraPrimeiroY
-	mov bl, cobraPrimeiroX
-	mov cobraUltimoY, bh
-	mov cobraUltimoX, bl
+movimentaEdesenha PROC
+	pushad
+
+	;ESCREVE UM CARACTER EM BRANCO NO LUGAR DO ULTIMO PONTO DA COBRA
+	movsx ebp, cobraIndiceUltimo
+	mov dh, cobraPontosY[ebp]			;Parâmetros para gotXY
+	mov dl, cobraPontosX[ebp]			;Parâmetros para gotXY
+	mov al, 255							;Caracter em branco
+	call gotoXY
+	call WriteChar
+
+	mov esi, ebp			;guarda posição do ultimo ponto da cobra em esi
+
+	;ATUALIZA ebp PARA APONTAR PARA O PRIMEIRO PONTO DA COBRA
+	dec ebp
+	cmp ebp, -1					
+	jne NaoAtualizaIndice
+		movzx ebp, contPontosCobra
+		dec ebp
+	NaoAtualizaIndice:
+
 	cmp direcaoAtual, CIMA
 		je direcaoCima
 	cmp direcaoAtual, DIREITA
@@ -98,39 +114,58 @@ movimenta PROC
 		je direcaoBaixo
 	cmp direcaoAtual, ESQUERDA
 		je direcaoESQUERDA
-	ret
+	jmp Retorna
 	
-DirecaoCima:
-		sub cobraPrimeiroY, 1
-		ret
+	;PEGA O ULTIMO PONTO E COLOCA NA FRENTE DO PRIMEIRO
+	DirecaoCima:
+		mov al, cobraPontosY[ebp]
+		dec al
+		mov cobraPontosY[esi], al
+		mov al, cobraPontosX[ebp]
+		mov cobraPontosX[esi], al
+		jmp Retorna
 	DirecaoBaixo:
-		add cobraPrimeiroY, 1
-		ret
+		mov al, cobraPontosY[ebp]
+		inc al
+		mov cobraPontosY[esi], al
+		mov al, cobraPontosX[ebp]
+		mov cobraPontosX[esi], al
+		jmp Retorna
 	DirecaoEsquerda:				
-		sub cobraPrimeiroX, 1
-		ret
+		mov al, cobraPontosX[ebp]
+		dec al
+		mov cobraPontosX[esi], al
+		mov al, cobraPontosY[ebp]
+		mov cobraPontosY[esi], al
+		jmp Retorna
 	DirecaoDireita:
-		add cobraPrimeiroX, 1
-		ret
+		mov al, cobraPontosX[ebp]
+		inc al
+		mov cobraPontosX[esi], al
+		mov al, cobraPontosY[ebp]
+		mov cobraPontosY[esi], al
+		jmp Retorna
 	
-ret
-movimenta ENDP
-
-desenha PROC
-
-	mov dh, cobraUltimoY
-	mov dl, cobraUltimoX
+	Retorna:
+	;ESCREVE NOVO PRIMEIRO PONTO DA COBRA NA TELA
+	mov dh, cobraPontosY[esi]			;Parâmetros para gotXY
+	mov dl, cobraPontosX[esi]			;Parâmetros para gotXY
+	mov al, 254 						;Caracter em branco
 	call gotoXY
-	mov edx, OFFSET espacoBranco
-	call writeString
-	mov dh, cobraPrimeiroY
-	mov dl, cobraPrimeiroX
-	call gotoXY
-	mov edx, OFFSET quadrado
-	call writeString
+	call WriteChar
 
-ret
-desenha ENDP
+	;ATUALIZA O PONTEIRO PARA O ÚLTIMO PONTO DA COBRA
+	inc esi
+	mov eax, esi
+	cmp ax, contPontosCobra
+	jne NaoATualizaUltimo
+		mov ax, 0
+	NaoAtualizaUltimo:
+	mov cobraIndiceUltimo, ax
+
+	popad
+	ret
+movimentaEdesenha ENDP
 
 identificaDirecao PROC
 
@@ -165,38 +200,50 @@ identificaDirecao ENDP
 
 
 verificaColisao PROC
-	cmp cobraPrimeiroY,0d
-	je  PossivelColisaoCima
-	cmp cobraPrimeiroX,0d
-	je  PossivelColisaoEsquerda
-	cmp cobraPrimeiroY, YMAXIMO
-	je  PossivelColisaoBaixo
-	cmp cobraPrimeiroX, XMAXIMO
-	je  PossivelColisaoDireita
-	ret
+	pushad
+	movsx ebp, cobraIndiceUltimo
 
-PossivelColisaoCima:
-		cmp direcaoAtual,CIMA
-		jne NaoColidiu
-		mov colidiu,1 ; colidiu no limite de cima
-		ret
-PossivelColisaoEsquerda:
-		cmp direcaoAtual,ESQUERDA
-		jne NaoColidiu
-		mov colidiu,1 ; colidiu no limite da esquerda
-		ret
-PossivelColisaoBaixo:
-		cmp direcaoAtual,BAIXO
-		jne NaoColidiu
-		mov colidiu,1 ; colidiu no limite de baixo
-		ret
-PossivelColisaoDireita:
-		cmp direcaoAtual,DIREITA
-		jne NaoColidiu
-		mov colidiu,1 ; colidiu no limite da direita
-		ret
-NaoColidiu:
-		ret
+	;ATUALIZA ebp PARA APONTAR PARA O PRIMEIRO PONTO DA COBRA
+	dec ebp
+	cmp ebp, -1					
+	jne NaoAtualizaIndice
+		movsx ebp, contPontosCobra
+		dec ebp
+	NaoAtualizaIndice:
+
+	cmp cobraPontosY[ebp],0d
+	je  PossivelColisaoCima
+	cmp cobraPontosX[ebp],0d
+	je  PossivelColisaoEsquerda
+	cmp cobraPontosY[ebp], YMAXIMO
+	je  PossivelColisaoBaixo
+	cmp cobraPontosX[ebp], XMAXIMO
+	je  PossivelColisaoDireita
+	jmp NaoColidiu
+
+	PossivelColisaoCima:
+			cmp direcaoAtual,CIMA
+			jne NaoColidiu
+			mov colidiu,1 ; colidiu no limite de cima
+			jmp NaoColidiu
+	PossivelColisaoEsquerda:
+			cmp direcaoAtual,ESQUERDA
+			jne NaoColidiu
+			mov colidiu,1 ; colidiu no limite da esquerda
+			jmp NaoColidiu
+	PossivelColisaoBaixo:
+			cmp direcaoAtual,BAIXO
+			jne NaoColidiu
+			mov colidiu,1 ; colidiu no limite de baixo
+			jmp NaoColidiu
+	PossivelColisaoDireita:
+			cmp direcaoAtual,DIREITA
+			jne NaoColidiu
+			mov colidiu,1 ; colidiu no limite da direita
+			jmp NaoColidiu
+	NaoColidiu:
+	popad
+	ret
 verificaColisao ENDP
 
 exibeMelhoresPontuacoes PROC
