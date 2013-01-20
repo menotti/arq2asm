@@ -7,7 +7,7 @@ BAIXO = 3
 ESQUERDA = 4
 YMAXIMO = 22
 XMAXIMO = 79
-COMIDA = 178
+COMIDA = 254
 VAZIO = 255
 PONTO = 219
 cobraPontosX BYTE 20, 21, 22, 1700 dup (?)
@@ -581,9 +581,15 @@ come PROC
 				xchg al, cobraPontosX[ebp]
 				xchg cobraPontosX[ebp-1], al
 				xchg cobraPontosX[ebp], al
+				xchg al, cobraPontosY[ebp]
+				xchg cobraPontosY[ebp-1], al
+				xchg cobraPontosY[ebp], al
 				dec ebp
 				cmp ebp, ecx
 				jne Trocar_posicoes_no_vetor
+			inc ebp
+			mov eax, ebp
+			mov cobraIndiceUltimo, ax
 			inc contPontosCobra
 			call geraComida
 	Nao_Come:
