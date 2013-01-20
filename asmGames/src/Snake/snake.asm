@@ -32,7 +32,7 @@ topoPontuacoes2 BYTE "			Pontuacao	Nome",0
 snakeInicio BYTE " ***************************** SNAKE GAME ****************************",0
 topoPontuacoes BYTE " ######################## MELHORES PONTUACOES ########################",0
 fimPontuacoes BYTE " #####################################################################",0
-mensagemComecarJogo BYTE "Pressione ENTER para comecar o jogo",0
+mensagemComecarJogo BYTE "ENTER: Comecar o jogo  ESC: Voltar ao menu",0
 mensagemErroArquivo BYTE "Erro ao abrir o arquivo de pontuações!",13, 10, 0
 mensagemRecorde BYTE "Parabens! Voce fez uma das 5 melhores pontuacoes!. Digite seu nome: ",0
 TempoInicial dWord ?
@@ -45,13 +45,19 @@ colidiu DWORD 0
 
 
 Snake PROC
-	
+inicioJogo:	
 		call  clrscr
 		call exibeMelhoresPontuacoes
-	leTecla:
+leTecla:
+		mov eax,10
+		call Delay
 		call ReadKey
-		cmp ah, 1Ch
+		cmp ah, 1Ch ; ENTER
+		je comecaJogo
+		cmp ah, 01h ;ESC
 		jne leTecla
+		jmp saiJogo
+comecaJogo:
 		call clrscr
 		call GetMseconds
 		mov tempoInicial, eax
@@ -90,7 +96,8 @@ Snake PROC
 		mov contPontosCobra, 3
 		call atualizaMelhoresPontuacoes
 		call escreveArquivoPontuacao
-		
+		jmp inicioJogo
+SaiJogo:		
 ret
 Snake ENDP
 
@@ -348,7 +355,7 @@ achouNomePontuacao:
 		call offsetNomePontuacao
 		loop LoopNomePontuacoes
 		mov dh,11
-		mov dl,20
+		mov dl,16
 		call GotoXY
 		mov countLinhaPontuacao,5
 		mov edx, OFFSET mensagemComecarJogo
