@@ -64,3 +64,5 @@ Ligue a placa na energia e também no usb do seu computador, então aperte o bot
   * C:\altera\12.1\quartus\drivers 
 
 Não selecione nenhuma das pastas dentro de _drivers_ ou o driver não será reconhecido!
+
+= Arquitetura do Zet =
