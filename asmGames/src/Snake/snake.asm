@@ -11,8 +11,8 @@ cobraPrimeiroY BYTE 5
 cobraUltimoX BYTE 20
 cobraUltimoY BYTE 5
 bufferPontuacoes BYTE 4096 DUP(0)
-melhoresPontuacoes DWORD 0,0,0,0,0
 pontuacao BYTE 10 DUP(?)
+melhoresPontuacoes DWORD 0,0,0,0,0
 nomePontuacao1 BYTE 20 DUP(0)
 nomePontuacao2 BYTE 20 DUP(0)
 nomePontuacao3 BYTE 20 DUP(0)
@@ -74,6 +74,7 @@ leTecla:
 		mov cobraPrimeiroY,5
 		mov cobraUltimoX,20
 		mov cobraUltimoY,5
+		;call escreveArquivoPontuacao
 		
 ret
 Snake ENDP
@@ -332,3 +333,59 @@ RetornaSemValor:
 		mov edx,-1
 ret
 offsetNomePontuacao ENDP
+
+escreveArquivoPontuacao PROC
+	mov edx,OFFSET arquivoPontuacoes
+	call CreateOutputFile
+	mov ecx,5
+	mov ebx,1
+	mov esi, OFFSET melhoresPontuacoes
+	mov bufferPontuacoes,0
+	mov edi, OFFSET bufferPontuacoes
+	push eax
+LOOP_NUMEROS_PONT:
+	cmp ebx,5
+	je EscreveProximaPontuacao
+	mov dl,[esi]
+	mov BYTE PTR [edi],dl
+	inc esi
+	inc edi
+	inc ebx
+	jmp LOOP_NUMEROS_PONT
+EscreveProximaPontuacao:
+	mov ebx,1
+	inc edi
+	mov BYTE PTR [edi],'/'
+	loop LOOP_NUMEROS_PONT
+	
+	mov ebx,0
+LOOP_NOMES_PONT:
+	inc ebx
+	mov eax,ebx
+	call offsetNomePontuacao
+	invoke Str_length,edx
+	mov ecx,eax
+	mov esi, edx
+LOOP_INTERNO_NOMES_PONT:
+
+	mov dl,[esi]
+	mov BYTE PTR [edi],dl
+	inc esi
+	inc edi
+	loop LOOP_INTERNO_NOMES_PONT
+
+	mov BYTE PTR [edi],'/'
+	inc edi
+	cmp ebx,5
+	jb LOOP_NOMES_PONT
+	mov BYTE PTR [edi],0
+	mov edx,OFFSET bufferPontuacoes
+	invoke Str_length,edx
+	mov ecx,eax
+	pop eax
+	push eax
+	call WriteToFile
+	
+	pop eax
+	call CloseFile
+escreveArquivoPontuacao ENDP
