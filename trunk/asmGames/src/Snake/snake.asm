@@ -80,6 +80,7 @@ Snake PROC
 		;REINICIA PARÂMETROS PARA RECOMEÇAR O JOGO
 		mov colidiu,0
 		mov direcaoAtual,DIREITA
+		mov cobraIndiceUltimo, 0
 		Mov cobraPontosX, 20
 		mov cobraPontosX[1], 21
 		mov cobraPontosX[2], 22
