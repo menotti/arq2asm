@@ -23,7 +23,7 @@ Obviamente é necessário que você possua uma placa Altera DE2-115 mas além de
   * Cabo vga
   * Teclado PS2
   * Mouse PS2
-  * Cartão SD de até 2GB _(no site do Zet está escrito que 2GB é o máximo suportado, não sabemos se isso realmente acontece)_
+  * Cartão SD de até 2GB
 
 === Quartus II ===
 Utilizamos a versão do *Quartus II 12.1 _Web Edition_* disponível no site do [http://www.altera.com/index.jsp Altera] que pode ser encontrada [https://www.altera.com/download/dnl-index.jsp aqui]. 
@@ -53,4 +53,14 @@ Recomendamos que seja criado uma pasta onde você deverá realizar o download de
   * *[http://zet.aluzina.org/images/9/9c/C.img.zip Hard Disk Image]*: _Extrair o arquivo *c.img* para a pasta._
 
 Estes são os arquivos necessários para fazer nosso processador Zet funcionar!
+
 ----
+== Botando a mão na massa! ==
+
+=== Instalando os drivers da DE2-115 _(Windows)_ ===
+
+Caso você já tenha utilizado a DE2-115 no seu computador e já a tenha configurado, não há a necessidade de seguir este passo, mas caso seja a primeira vez vamos ter de instalar o driver para que ela possa funcionar corretamente. 
+Ligue a placa na energia e também no usb do seu computador, então aperte o botão de Power para ligá-la. Um programa pré-carregado vai começar a executar fazendo com que os leds e displays fiquem funcionando. Para instalar o driver basta localizá-lo na pasta onde você instalou o Altera:
+  * C:\altera\12.1\quartus\drivers 
+
+Não selecione nenhuma das pastas dentro de _drivers_ ou o driver não será reconhecido!
