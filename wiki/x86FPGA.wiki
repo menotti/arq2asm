@@ -1,4 +1,4 @@
-#summary Guia de instalação do processador Zet na placa Altera DE2-115.
+#summary Processador Zet na placa Altera DE2-115.
 
 = Processador Zet na placa Altera DE2-115 =
 ----
@@ -65,6 +65,10 @@ Ligue a placa na energia e também no usb do seu computador, então aperte o bot
 
 Não selecione nenhuma das pastas dentro de _drivers_ ou o driver não será reconhecido!
 
+=== Criando a imagem da HD ===
+
+No Linux é muito mais simples de realizar este passo, 
+
 ----
 
 <br>  
@@ -82,3 +86,6 @@ O conjunto de instruções do Zet suporta 89 das 92 instruções do 8086 e podem
 As 3 instruções não implementadas são wait, esc e lock, essas instruções foram desnecessárias pois não foi usado nenhum coprocessador. A falta deste coprocessador também acarretou no fato que o Zet não suporta instruções de ponto flutuante, pois o 8086 delegava estas instruções a um coprocessador Intel 8087 (vide http://www.cpu-world.com/CPUs/8086/index.html)
 
 == Visão Geral ==
+
+=== Aprovado por Cthulhu ===
+http://img838.imageshack.us/img838/8921/cthulhuv.jpg
