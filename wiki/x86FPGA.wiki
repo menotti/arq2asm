@@ -65,4 +65,20 @@ Ligue a placa na energia e também no usb do seu computador, então aperte o bot
 
 Não selecione nenhuma das pastas dentro de _drivers_ ou o driver não será reconhecido!
 
+----
+
+<br>  
 = Arquitetura do Zet =
+----
+== Considerações Iniciais ==
+Primeiramente, vamos esclarecer algumas coisas  em relação a nomenclatura dos processadores:
+  * Processadores 	IA-32: processadores da Intel baseados na arquitetura IA-32, e.g., 	8086/88, Intel 286, Intel386, Intel486, Pentium, Pentium Pro, Pentium II, Pentium III, Pentium 4 e Intel Xeon.
+  * Processadores de 32-bits:  processadores IA-32 que usam arquitetura de 32-bits que inclui os processadores Intel386, Intel486, Pentium, Pentium Pro, Pentium II, Pentium III, Pentium 4 e Intel Xeon.
+  * Processadores de 16-bits:  processadores IA-32 que usam arquitetura de 16-bits que inclui os processadores 8086/88 e o Intel 286
+
+O Zet, processador implementado neste trabalho, é uma implementação da arquitetura IA-32 (x86), porém somente a parte 16-bits é suportada. Ele foi feito baseado no Intel 8086.
+O conjunto de instruções do Zet suporta 89 das 92 instruções do 8086 e podem ser encontradas em http://zet.aluzina.org/index.php/Zet_status.
+
+As 3 instruções não implementadas são wait, esc e lock, essas instruções foram desnecessárias pois não foi usado nenhum coprocessador. A falta deste coprocessador também acarretou no fato que o Zet não suporta instruções de ponto flutuante, pois o 8086 delegava estas instruções a um coprocessador Intel 8087 (vide http://www.cpu-world.com/CPUs/8086/index.html)
+
+== Visão Geral ==
