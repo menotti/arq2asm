@@ -1,3 +1,5 @@
+IntParaString PROTO,buffer_B:PTR BYTE
+
 .data
 CIMA = 1
 DIREITA = 2
@@ -11,7 +13,7 @@ cobraPrimeiroY BYTE 5
 cobraUltimoX BYTE 20
 cobraUltimoY BYTE 5
 bufferPontuacoes BYTE 4096 DUP(0)
-pontuacao BYTE 10 DUP(?)
+pontuacao BYTE 12 DUP(0),0
 melhoresPontuacoes DWORD 0,0,0,0,0
 nomePontuacao1 BYTE 20 DUP(0)
 nomePontuacao2 BYTE 20 DUP(0)
@@ -36,6 +38,8 @@ colidiu DWORD 0
 
 
 .code
+
+
 Snake PROC
 	
 		call  clrscr
@@ -74,7 +78,7 @@ leTecla:
 		mov cobraPrimeiroY,5
 		mov cobraUltimoX,20
 		mov cobraUltimoY,5
-		;call escreveArquivoPontuacao
+		call escreveArquivoPontuacao
 		
 ret
 Snake ENDP
@@ -338,24 +342,24 @@ escreveArquivoPontuacao PROC
 	mov edx,OFFSET arquivoPontuacoes
 	call CreateOutputFile
 	mov ecx,5
-	mov ebx,1
 	mov esi, OFFSET melhoresPontuacoes
-	mov bufferPontuacoes,0
 	mov edi, OFFSET bufferPontuacoes
 	push eax
 LOOP_NUMEROS_PONT:
-	cmp ebx,5
-	je EscreveProximaPontuacao
-	mov dl,[esi]
-	mov BYTE PTR [edi],dl
-	inc esi
+	push ecx
+	mov eax,[esi]
+	invoke IntParaString,OFFSET pontuacao
+LOOP_NUMEROS_PONT2:
+	mov bl,[edx]
+	mov BYTE PTR [edi],bl
+	inc edx
 	inc edi
-	inc ebx
-	jmp LOOP_NUMEROS_PONT
+	loop LOOP_NUMEROS_PONT2
 EscreveProximaPontuacao:
-	mov ebx,1
-	inc edi
+	pop ecx
+	add esi,4
 	mov BYTE PTR [edi],'/'
+	inc edi
 	loop LOOP_NUMEROS_PONT
 	
 	mov ebx,0
@@ -388,4 +392,54 @@ LOOP_INTERNO_NOMES_PONT:
 	
 	pop eax
 	call CloseFile
+	ret
 escreveArquivoPontuacao ENDP
+
+;-----------------------------------------------------
+IntParaString PROC USES edi,
+		buffer_B:PTR BYTE
+		LOCAL neg_flag:BYTE
+; Escreve inteiro em uma string
+; em ASCII decimal.
+; Receives: EAX = o inteiro e buffer_B um ponteiro a uma string que tem 12 posicoes
+; Returns:  EDX = o endereço p/ a string, ECX = o tamanho da string
+;-----------------------------------------------------
+WI_Bufsize = 12
+true  =   1
+false =   0
+
+
+	mov   neg_flag,false    ; assume neg_flag is false
+	or    eax,eax             ; is AX positive?
+	jns   WIS1              ; yes: jump to B1
+	neg   eax                ; no: make it positive
+	mov   neg_flag,true     ; set neg_flag to true
+
+WIS1:
+	mov   ecx,0              ; digit count = 0
+	mov   edi,buffer_B
+	add   edi,(WI_Bufsize-1)
+	mov   ebx,10             ; will divide by 10
+
+WIS2:
+	mov   edx,0              ; set dividend to 0
+	div   ebx                ; divide AX by 10
+	or    dl,30h            ; convert remainder to ASCII
+	dec   edi                ; reverse through the buffer
+	mov   [edi],dl           ; store ASCII digit
+	inc   ecx                ; increment digit count
+	or    eax,eax             ; quotient > 0?
+	jnz   WIS2              ; yes: divide again
+
+	; Insert the sign.
+	cmp   neg_flag,false    	; was the number positive?
+	jz    WIS3              	; yes
+	dec   edi	; back up in the buffer
+	inc   ecx               	; increment counter
+	mov   BYTE PTR [edi],'-' 	; no: insert negative sign
+
+WIS3:	; retorna numero
+	mov  edx,edi
+
+	ret
+IntParaString ENDP
