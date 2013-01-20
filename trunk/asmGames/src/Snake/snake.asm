@@ -7,10 +7,15 @@ BAIXO = 3
 ESQUERDA = 4
 YMAXIMO = 22
 XMAXIMO = 79
+COMIDA = 178
+VAZIO = 255
+PONTO = 254
 cobraPontosX BYTE 20, 21, 22, 1700 dup (?)
 cobraPontosY BYTE 5, 5, 5, 1700 dup (?)
 contPontosCobra WORD 3
 cobraIndiceUltimo WORD 0
+comidaX BYTE ?
+comidaY BYTE ?
 bufferPontuacoes BYTE 4096 DUP(0)
 pontuacao BYTE 12 DUP(0),0
 melhoresPontuacoes DWORD 0,0,0,0,0
@@ -30,7 +35,6 @@ fimPontuacoes BYTE " ###########################################################
 mensagemComecarJogo BYTE "Pressione ENTER para comecar o jogo",0
 mensagemErroArquivo BYTE "Erro ao abrir o arquivo de pontuações!",13, 10, 0
 mensagemRecorde BYTE "Parabens! Voce fez uma das 5 melhores pontuacoes!. Digite seu nome: ",0
-espacoBranco BYTE " ",0
 TempoInicial dWord ?
 velocidade Dword 60
 direcaoAtual DWORD DIREITA
@@ -52,6 +56,8 @@ Snake PROC
 		call GetMseconds
 		mov tempoInicial, eax
 
+		call geraComida
+		
 	GameLoop:
 	
 		call GetMseconds
@@ -64,7 +70,9 @@ Snake PROC
 			call verificaColisao
 			cmp colidiu, 1
 				je FimDeJogo
+			call come
 			call movimentaEDesenha
+			
 		
 	jmp GameLoop
 
@@ -92,7 +100,7 @@ movimentaEdesenha PROC
 	movsx ebp, cobraIndiceUltimo
 	mov dh, cobraPontosY[ebp]			;Parâmetros para gotXY
 	mov dl, cobraPontosX[ebp]			;Parâmetros para gotXY
-	mov al, 255							;Caracter em branco
+	mov al, VAZIO							;Caracter em branco
 	call gotoXY
 	call WriteChar
 
@@ -150,7 +158,7 @@ movimentaEdesenha PROC
 	;ESCREVE NOVO PRIMEIRO PONTO DA COBRA NA TELA
 	mov dh, cobraPontosY[esi]			;Parâmetros para gotXY
 	mov dl, cobraPontosX[esi]			;Parâmetros para gotXY
-	mov al, 254 						;Caracter em branco
+	mov al, PONTO 						;Caracter ponto
 	call gotoXY
 	call WriteChar
 
@@ -201,7 +209,7 @@ identificaDirecao ENDP
 
 verificaColisao PROC
 	pushad
-	movsx ebp, cobraIndiceUltimo
+	movzx ebp, cobraIndiceUltimo
 
 	;ATUALIZA ebp PARA APONTAR PARA O PRIMEIRO PONTO DA COBRA
 	dec ebp
@@ -547,3 +555,72 @@ NOVO_NOME:
 	call ReadString
 	ret
 atualizaMelhoresPontuacoes ENDP
+
+come PROC
+	movzx ebp, cobraIndiceUltimo
+
+	;ATUALIZA ebp PARA APONTAR PARA O PRIMEIRO PONTO DA COBRA
+	dec ebp
+	cmp ebp, -1					
+	jne NaoAtualizaIndice
+		movsx ebp, contPontosCobra
+		dec ebp
+	NaoAtualizaIndice:
+	
+	mov al, comidaX
+	cmp al, cobraPontosX[ebp]
+	jne Nao_Come
+		mov ah, comidaY
+		cmp ah, cobraPontosY[ebp]
+		jne Nao_come
+			movzx ebp, contPontosCobra
+			mov cobraPontosX[ebp], al
+			mov cobraPontosY[ebp], ah
+			movzx ecx, cobraIndiceUltimo
+			Trocar_Posicoes_no_vetor:
+				xchg al, cobraPontosX[ebp]
+				xchg cobraPontosX[ebp-1], al
+				xchg cobraPontosX[ebp], al
+				dec ebp
+				cmp ebp, ecx
+				jne Trocar_posicoes_no_vetor
+			inc contPontosCobra
+			call geraComida
+	Nao_Come:
+
+ret
+come ENDP
+
+geraComida PROC
+	GERA_COMIDA:
+		mov eax, XMAXIMO
+		call randomize
+		call randomRange
+		mov comidaX, al
+		mov eax, YMAXIMO
+		call randomize
+		call randomRange
+		mov comidaY, al
+		;VEFIFICA SE COMIDA ESTA NA COBRA
+		mov al, comidaX						;valor a ser procurado
+		movzx ecx, contPontosCobra			;nro de itens no vetor
+		mov edi, OFFSET cobraPontosX		;ponteiro pro vetor
+		repne scasb							;faz a busca
+		jnz Comida_ok						;zf = 1 se encontrou
+			mov al, comidaY
+			movzx ecx, contPontosCobra
+			mov edi, OFFSET cobraPontosY
+			repne scasb
+			jz GERA_COMIDA
+		Comida_ok:
+		mov ax, 02h							;Define cor da comida como verde
+		call setTextColor
+		mov dh, comidaY
+		mov dl, comidaX
+		mov al, COMIDA
+		call gotoXY
+		call writeChar
+		mov ax, 0Fh							;Volta a cor original
+		call setTextColor
+ret
+geraComida ENDP

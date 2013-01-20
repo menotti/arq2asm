@@ -1,4 +1,4 @@
-﻿Build started 20/01/2013 17:54:29.
+﻿Build started 20/01/2013 20:23:12.
      1>Project "C:\Users\JP\Documents\LabArq2_color_snake\asmGames\Project.vcxproj" on node 2 (rebuild target(s)).
      1>_PrepareForClean:
          Deleting file "Debug\Project.lastbuildstate".
@@ -6,7 +6,7 @@
          Creating "Debug\Project.unsuccessfulbuild" because "AlwaysCreate" was specified.
        _MASM:
          Assembling [Inputs]...
-         cmd.exe /C "C:\Users\JP\AppData\Local\Temp\c6c8644f410a4f478abbf38056bb5935.cmd"
+         cmd.exe /C "C:\Users\JP\AppData\Local\Temp\edcbb1fd346c4b72ab0d269da67e2af4.cmd"
          ml.exe /c /nologo /Zi /Fo"Debug\main.obj" /I "c:\Irvine" /W3 /errorReport:prompt  /Tasrc\main.asm
        Link:
          C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\JP\Documents\LabArq2_color_snake\asmGames\Debug\Project.exe" /NOLOGO /LIBPATH:c:\Irvine user32.lib irvine32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /ManifestFile:"Debug\Project.exe.intermediate.manifest" /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /DEBUG /PDB:"C:\Users\JP\Documents\LabArq2_color_snake\asmGames\Debug\Project.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE:NO /IMPLIB:"C:\Users\JP\Documents\LabArq2_color_snake\asmGames\Debug\Project.lib" /MACHINE:X86 Debug\main.obj
@@ -20,4 +20,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:01.55
+Time Elapsed 00:00:01.17
