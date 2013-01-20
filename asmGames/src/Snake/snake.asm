@@ -10,6 +10,24 @@ cobraPrimeiroX BYTE 20
 cobraPrimeiroY BYTE 5
 cobraUltimoX BYTE 20
 cobraUltimoY BYTE 5
+bufferPontuacoes BYTE 4096 DUP(0)
+melhoresPontuacoes DWORD 0,0,0,0,0
+pontuacao BYTE 10 DUP(?)
+nomePontuacao1 BYTE 20 DUP(0)
+nomePontuacao2 BYTE 20 DUP(0)
+nomePontuacao3 BYTE 20 DUP(0)
+nomePontuacao4 BYTE 20 DUP(0)
+nomePontuacao5 BYTE 20 DUP(0)
+pontuacaoAtual DWORD 0
+countLinhaPontuacao BYTE 5
+arquivoPontuacoes BYTE "src/Snake/melhoresPontuacoes.txt",0
+handlePontuacoes DWORD ?
+topoPontuacoes2 BYTE "			Pontuacao	Nome",0
+snakeInicio BYTE " ***************************** SNAKE GAME ****************************",0
+topoPontuacoes BYTE " ######################## MELHORES PONTUACOES ########################",0
+fimPontuacoes BYTE " #####################################################################",0
+mensagemComecarJogo BYTE "Pressione ENTER para comecar o jogo",0
+mensagemErroArquivo BYTE "Erro ao abrir o arquivo de pontuações!",13, 10, 0
 espacoBranco BYTE " ",0
 TempoInicial dWord ?
 velocidade Dword 60
@@ -21,6 +39,12 @@ colidiu DWORD 0
 Snake PROC
 	
 		call  clrscr
+		call exibeMelhoresPontuacoes
+leTecla:
+		call ReadKey
+		cmp ah, 1Ch
+		jne leTecla
+		call clrscr
 		call GetMseconds
 		mov tempoInicial, eax
 
@@ -167,3 +191,144 @@ PossivelColisaoDireita:
 NaoColidiu:
 		ret
 verificaColisao ENDP
+
+exibeMelhoresPontuacoes PROC
+	mov edx,OFFSET snakeInicio
+	call WriteString
+	mov dh,2
+	mov dl,0
+	call GotoXY
+	mov edx, OFFSET topoPontuacoes
+	call WriteString
+	call Crlf
+	mov edx, OFFSET topoPontuacoes2
+	call WriteString
+	call Crlf
+	mov ebx,0
+	mov edx,OFFSET arquivoPontuacoes
+	call OpenInputFile
+	cmp eax,INVALID_HANDLE_VALUE
+	jne abriuArquivo
+	call exibeMensagemErroArquivo
+	mov ebx,-1
+abriuArquivo:
+		mov handlePontuacoes,eax
+		mov ecx,4096 
+		mov edx,OFFSET bufferPontuacoes
+		call ReadFromFile
+		mov eax,handlePontuacoes
+		call CloseFile
+
+		mov ecx, 5
+		mov esi, OFFSET bufferPontuacoes
+		mov edi, OFFSET pontuacao
+		mov ebx, OFFSET melhoresPontuacoes
+LoopPontuacoes:
+		mov al, [esi]
+		cmp al,'/'
+		je achouPontuacao
+		mov BYTE PTR [edi],al
+		inc edi
+		inc esi
+		jmp LoopPontuacoes
+achouPontuacao:
+		mov al, 'K'
+		mov BYTE PTR [edi], al
+		mov edx, OFFSET pontuacao
+		push ecx
+		mov ecx, SIZEOF pontuacao
+		call ParseDecimal32
+		pop ecx
+		mov [ebx],eax
+		add ebx,4
+		mov dh, countLinhaPontuacao
+		mov dl, 24
+		inc countLinhaPontuacao
+		call GotoXY
+		call WriteInt
+		call Crlf
+		inc esi
+		mov edi, OFFSET pontuacao
+		loop LoopPontuacoes
+
+		mov ecx, 5
+		mov countLinhaPontuacao,5
+		mov eax,6
+		sub eax,ecx
+		call offsetNomePontuacao
+LoopNomePontuacoes:
+		mov al, [esi]
+		cmp al,'/'
+		je achouNomePontuacao
+		mov BYTE PTR [edx],al
+		inc edx
+		inc esi
+		jmp LoopNomePontuacoes
+achouNomePontuacao:
+		mov al, 0
+		mov BYTE PTR [edx], al
+		add ebx,4
+		mov dh, countLinhaPontuacao
+		mov dl, 40
+		inc countLinhaPontuacao
+		call GotoXY
+		mov eax,6
+		sub eax,ecx
+		call offsetNomePontuacao
+		call WriteString
+		call Crlf
+		inc esi
+		mov eax,6
+		mov ebx,ecx
+		sub ebx,1
+		sub eax,ebx
+		call offsetNomePontuacao
+		loop LoopNomePontuacoes
+		mov dh,11
+		mov dl,20
+		call GotoXY
+		mov countLinhaPontuacao,5
+		mov edx, OFFSET mensagemComecarJogo
+		call WriteString
+		call Crlf
+		mov edx, OFFSET fimPontuacoes
+		call WriteString
+	ret
+exibeMelhoresPontuacoes ENDP
+
+exibeMensagemErroArquivo PROC
+	mov edx, OFFSET mensagemErroArquivo
+	call WriteString
+	call WaitMsg
+	ret
+exibeMensagemErroArquivo ENDP
+
+offsetNomePontuacao PROC
+	cmp eax,1
+	jne COMP2
+	mov edx, OFFSET nomePontuacao1
+	ret
+COMP2:
+		cmp eax,2
+		jne COMP3
+		mov edx, OFFSET nomePontuacao2
+		ret
+COMP3:
+		cmp eax,3
+		jne COMP4
+		mov edx, OFFSET nomePontuacao3
+		ret
+COMP4:
+		cmp eax,4
+		jne COMP5
+		mov edx, OFFSET nomePontuacao4
+		ret
+COMP5:
+		cmp eax,5
+		jne RetornaSemValor
+		mov edx, OFFSET nomePontuacao5
+		ret
+RetornaSemValor:
+		mov edx,-1
+ret
+offsetNomePontuacao ENDP
