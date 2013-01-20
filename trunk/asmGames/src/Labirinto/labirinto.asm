@@ -1,224 +1,370 @@
 TITLE Labirinto da Morte (labirinto.asm)
 
 .data
-msgInicio BYTE "Labirinto da Morte",0dh,0ah,0
-msgMenu BYTE "______Menu______",0dh,0ah,
-             "1-Iniciar",0dh,0ah,
-			 "2-Sair",0dh,0ah,
-			 "Sua opcao:", 0
+msgInicio BYTE "Labirinto da Morte", 0dh, 0ah, 0
+msgMenu BYTE "______Menu______", 0dh, 0ah,
+             "1-Iniciar", 0dh, 0ah,
+			 "2-Tutorial", 0dh, 0ah,
+			 "0-Sair", 0dh, 0ah, 0
 
-msgDificuldade BYTE "Escolha a dificuldade:", 0dh, 0ah,
-                    "1-Normal (Visao de raio 2 em volta de voce)",0dh,0ah,
-			        "2-Dificil(Visao de raio 1 em volta de voce)",0dh,0ah,
-					"0-Voltar ao menu inicial",0dh,0ah,
-			        "Sua opcao:", 0
+msgDificuldade BYTE "0-Voltar ao menu inicial", 0dh, 0ah, 0ah,
+                    "Escolha a dificuldade:", 0dh, 0ah,
+                    "1-Normal  (Visao com raio 2 em volta de voce)", 0dh, 0ah,
+			        "2-Dificil (Visao com raio 1 em volta de voce)", 0dh, 0ah, 0
 
-msgFase BYTE "Escolha a fase:", 0dh, 0ah,
-             "1-Labirinto e o Minotauro ",0dh,0ah,
-			 "2- Labirinto do Troll",0dh,0ah,
-			 "0-Voltar ao menu inicial",0dh,0ah,
-			 "Sua opcao:", 0
-                     
+msgOpcao BYTE "Sua opcao: ", 0
 
-nomeArq BYTE "m1.txt", 0
-nomeTArq BYTE "tamM1.txt",0
-nomeArq2 BYTE "m2.txt", 0
-nomeTArq2 BYTE "tamM2.txt",0
+msgFase01 BYTE "0-Voltar ao menu inicial", 0dh, 0ah, 0ah,
+             "Escolha a fase:", 0dh, 0ah,
+             "1-Labirinto do Troll ", 0dh, 0ah, 0
+msgFase02 BYTE "2-Labirinto do Troll 2 ", 0dh, 0ah, 0
+msgFase03 BYTE "3-Labirinto do Troll 3 ", 0dh, 0ah, 0
+msgFase04 BYTE "4-Labirinto do Troll 4 ", 0dh, 0ah, 0
+msgFase05 BYTE "5-Labirinto do Minotauro ", 0dh, 0ah, 0       
+msgFase06 BYTE "6-Labirinto do Minotauro 2", 0dh, 0ah, 0  
+msgFase07 BYTE "7-Labirinto do Minotauro 3", 0dh, 0ah, 0  
+msgFase08 BYTE "8-Labirinto Móvel", 0dh, 0ah, 0  
+msgFase09 BYTE "9-Labirinto Móvel 2 ", 0dh, 0ah, 0   
+msgFase10 BYTE "10-Labirinto Móvel 3 ", 0dh, 0ah, 0          
+
+nomeArq01 BYTE "src/Labirinto/labirinto01.txt", 0
+nomeArq02 BYTE "src/Labirinto/labirinto02.txt", 0
+nomeArq03 BYTE "src/Labirinto/labirinto03.txt", 0
+nomeArq04 BYTE "src/Labirinto/labirinto04.txt", 0
+nomeArq05 BYTE "src/Labirinto/labirinto05.txt", 0
+nomeArq06 BYTE "src/Labirinto/labirinto06.txt", 0
+nomeArq07 BYTE "src/Labirinto/labirinto07.txt", 0
+nomeArq08 BYTE "src/Labirinto/labirinto08.txt", 0
+nomeArq09 BYTE "src/Labirinto/labirinto09.txt", 0
+nomeArq10 BYTE "src/Labirinto/labirinto10.txt", 0
+nomeArq11 BYTE "src/Labirinto/medalha.txt", 0
+
+msgErro BYTE "Não foi possivel carregar o arquivo desejado.", 0dh, 0ah, 0
+msgErro2 BYTE "Por favor, selecione um labirinto valido.", 0dh, 0ah, 0
 
 aux BYTE 10 DUP(0)
 
-tamanho DWORD ?
-tamanhoM DWORD ?
-matriz BYTE 2400 DUP (0)
+tamanhoX DWORD 64
+tamanhoY DWORD 24
+tamanhoM DWORD 1650 
+matriz BYTE 1650 DUP (0) ; 1650 = 25 linhas * 66 colunas
 
 posicao DWORD ?
 posicaoS DWORD ?
+posicaoVelha DWORD ?
 
 direcao BYTE ?
-mapa BYTE ?
+mapa BYTE 0
+mapaPossivel BYTE 1
 liberado BYTE 0
 visao BYTE 1
+
+msgPassos BYTE "PASSOS:", 0
+msgPassos2 BYTE "MELHOR:", 0
+msgPassos3 BYTE "RECORD:", 0
+
+msgPont BYTE "PARABENS! VOCE COMPLETOU O LABIRINTO E ESTA VIVO!", 0
+msgPont2 BYTE "VOCE CONSEGUIU EM", 0
+msgPont3 BYTE " PASSOS. SEU MELHOR CAMINHO FOI FEITO EM", 0
+msgPont4 BYTE "VOCE NAO OBTEVE MEDALHA! :( ", 0dh, 0ah, 0
+msgPont5 BYTE "VOCE OBTEVE UMA MEDALHA DE OURO :D ", 0dh, 0ah, 0
+msgPont6 BYTE "VOCE OBTEVE UMA MEDALHA DE PRATA :) ", 0dh, 0ah, 0
+msgPont7 BYTE "VOCE OBTEVE UMA MEDALHA DE BRONZE :| ", 0dh, 0ah, 0
+
+pontuacao WORD 10 DUP (0)
+passos WORD 0
+seusMelhoresPassos WORD 10 DUP (1000)
+melhoresPassos WORD 141, 101, 102, 103, 104, 100, 100, 100, 100, 100
 
 .code
 
 escreveMenu PROC
-      call Clrscr
-	  
-	  mov edx,OFFSET msgInicio
-	  call WriteString
-	  mov edx, OFFSET msgMenu
-	  call WriteString
-  ret
+; Exibe as opcoes iniciais do jogo
+	
+	call Clrscr	  
+	mov edx,OFFSET msgInicio
+	call WriteString
+	mov edx, OFFSET msgMenu
+	call WriteString
+	ret
 escreveMenu ENDP
 
+escreveOpcao PROC
+; Exibe para que o usuario escolha uma opcao 
+
+	mov edx, OFFSET msgOpcao
+	call WriteString
+	ret
+escreveOpcao ENDP
+
 escreveDificuldade PROC
-      call Clrscr
-	 
-	  mov edx, OFFSET msgDificuldade
-	  call WriteString
-  ret
+; Exibe as opcoes de dificuldade
+
+	call Clrscr
+	mov edx, OFFSET msgDificuldade
+	call WriteString
+	ret
 escreveDificuldade ENDP
 
 escreveFase PROC
-      call Clrscr
+;Exibe as opcoes de fase
+
+	call Clrscr
 	  
-	  mov edx, OFFSET msgFase
-	  call WriteString
-  ret
+	mov edx, OFFSET msgFase01
+	call WriteString
+
+	cmp mapaPossivel, 2
+	jb acabouFases
+	mov edx, OFFSET msgFase02
+    call WriteString
+    
+    cmp mapaPossivel, 3
+    jb acabouFases
+    mov edx, OFFSET msgFase03
+    call WriteString
+    
+    cmp mapaPossivel, 4
+    jb acabouFases
+    mov edx, OFFSET msgFase04
+    call WriteString
+    
+    cmp mapaPossivel, 5
+    jb acabouFases
+    mov edx, OFFSET msgFase05
+    call WriteString
+    
+    cmp mapaPossivel, 6
+    jb acabouFases
+    mov edx, OFFSET msgFase06
+    call WriteString
+    
+    cmp mapaPossivel, 7
+    jb acabouFases
+    mov edx, OFFSET msgFase07
+    call WriteString
+    
+    cmp mapaPossivel, 8
+    jb acabouFases
+    mov edx, OFFSET msgFase08
+    call WriteString
+    
+    cmp mapaPossivel, 9
+    jb acabouFases
+    mov edx, OFFSET msgFase09
+    call WriteString
+    
+    cmp mapaPossivel, 10
+    jb acabouFases
+    mov edx, OFFSET msgFase10
+    call WriteString
+
+acabouFases:
+	ret
 escreveFase ENDP
 
 leLabirinto PROC
-      cmp mapa, 2
-	  je m2
+; Carrega o labirinto que sera jogado do arquivo para a memoria
 
-	  mov edx, offset nomeTArq
-	  jmp nPassa
+    mov edx, offset nomeArq01
+    cmp mapa, 1
+    je abreArq
+    mov edx, offset nomeArq02
+    cmp mapa, 2
+    je abreArq
+    mov edx, offset nomeArq03
+    cmp mapa, 3
+    je abreArq
+    mov edx, offset nomeArq04
+    cmp mapa, 4
+    je abreArq
+    mov edx, offset nomeArq05
+    cmp mapa, 5
+    je abreArq
+    mov edx, offset nomeArq06
+    cmp mapa, 6
+    je abreArq
+    mov edx, offset nomeArq07
+    cmp mapa, 7
+    je abreArq
+    mov edx, offset nomeArq08
+    cmp mapa, 8
+    je abreArq
+    mov edx, offset nomeArq09
+    cmp mapa, 9
+    je abreArq
+    mov edx, offset nomeArq10
+    
+abreArq:
+    call OpenInputFile
+    cmp eax, INVALID_HANDLE_VALUE
+    jne semErro
+    mov edx, offset msgErro
+    call WriteString
+	call Crlf
+	call WaitMsg
+	jmp sair
 
-	  m2: 
-	  mov edx, offset nomeTArq2
-
-	  nPassa:
-
-	  call OpenInputFile
-
-	  mov edx, offset tamanho
-	  mov ecx, 3
-	  call ReadFromFile
-      
-	  mov edx, offset tamanho
-	  movsx ecx, al 
-	  call ParseDecimal32
-
-	  mov tamanho, eax
-
-	  mov bl, al
-	  movsx bx, bl
-	  mul bl
-
-	  shl bl, 1
-	  movsx bx, bl
-	  add ax, bx
-
-	  movsx ecx, ax
-	  mov tamanhoM, ecx
-
-	  cmp mapa, 2
-	  je m3
-
-	  mov edx, offset nomeArq
-	  jmp nPassa2
-
-	  m3: 
-	  mov edx, offset nomeArq2
-
-	  nPassa2:
-
-	  call OpenInputFile
-
-	  mov ecx, tamanhoM
-	  mov edx, offset matriz
-	  call ReadFromFile
-
-	  call buscaPosicao
-	  call buscaSaida
-  ret
+semErro:
+    push eax ; deixa na pilha o file handle
+    
+    mov ecx, tamanhoM
+    mov edx, offset matriz
+    call ReadFromFile ; vai ler todo o arquivo do labirinto e salvar na matriz
+    
+    call buscaPosicao
+    call buscaSaida
+    
+    pop eax
+    call CloseFile
+	ret
 leLabirinto ENDP
 
 desliberaMapa PROC
-  mov ecx, tamanhoM
-  mov edx, offset matriz
 
-  deslibera:
-      mov al, [edx]
-	  cmp al, 35
-	  jne nMuda5
+    mov ecx, tamanhoM
+    mov edx, offset matriz
+    
+deslibera:
+    mov al, [edx]
+    cmp al, 35
+    jne nMuda5
+    
+    mov al, 2ah
+    mov [edx], al
+    
+    nMuda5: 
+    
+    inc edx
+	loop deslibera
 
-	  mov al, 2ah
-	  mov [edx], al
-
-	  nMuda5: 
-
-	  inc edx
- loop deslibera
-
- mov liberado, 0
-
- ret
-
+	mov liberado, 0
+	ret
 desliberaMapa ENDP
 
 liberaMapa PROC
-  mov ecx, tamanhoM
-  mov edx, offset matriz
 
-  libera:
-      mov al, [edx]
-	  cmp al, 2ah
-	  jne nMuda3
+	mov ecx, tamanhoM
+	mov edx, offset matriz
 
-	  mov al, 35
-	  mov [edx], al
+libera:
+    mov al, [edx]
+    cmp al, 2ah
+    jne nMuda3
+    
+    mov al, 35
+    mov [edx], al
+    
+    nMuda3: 
+    
+    inc edx
+	loop libera
 
-	  nMuda3: 
+	call escreveLabirinto
 
-	  inc edx
- loop libera
-
- call escreveLabirinto
-
- ret
+	ret
 liberaMapa ENDP
 
 buscaPosicao PROC 
-    mov ecx, tamanhoM
-    mov esi, offset matriz
-    
-	busca:
-	  mov al, [esi]
-	  cmp al, 79
-	  je sai
-	  inc esi
-	loop busca
+; Busca a posicao atual do usuario na memoria
 
-	sai:
-	  mov posicao, esi
-  ret
+	mov ecx, tamanhoM
+	mov esi, offset matriz
+
+busca:
+	mov al, [esi]
+	cmp al, 79
+	je sai
+	inc esi
+loop busca
+
+sai:
+	mov posicao, esi
+	mov posicaoVelha, esi
+
+	ret
 buscaPosicao ENDP
 
 buscaSaida PROC
-    mov ecx, tamanhoM
-    mov esi, offset matriz
-    
-	busca:
-	  mov al, [esi]
-	  cmp al, 124
-	  je sai
-	  inc esi
+; Busca a posição da saída do labirinto na memória
+	mov ecx, tamanhoM
+	mov esi, offset matriz
+	
+busca:
+	mov al, [esi]
+	cmp al, 70
+	je sai
+	inc esi
 	loop busca
-
-	sai:
-	  mov posicaoS, esi
-  ret
-   
+	
+sai:
+	mov posicaoS, esi
+	ret 
 buscaSaida ENDP
 
 escreveLabirinto PROC
-    mov ecx, tamanhoM
+; Exibe o labirinto visível para o usuario, o numero de passos, o melhor tempo e o recorde
+
+	mov ecx, tamanhoM
 	mov esi, offset matriz
 
-	passa:
-	  call escreveChar
-	  inc esi
+passa:
+	call escreveChar
+	inc esi
 	loop passa
 
-  ret
+	push edx
+	mov eax, 0
+
+	mov ah, blue
+	shr ax, 4
+	add al, yellow
+    call SetTextColor
+
+	movzx esi, mapa
+	dec esi
+	mov eax, 0
+
+	mov edx, 41h
+	call Gotoxy
+	mov edx, OFFSET msgPassos
+	call WriteString
+	mov ax, passos
+	call WriteDec
+	
+	mov edx, 0141h
+	call Gotoxy
+	mov edx, OFFSET msgPassos2
+	call WriteString
+	mov ax, seusMelhoresPassos[esi * TYPE WORD]
+	call WriteDec
+
+    mov edx, 0241h
+	call Gotoxy
+	mov edx, OFFSET msgPassos3
+	call WriteString
+	mov ax, melhoresPassos[esi * TYPE WORD]
+	call WriteDec
+    
+	mov eax, 0
+    mov ah, blue
+	shr ax, 4
+	add al, white
+    call SetTextColor
+
+	pop edx
+
+	ret
 escreveLabirinto ENDP
 
 escreveChar PROC
-    mov al,[esi]
+; Escreve o caractere especifico. Para paredes ou saída, o caractere é mudado
+
+	mov al,[esi]
 
 	cmp al, 79
 	je p
+
 
 	cmp al, 35
 	je pa
@@ -229,43 +375,52 @@ escreveChar PROC
 	cmp al, 0ah
 	je p
 
+	cmp passos, 1 ;mostra o inicio e fim por 3 passos
+	ja parede
+
+	cmp al, 73
+	je p
+
+	cmp al, 70
+	je p
 
 	jmp parede
 
-	p:
-	  call WriteChar
-	  jmp escreveu
+p:
+	call WriteChar
+	jmp escreveu
 
-	pa:
-	  mov al, 35
-	  call WriteChar
-	  jmp escreveu
+pa:
+	mov al, 35
+	call WriteChar
+	jmp escreveu
 
-	parede:
-
+parede:
 	mov al, 32
 	call WriteChar
-	
-	escreveu:
+	jmp escreveu
 
-  ret
+escreveu:
+	ret
 escreveChar ENDP
 
 movimento PROC
-  cmp direcao, 0
-  je cima
-
-  cmp direcao, 1
-  je direita
-
-  cmp direcao, 2
-  je baixo
-
-  cmp direcao, 3
-  je esquerda
-
-  cima:
-    mov edx, tamanho
+; Executa o movimento (possivel) do usuario no labirinto
+    
+    cmp direcao, 0
+    je dcima
+    
+    cmp direcao, 1
+    je ddireita
+    
+    cmp direcao, 2
+    je dbaixo
+    
+    cmp direcao, 3
+    je desquerda
+    
+dcima:
+    mov edx, tamanhoX
 	add edx, 2
 
 	mov edi, posicao
@@ -277,7 +432,7 @@ movimento PROC
     call verificaMovimento
     jmp invalido
 
-  direita:
+ddireita:
     mov edi, posicao
 	inc edi
 
@@ -289,8 +444,8 @@ movimento PROC
 	call verificaMovimento
 	jmp invalido
 
-   baixo:
-    mov edx, tamanho
+dbaixo:
+    mov edx, tamanhoX
 	add edx, 2
 
 	mov edi, posicao
@@ -305,52 +460,55 @@ movimento PROC
     call verificaMovimento
 	jmp invalido
 
-	esquerda:
-      mov edi, posicao
-	  sub edi, 1
-
-  	  mov al, [edi]
-
-	  cmp al, 0ah
-	  je invalido
-
-	  call verificaMovimento
-
-	invalido:
- 
-  ret
+desquerda:
+    mov edi, posicao
+    sub edi, 1
+    
+    mov al, [edi]
+    
+    cmp al, 0ah
+    je invalido
+    
+    call verificaMovimento
+    jmp invalido
+    
+invalido:
+	ret
 movimento ENDP
 
 verificaMovimento PROC uses EAX
+; Verifica se o movimento e possivel (nao encara uma parede)
     mov al, [edi]
     
-	cmp al, 32
-	je move
-
-	cmp al, 124
-	je move
-
-	jmp nMove
-	
-	move: 
-	  mov eax, posicao
-	  mov bl, 32
-	  mov [eax], bl
-	  mov posicao, edi
-	  mov al, 79
-	  mov [edi], al
-
-	  mov al, liberado
-	  cmp al, 1
-	  jne nMove
-
-	  call desliberaMapa
-
-	nMove: 
-	  mov ecx, 1
-	  call atualizaLabirinto
+    cmp al, 32
+    je move
     
-  ret
+	cmp al, 70
+    je move
+
+	cmp al, 73
+    je sair
+    
+    jmp nMove
+    
+move: 
+    mov eax, posicao
+    mov bl, 32
+    mov [eax], bl
+    mov posicao, edi
+    mov al, 79
+    mov [edi], al
+    
+    mov al, liberado
+    cmp al, 1
+    jne nMove
+    
+    call desliberaMapa
+    
+nMove: 
+	mov ecx, 1
+	call atualizaLabirinto
+    ret
 verificaMovimento ENDP
 
 atualizaLabirinto PROC
@@ -365,238 +523,230 @@ atualizaLabirinto PROC
 
 	jmp erro
 
-	visao2:
-	  mov eax, tamanho
-	  add eax, 2
-	  mov esi, eax
+visao2:
+	mov eax, tamanhoX
+	add eax, 2	
+	mov esi, eax
 
-	  mov edi, posicao
-	  inc edi
-	  inc edi
-	  call verificaBorda
-      cmp eax, 1
-	  jne nValido23
-	  call substituiParede
-	  nValido23:
+	mov edi, posicao
+	add edi, 2
+	call verificaBorda
+    cmp eax, 1
+	jne nValido23
+	call substituiParede
 
-	  sub edi, 4
-	  call verificaBorda
-      cmp eax, 1
-	  jne nValido24
-	  call substituiParede
-	  nValido24:
+nValido23:
+	sub edi, 4
+	call verificaBorda
+    cmp eax, 1
+	jne nValido24
+	call substituiParede
 
-	  mov edi, posicao
-	  add edi, esi
-	  add edi, esi
-	  call verificaBorda
-	  cmp eax, 1
-	  jne nValido9
-      call substituiParede
-	  nValido9:
+nValido24:
+	mov edi, posicao
+	add edi, esi
+	add edi, esi
+	call verificaBorda
+	cmp eax, 1
+	jne nValido9
+    call substituiParede
 
-	  inc edi
-	  call verificaBorda
-      cmp eax, 1
-	  jne nValido10
-	  call substituiParede
-	  nValido10:
+nValido9:
+	inc edi
+	call verificaBorda
+    cmp eax, 1
+	jne nValido10
+	call substituiParede
+	
+nValido10:
+	inc edi
+	call verificaBorda
+    cmp eax, 1
+	jne nValido11
+	call substituiParede
 
-	  inc edi
-	  call verificaBorda
-      cmp eax, 1
-	  jne nValido11
-	  call substituiParede
-	  nValido11:
+nValido11:
+	sub edi, 3
+	call verificaBorda
+    cmp eax, 1
+	jne nValido12
+	call substituiParede
 
-	  sub edi, 3
-	  call verificaBorda
-      cmp eax, 1
-	  jne nValido12
-	  call substituiParede
-	  nValido12:
+nValido12:
+	sub edi, 1
+	call verificaBorda
+    cmp eax, 1
+	jne nValido13
+	call substituiParede
 
-	  sub edi, 1
-	  call verificaBorda
-      cmp eax, 1
-	  jne nValido13
-	  call substituiParede
-	  nValido13:
+nValido13:
+	mov edi, posicao
+	sub edi, esi
+	sub edi, esi
+	call verificaBorda
+	cmp eax, 1
+	jne nValido14
+    call substituiParede
+	
+nValido14:
+	inc edi
+	call verificaBorda
+    cmp eax, 1
+	jne nValido15
+	call substituiParede
+	
+nValido15:
+	inc edi
+	call verificaBorda
+    cmp eax, 1
+	jne nValido16
+	call substituiParede
+	
+nValido16:
+	sub edi, 3
+	call verificaBorda
+    cmp eax, 1
+	jne nValido17
+	call substituiParede
+	
+nValido17:
+	sub edi, 1
+	call verificaBorda
+    cmp eax, 1
+	jne nValido18
+	call substituiParede
+	
+nValido18:
+	mov edi, posicao
+	sub edi, esi
 
-	  mov edi, posicao
-	  sub edi, esi
-	  sub edi, esi
-	  call verificaBorda
-	  cmp eax, 1
-	  jne nValido14
-      call substituiParede
-	  nValido14:
+	add edi, 2
+	call verificaBorda
+    cmp eax, 1
+	jne nValido19
+	call substituiParede
+	
+nValido19:
+	sub edi, 4
+	call verificaBorda
+    cmp eax, 1
+	jne nValido20
+	call substituiParede
+	
+nValido20:
+	mov edi, posicao
+	add edi, esi
 
-	  inc edi
-	  call verificaBorda
-      cmp eax, 1
-	  jne nValido15
-	  call substituiParede
-	  nValido15:
+	add edi, 2
+	call verificaBorda
+    cmp eax, 1
+	jne nValido21
+	call substituiParede
+	
+nValido21:
+	sub edi, 4
+	call verificaBorda
+    cmp eax, 1
+	jne visao1
+	call substituiParede
+	
+visao1: 
+	mov eax, tamanhoX
+	add eax, 2
+	mov esi, eax
 
-	  inc edi
-	  call verificaBorda
-      cmp eax, 1
-	  jne nValido16
-	  call substituiParede
-	  nValido16:
+	mov edi, posicao
+	add edi, esi
+	call verificaBorda
+	cmp eax, 1
+	jne nValido1
+    call substituiParede
+	
+nValido1:
+	inc edi
+	call verificaBorda
+    cmp eax, 1
+	jne nValido2
+	call substituiParede
+	
+nValido2:
+	sub edi, 2
+	call verificaBorda
+    cmp eax, 1
+	jne nValido3
+	call substituiParede
+	
+nValido3:
+	mov edi, posicao
+	sub edi, esi
+	call verificaBorda
+    cmp eax, 1
+	jne nValido4
+	call substituiParede
+	
+nValido4:
+	inc edi
+	call verificaBorda
+    cmp eax, 1
+	jne nValido5
+	call substituiParede
+	
+nValido5:
+	sub edi, 2
+	call verificaBorda
+    cmp eax, 1
+	jne nValido6
+	call substituiParede
+	
+nValido6:
+	mov edi, posicao
 
-	  sub edi, 3
-	  call verificaBorda
-      cmp eax, 1
-	  jne nValido17
-	  call substituiParede
-	  nValido17:
-
-	  sub edi, 1
-	  call verificaBorda
-      cmp eax, 1
-	  jne nValido18
-	  call substituiParede
-	  nValido18:
-
-	  mov edi, posicao
-	  sub edi, esi
-
-	  inc edi
-	  inc edi
-	  call verificaBorda
-      cmp eax, 1
-	  jne nValido19
-	  call substituiParede
-	  nValido19:
-
-	  sub edi, 4
-	  call verificaBorda
-      cmp eax, 1
-	  jne nValido20
-	  call substituiParede
-	  nValido20:
-
-	  mov edi, posicao
-	  add edi, esi
-
-	  inc edi
-	  inc edi
-	  call verificaBorda
-      cmp eax, 1
-	  jne nValido21
-	  call substituiParede
-	  nValido21:
-
-	  sub edi, 4
-	  call verificaBorda
-      cmp eax, 1
-	  jne nValido22
-	  call substituiParede
-	  nValido22:
-
-	visao1: 
-	  mov eax, tamanho
-	  add eax, 2
-	  mov esi, eax
-
-	  mov edi, posicao
-	  add edi, esi
-	  call verificaBorda
-	  cmp eax, 1
-	  jne nValido1
-      call substituiParede
-	  nValido1:
-
-	  inc edi
-	  call verificaBorda
-      cmp eax, 1
-	  jne nValido2
-	  call substituiParede
-	  nValido2:
-
-	  sub edi, 2
-	  call verificaBorda
-      cmp eax, 1
-	  jne nValido3
-	  call substituiParede
-	  nValido3:
-
-	  mov edi, posicao
-	  sub edi, esi
-	  call verificaBorda
-      cmp eax, 1
-	  jne nValido4
-	  call substituiParede
-	  nValido4:
-
-	  inc edi
-	  call verificaBorda
-      cmp eax, 1
-	  jne nValido5
-	  call substituiParede
-	  nValido5:
-
-	  sub edi, 2
-	  call verificaBorda
-      cmp eax, 1
-	  jne nValido6
-	  call substituiParede
-	  nValido6:
-
-	  mov edi, posicao
-
-	  inc edi
-	  call verificaBorda
-      cmp eax, 1
-	  jne nValido7
-	  call substituiParede
-	  nValido7:
-
-	  sub edi, 2
-	  call verificaBorda
-      cmp eax, 1
-	  jne nValido8
-	  call substituiParede
-	  nValido8:
-
+	inc edi
+	call verificaBorda
+    cmp eax, 1
+	jne nValido7
+	call substituiParede
+	
+nValido7:
+	sub edi, 2
+	call verificaBorda
+    cmp eax, 1
+	jne nValido8
+	call substituiParede
+	
+nValido8:
 	jmp erro
 
-	erro:
-
-  ret 
+erro:
+	ret 
 atualizaLabirinto ENDP
 
 substituiParede PROC
-   cmp ecx, 1
-   je mostra
-
+	cmp ecx, 1
+	je mostra
+    
     mov al, [edi]
     cmp al, 35
-	jne nMuda
+    jne nMuda
+    
+    mov al, 42
+    mov [edi], al
+    
+nMuda:
+    jmp fim3
 
-	mov al, 42
-	mov [edi], al
-
-	nMuda:
-
-	jmp fim3
-
-  mostra:
-
-      mov al, [edi]
-	  cmp al, 42
-	  jne nMuda2
-
-	  mov al, 35
-	  mov [edi], al
-
-	  nMuda2:
+mostra:
+    mov al, [edi]
+    cmp al, 42
+    jne nMuda2
+    
+    mov al, 35
+    mov [edi], al
+    
+nMuda2:
   
-  fim3:
-
-  ret
+fim3:
+	ret
 substituiParede ENDP
 
 verificaBorda PROC uses esi
@@ -621,134 +771,327 @@ verificaBorda PROC uses esi
 	mov eax, 1
 	jmp s2
 
-	fora:
+fora:
 
-	  mov eax, 0 
+	mov eax, 0 
 
-	s2:
-  ret
+s2:
+	ret
 verificaBorda ENDP
 
-jogaLabirinto PROC
-	menuInicial:
-	  call escreveMenu
-	  
-	  call ReadInt
-	  jc menuInicial
-
-	  cmp eax, 1
-	  je dif
-
-	  jmp sair
-
-    dif:
-	  call escreveDificuldade
-
-	  call ReadInt
-	  jc dif
-
-	  cmp eax, 1
-	  je v1
-
-	  cmp eax, 2
-	  je v2
-
-	  cmp eax, 0
-	  je menuInicial
-
-	  v1:
-	    mov visao, 2
-		jmp fase
-	  
-	  v2: 
-	    mov visao, 1
-		jmp fase
-
-	  fase:
-
-	  call escreveFase
-
-	  call ReadInt
-	  jc fase
-
-	  cmp eax, 0
-	  je menuInicial
-
-	  mov mapa, al
-
-	jogo:
-	  call leLabirinto
-	  mov ecx, 1
-	  call atualizaLabirinto
-
-	  continua:
-	    call Clrscr
-        call escreveLabirinto
-;		mov eax, posicao
-;	    cmp eax, posicaoS
-
-		call ReadChar
-		
-		cmp ah, 48h
-		je mCima
-
-		cmp ah, 50h
-		je mBaixo
-
-		cmp ah, 4Dh
-		je mDireita
-
-		cmp ah, 4Bh
-		je mEsquerda
-
-		cmp al, 108
-		je mLibera
-
-		jmp inv
-
-		mCima: 
-		  mov dl, 0
-		  mov direcao, dl
-		  jmp m
-		
-	    mBaixo:
-		  mov dl, 2
-		  mov direcao, dl
-		  jmp m
-		
-		mDireita:
-		  mov dl, 1
-		  mov direcao, dl
-		  jmp m
-		  
-		mEsquerda:
-		  mov dl, 3
-		  mov direcao, dl 
-		  jmp m
-
-		mLibera:
-		  call liberaMapa
-		  mov liberado, 1
-		  jmp continua
-	   m: 
-	      mov ecx, 0
-          call atualizaLabirinto
-		  
-	      call movimento
-
-		  mov eax, posicao
-		  cmp eax, posicaoS
-		  je fim
-
-	   inv:
 
 
-       jmp continua
-	fim:
+mostraPontuacao PROC
+    mov eax, 0
+	mov ebx, 50 ; tempo para esperar
+    mov esi, offset msgPont
+	mov ecx, SIZEOF msgPont
+mostra:
+	mov al, [esi]
+	call WriteChar
+	inc esi
+	call esperaXms
+	loop mostra
 
-	  call liberaMapa
-	  call ReadKey
+	mov ebx, 2000
+	call esperaXms
+	mov ebx, 50 
+
+	call Crlf
+    mov esi, offset msgPont2
+	mov ecx, SIZEOF msgPont2
+mostra2:
+	mov al, [esi]
+	call WriteChar
+	inc esi
+	call esperaXms
+	loop mostra2
+
+	mov ax, passos
+	call WriteDec
+
+
+    mov esi, offset msgPont3
+	mov ecx, SIZEOF msgPont3
+mostra3:
+	mov al, [esi]
+	call WriteChar
+	inc esi
+	call esperaXms
+	loop mostra3
+
+	movzx esi, mapa
+	dec esi
+	mov ax, seusMelhoresPassos[esi * TYPE WORD]
+	call WriteDec
+
+	cmp passos, ax
+	jae naoMuda
+	mov ax, passos
+	mov seusMelhoresPassos[esi * TYPE WORD], ax
+
+naoMuda:
+	mov ebx, 2000
+	call esperaXms
+	call Crlf
+
+	mov edx, offset nomeArq11
+
+    call OpenInputFile
+    cmp eax, INVALID_HANDLE_VALUE
+    jne semErro
+    mov edx, offset msgErro
+    call WriteString   
+
+semErro:
+    push eax ; deixa na pilha o file handle
     
-	sair:
+    mov ecx, 400
+    mov edx, offset matriz
+    call ReadFromFile ; 
+
+	mov ax, passos
+	mov bx, 100
+	mul bx
+	movzx esi, mapa
+	dec esi
+	mov bx, melhoresPassos[esi * TYPE WORD] ; esi = , mapa-1
+	mov dx, 0
+	div bx
+	sub ax, 100
+
+	mov dx, ax
+	mov ax, 0
+	mov ah, blue
+	shr ax, 4
+	
+	cmp dx, 5
+	jb cor1
+	cmp dx, 30
+	jb cor2
+	cmp dx, 60
+	jb cor3
+	jmp semcor
+
+cor1:
+	mov edx, offset msgPont5
+	add al, yellow
+	jmp mudacor
+cor2:
+	mov edx, offset msgPont6
+	add al, gray
+	inc mapaPossivel ; aumenta o mapa possivel
+	jmp mudacor
+cor3:
+	mov edx, offset msgPont7
+	add al, magenta
+	jmp mudacor
+semcor:
+	mov edx, offset msgPont4
+	jmp semMedalha
+mudacor:
+	call SetTextColor
+
+	mov ecx, 400
+	mov esi, offset matriz
+mostra4:
+	mov al, [esi]
+	call WriteChar
+	inc esi
+	loop mostra4
+    
+    pop eax
+	push edx
+    call CloseFile
+	pop edx
+
+	mov ah, blue
+	shr ax, 4
+	add al, white
+    call SetTextColor
+
+semMedalha:
+	call Crlf
+	call WriteString
+	call Crlf
+	call ReadInt ;esvazia buffer
+	mov ebx, 3000
+	call esperaXms
+
+    ret
+mostraPontuacao ENDP
+
+esperaXms PROC USES EAX EDX
+; Recebe em EBX o numero de milisegundos para esperar
+    call GetMseconds
+	mov edx, eax
+
+espera:
+	call GetMseconds
+	sub eax, edx
+	cmp eax, ebx
+	ja fim
+	jmp espera
+
+fim:
+	ret
+esperaXms ENDP
+
+jogaLabirinto PROC
+
+    mov eax, 0
+    mov ah, blue
+	shr ax, 4
+	add al, white
+    call SetTextColor
+
+menuInicial:
+	call escreveMenu
+	call escreveOpcao
+	
+	call ReadInt
+	jc menuInicial
+
+	cmp eax, 1
+	je dif
+
+	jmp voltar
+
+dif:
+	call escreveDificuldade
+	call escreveOpcao
+
+	call ReadInt
+	jc dif
+
+	cmp eax, 1
+	je v1
+
+	cmp eax, 2
+	je v2
+
+	cmp eax, 0
+	je menuInicial
+
+  v1:
+	mov visao, 2
+	jmp fase
+	
+  v2: 
+	mov visao, 1
+	jmp fase
+
+fase:
+
+	call escreveFase
+	call escreveOpcao
+
+	call ReadInt
+	jc fase
+
+	cmp eax, 0
+	je menuInicial
+
+	mov mapa, al
+	mov dl, mapaPossivel
+	cmp mapa, dl
+	jbe jogo
+	call Crlf
+	mov edx, offset msgErro2
+	call WriteString
+	call WaitMsg
+	jmp fase
+	
+
+jogo:
+	call leLabirinto
+	mov ecx, 1
+	call atualizaLabirinto
+	mov passos, 0	
+
+continua:
+	mov eax, posicaoVelha
+	cmp eax, posicao
+	je naoConta
+    inc passos
+	mov eax, posicao
+	mov posicaoVelha, eax
+  naoConta:
+	mov dx, 0
+	call Gotoxy
+    call escreveLabirinto
+ 
+ volta:   
+    call ReadChar
+    
+    cmp ah, 48h
+    je mCima
+    
+	cmp ah, 50h
+    je mBaixo
+    
+    cmp ah, 4Dh
+    je mDireita
+    
+    cmp ah, 4Bh
+    je mEsquerda
+    
+    cmp al, 108
+    je mLibera
+    
+    jmp volta
+    
+  mCima: 
+    mov dl, 0
+    mov direcao, dl
+    jmp m
+    
+  mBaixo:
+    mov dl, 2
+    mov direcao, dl
+    jmp m
+    
+  mDireita:
+     mov dl, 1
+     mov direcao, dl
+     jmp m
+     
+  mEsquerda:
+	mov dl, 3
+	mov direcao, dl 
+	jmp m
+    
+  mLibera:
+	call liberaMapa
+	mov liberado, 1
+	jmp continua
+
+  m: 
+    mov ecx, 0
+    call atualizaLabirinto
+    
+    call movimento
+    
+    mov eax, posicao
+    cmp eax, posicaoS
+    je fim
+    
+    jmp continua
+
+fim:
+	call Clrscr
+	call mostraPontuacao
+	;call liberaMapa
+	;call ReadKey
+    
+sair::
+	jmp fase
+
+voltar:
+	mov eax, 0
+    mov ah, black
+	shr ax, 4
+	add al, white
+    call SetTextColor
 	ret
 jogaLabirinto ENDP
