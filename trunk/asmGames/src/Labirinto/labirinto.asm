@@ -71,7 +71,6 @@ msgPont5 BYTE "VOCE OBTEVE UMA MEDALHA DE OURO :D ", 0dh, 0ah, 0
 msgPont6 BYTE "VOCE OBTEVE UMA MEDALHA DE PRATA :) ", 0dh, 0ah, 0
 msgPont7 BYTE "VOCE OBTEVE UMA MEDALHA DE BRONZE :| ", 0dh, 0ah, 0
 
-pontuacao WORD 10 DUP (0)
 passos WORD 0
 seusMelhoresPassos WORD 10 DUP (1000)
 melhoresPassos WORD 141, 101, 102, 103, 104, 100, 100, 100, 100, 100

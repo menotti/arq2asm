@@ -9,7 +9,7 @@ INCLUDE macros.inc
 INCLUDE forca/forca.asm
 INCLUDE GeeckoGames/GeeckoGamesSokoban.asm
 INCLUDE SpaceInvaders/Space_Invaders.asm
-;INCLUDE Labirinto/labirinto.asm
+INCLUDE Labirinto/labirinto.asm
 Include Snake/snake.asm
 INCLUDE Frogger/Frogger.asm
 
@@ -57,7 +57,7 @@ SpaceInv:
 Labirinto: 	
 	cmp eax, 4
 	jne Grupo5
-	;call jogaLabirinto 
+	call jogaLabirinto 
 
 Grupo5: ;seguir exemplo acima	
 	cmp eax, 5
