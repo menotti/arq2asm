@@ -9,7 +9,7 @@ YMAXIMO = 22
 XMAXIMO = 79
 COMIDA = 178
 VAZIO = 255
-PONTO = 254
+PONTO = 219
 cobraPontosX BYTE 20, 21, 22, 1700 dup (?)
 cobraPontosY BYTE 5, 5, 5, 1700 dup (?)
 contPontosCobra WORD 3
