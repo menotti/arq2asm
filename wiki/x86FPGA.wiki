@@ -17,12 +17,26 @@ Vamos descrever abaixo passo a passo como deve ser realizado este procedimento, 
 ----
 
 == Antes de Começar ==
+=== Periféricos ===
+Obviamente é necessário que você possua uma placa Altera DE2-115 mas além dela são necessários alguns itens para que possamos utilizar o Zet:
+  * Monitor com entrada vga
+  * Cabo vga
+  * Teclado PS2
+  * Mouse PS2
+  * Cartão SD de até 2GB _(no site do Zet está escrito que 2GB é o máximo suportado, não sabemos se isso realmente acontece)_
+
 === Quartus II ===
 Utilizamos a versão do *Quartus II 12.1 _Web Edition_* disponível no site do [http://www.altera.com/index.jsp Altera] que pode ser encontrada [https://www.altera.com/download/dnl-index.jsp aqui]. 
 Basta clicar na versão Windows ou Linux, baixar o instalador e durante o processo de instalação mudar para a versão *free*! Lembrando que é necessário ter um cadastro para realizar o download e para utilizar o Quartus II, mesmo que seja na versão free, caso contrário o mesmo não fará a compilação dos seus projetos.
 
 _Observação: Para deixar sua licença funcional é necessário abrir o Quartus II, ir em *Tools/License Setup* clicar em Web License Update e escolher para realizar seu cadastro, após preencher todos os dados (será necessário inclusive o MAC Address da sua placa de rede) um arquivo .dat será enviado ao seu e-mail, baixe-o e atualize o arquivo dentro da opção License Setup do Quartus II._
 
+=== DE2-115 Control Panel ===
+
+O Control Panel é um software fornecido pelo Altera que funciona como um painel de controles para configurar e testar a placa, vamos utilizá-lo para escrever na memória FLASH e também para verificar se todas as entradas reconheceram os periféricos instalados.
+Ele pode ser encontrado no CD que vem junto com a placa, mas também pode ser obtido [http://www.terasic.com.tw/cgi-bin/page/archive.pl?Language=English&CategoryNo=139&No=502&PartNo=4 aqui] em sua ultima versão.
+Utilizamos a versão mais atualizada neste guia que é a v.1.0.6, após extrair o arquivo é possível encontrar o executável na pasta:
+  * _DE2-115_V.1.0.6_SystemCD\DE2_115_tools\DE2_115_control_panel_
 
 === Preparando os arquivos ===
 Recomendamos que seja criado uma pasta onde você deverá realizar o download de todos os arquivos necessários para que possamos implementar o Zet.
@@ -39,3 +53,4 @@ Recomendamos que seja criado uma pasta onde você deverá realizar o download de
   * *[http://zet.aluzina.org/images/9/9c/C.img.zip Hard Disk Image]*: _Extrair o arquivo *c.img* para a pasta._
 
 Estes são os arquivos necessários para fazer nosso processador Zet funcionar!
+----
