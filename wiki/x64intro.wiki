@@ -1,27 +1,36 @@
  = Introdução: =
 
-Como os PC’s não param de evoluir, a arquitetura também continua a evoluir, nesse caso para um PC de 64bits, que é genericamente conhecido como x64, a primeira empresa a cria-lo foi a AMD, hoje é conhecido por AMD64, a Intel também criou a dela e chamou de EMT64, ambas possuem apenas algumas pequenas diferenças, mas a maioria do código pode ser implementado em ambos, e a esse tipo de código foi dado o nome de flavor x64.
-É necessário um bom conhecimento de Assembly, pois boa parte do programa será escrito nele e além do mais é útil na hora de debuggar o código, pois o código em C++ pode produzir um código incorreto em Assembly e comprometer o funcionamento do programa, nesse caso um bom conhecimento da linguagem ajudará o programador a encontrar e consertar o erro.
+O rápido avanço tecnológico da computação no século XXI cria margem para computadores cada vez mais rápidos e poderosos. Só que esse avanço encontrou uma barreira na própria arquitetura dos processadores: palavras de 32 bits só poderiam acessar até 4GB de memoria RAM. Foi para resolver esse problema que a Intel projetou a arquitetura conhecida como x64. A primeira implementação desse tipo de arquitetura foi da empresa AMD,com a arquitetura hoje conhecida por AMD64,logo depois a Intel criou a EMT64, ambas possuem apenas algumas pequenas diferenças, mas a maioria do código pode ser implementado em ambos, e a esse tipo de código foi dado o nome de flavor x64.
+É necessário um bom conhecimento de Assembly para entende-la, pois boa parte do programa será escrito nele e além do mais é útil na hora de debuggar o código, pois o código em C++ pode produzir um código incorreto em Assembly e comprometer o funcionamento do programa, nesse caso um bom conhecimento da linguagem ajudará o programador a encontrar e consertar o erro. A x64 pode emular e usa muito das arquiteturas de 32 bits da Intel, logo, conhecimento prévio do Assembly das mesmas ajuda muito na programação.
 
  = Arquitetura: =
 
-Inicialmente agora temos mais bits para trabalhar, além dos já conhecidos da versão de 32 bits, agora temos um Double Quadword de 128 bits para utilizarmos. Antes havia a letra “E” ligada aos registradores para indicar que eram de 32 bits, agora utiliza-se a letra “R” para tal, com isso os oito registadores já conhecidos permanecem do mesmo modo, mas como um R no inicio.
+Inicialmente agora temos mais bits para trabalhar, além dos tipos de dados já conhecidas da versão de 32 bits (byte,word,doubleword e quadword), agora temos um double quadword de 128 bits para utilizarmos. Antes havia a letra “E” ligada aos registradores para indicar que eram de 32 bits, agora utiliza-se a letra “R” para tal, com isso os oito registadores já conhecidos permanecem do mesmo modo, mas como um R no lugar do E no início.
 Com o aumento na capacidade também foram criados 8 novos registadores, que diferente dos outros 8, não possuem um nome, mas sim uma indicação numérica, vão de R8 até R15, uma diferença entre os dois “grupos” de registadores é que para utilizar as partes com menos bits, nos 8 primeiros permanece igual, substitui o R por E ou o X por H ou L, já nos novos registradores para se usar os outros tamanhos deve-se seguir a seguinte notação R8(quadword), R8D(lower dword), R8W(lowest word) e R8B(lowest byte) equivale ao R8L na arquitetura Intel e não existe R8H.
 Para poder acessar a parte alta, AH, por exemplo, é necessário usar o prefixo REX seguido de BPL, SPL, DIL ou SIL para acessar AH, BH, CH e DH respectivamente.
-O instruction pointer, RIP, funciona do mesmo modo que o de 32 bits, mas agora para 64 bits, o stack pointer, RSP aponta para o ultimo item a sofre um push na pilha e serve para guardar endereços de retorno para sub-rotinas, para passar parâmetros para linguagens de alto nível.
+O instruction pointer, RIP, funciona do mesmo modo que o de 32 bits, mas agora para 64 bits. O stack pointer, RSP aponta para o ultimo item a sofrer um push na pilha e serve para guardar endereços de retorno para sub-rotinas e para passar parâmetros para linguagens de alto nível.
 Temos ainda o RFLAGS que como o próprio nome diz, guarda os flags do programa, os flags mais importantes são:
-Carry, bit 0                Operação necessita ou gera um carry.
-Paridade, bit 2          O ultimo byte tem um numero igual de 1’s, senão 0.
-Ajuste, bit 4               Denota código binário convertido para decimal no byte de  carry.
-Zero, bit 6                 Se o resultado for igual a zero.
-Sinal, bit 7                 Se o bit mais significativo for 1.
-Overflow, bit 11         Se ocorreu overflow em uma operação com sinal.
-Direção, bit 10           A direção que as instruções operam, incremental ou decremental.
-Identificação, bit 21   Sua alteração denota a presença de uma instrução CPUID.
+||Carry, bit 0||Operação necessita ou gera um carry||
+||Paridade, bit 2||O ultimo byte tem um numero igual de 1’s, senão 0||
+||Ajuste, bit 4||Denota código binário convertido para decimal no byte de  carry||
+||Zero, bit 6||Se o resultado for igual a zero||
+||Sinal, bit 7||Se o bit mais significativo for 1||
+||Overflow, bit 11||Se ocorreu overflow em uma operação com sinal||
+||Direção, bit 10||A direção que as instruções operam, incremental ou decremental||
+||Identificação, bit 21||Sua alteração denota a presença de uma instrução CPUID||
 
 A unidade de ponto flutuante(FPU) possui 8 registradores próprios FPR0 – FPR7, registradores de status e controle, e outros mais especializados, o registrador FPR7 pode guardar um dos valore mostrados na tabela abaixo:
 
-Os últimos registradores incluem, registradores de segmento, quase não utilizados em x64, registradores de controle, gerenciamento de memoria, registradores de debug, registrador de virtualização, registrador de performance que busca todo tipo de parâmetro interno.
+||*Tipo de dado*||*Tamanho*||*Precisão(bits)*||*Precisão em dígitos decimais*||*Capacidade decimal*||
+||Precisão simples||32||24||7||1,18*10^-38 a 3,40*10^38||
+||Precisão dupla||64||53||15||2,23*10^-308 a 1,79*10^308||
+||Precisão extendida||80||64||19||3,37*10^-4932 a 1.18*10^4932||
+
+Os 16 registradores XMM (eram 8 na x86)de 128 bits são citados mais adiante. 
+
+Outros registradores incluem registradores de segmento, quase não utilizados em x64, registradores de controle, de gerenciamento de memoria, de debug, registrador de virtualização e registradores de performance que buscam todo tipo de parâmetro interno.
+
+Maiores detalhes no manual da Intel disponível em: http://www.intel.com/content/www/us/en/processors/architectures-software-developer-manuals.html
 
  = Arquitetura SIMD =
 
