@@ -66,6 +66,7 @@ Ligue a placa na energia e também no usb do seu computador, então aperte o bot
 Não selecione nenhuma das pastas dentro de _drivers_ ou o driver não será reconhecido!
 
 === Criando a imagem da HD ===
+*_Recomendamos fortemente utilizar Linux nesta etapa! Utilizamos o Ubuntu ;)_*
 
 No *Linux* é muito simples de realizar este passo, utilizando o terminal, navegue até a pasta onde está localizado o arquivo _c.img_ e execute o seguinte comando:
 {{{
@@ -73,9 +74,7 @@ dd if=./c.img of=/dev/sdc
 }}}
 _Observação: nem sempre o cartão estará em *sdc*, verifique antes de exceutar o comando_
 
-No *Windows* é necessário utilizar um programa chamado [http://www.winimage.com/ WinImage], a versão do site é trial e funciona apenas 30 dias, com um pouco de esforço é possível achar a versão "[http://torrentz.eu/6977435afaa316876887cd018e102e35264412fc completa]". ;)
-
-=== ENSINAR A USAR O WINIMAGE (falta editar) === 
+No *Windows* é necessário utilizar um programa chamado [http://www.winimage.com/ WinImage], a versão do site é trial e funciona apenas 30 dias, com um pouco de esforço é possível achar a versão "[http://torrentz.eu/6977435afaa316876887cd018e102e35264412fc completa]". Nós não conseguimos entender como ele funciona, muito menos escrever corretamente no cartão SD utilizando ele, portanto fica por sua conta e risco.
 
 === Carregando arquivos na FLASH da DE2-115 ===
 
@@ -111,7 +110,7 @@ Pronto! Já carregamos os arquivos necessários na memória FLASH da DE2-115, po
 
 Vamos abrir o projeto *_kotku.qpf_* localizado em _Zet-1.2.0\boards\altera-de2-115\syn_ no Quartus II. Após aberto, temos de compilá-lo, lembrando que caso você esteja usando a ultima versão do Quartus II é necessário estar com sua licença cadastrada, caso contrário ele não irá compilar! Clique em _Processing/Start Compilation_ ou simplesmente aperte _CTRL+L_. O processo de compilação é demorado, favor aguardar, já estamos quase no final!
 
-Após compilado, vamos carregar o programa na DE2-115, abra o _Tools/Programmer_ e clique em _Start_! Pronto, nosso processador Zet já está funcionando!
+Após compilado, vamos carregar o programa na DE2-115, abra o _Tools/Programmer_ e clique em _Start_ ! Pronto, nosso processador Zet já está funcionando!
 
 === Algumas observações ===
   * A chave *SW0* é o _Power ON/OFF_ utilize-a para ligar e desligar seu processador Zet.
