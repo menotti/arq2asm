@@ -11,7 +11,7 @@ INCLUDE GeeckoGames/GeeckoGamesSokoban.asm
 INCLUDE SpaceInvaders/Space_Invaders.asm
 ;INCLUDE Labirinto/labirinto.asm
 Include Snake/snake.asm
-;INCLUDE Frogger/Frogger.asm
+INCLUDE Frogger/Frogger.asm
 
 .data
 
@@ -26,8 +26,8 @@ myMenu	BYTE	80 dup ('='),
 				'5 - Grupo...', 13, 10,
 				'6 - Frogger', 13, 10,
 				'7 - Snake', 13, 10,
-				'0 - Sair!', 13, 10,
-				'Opcao:', 0
+				'0 - Sair!', 13, 10, 13, 10,
+				'Opcao: ', 0
 .code
 
 main PROC
@@ -67,8 +67,7 @@ Grupo5: ;seguir exemplo acima
 Frogger:
 	cmp eax, 6
 	jne SnakeGame
-
-	;call FROG_InitJogo
+	call FROG_InitJogo
 
 SnakeGame:
 	cmp eax, 7
