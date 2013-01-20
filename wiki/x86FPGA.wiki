@@ -67,7 +67,57 @@ Não selecione nenhuma das pastas dentro de _drivers_ ou o driver não será rec
 
 === Criando a imagem da HD ===
 
-No Linux é muito mais simples de realizar este passo, 
+No *Linux* é muito simples de realizar este passo, utilizando o terminal, navegue até a pasta onde está localizado o arquivo _c.img_ e execute o seguinte comando:
+{{{
+dd if=./c.img of=/dev/sdc
+}}}
+_Observação: nem sempre o cartão estará em *sdc*, verifique antes de exceutar o comando_
+
+No *Windows* é necessário utilizar um programa chamado [http://www.winimage.com/ WinImage], a versão do site é trial e funciona apenas 30 dias, com um pouco de esforço é possível achar a versão "[http://torrentz.eu/6977435afaa316876887cd018e102e35264412fc completa]". ;)
+
+=== ENSINAR A USAR O WINIMAGE (falta editar) === 
+
+=== Carregando arquivos na FLASH da DE2-115 ===
+
+Agora vamos utilizar o *Control Panel*. Antes de abrir o executável, temos de abrir o arquivo _DE2_115_ControlPanel.sof_ no Quartus II e carregá-lo na DE2-115. Ao abrir o arquivo a janela _Programmer_ já será aberta automaticamente, basta clicar em _Start_, mas caso ela não apareça, é possível encontrá-la em _Tools/Programmer_.
+
+Todos os _leds_ e filamentos dos _displays_ estarão acesos, agora já é possível abrir o executável _DE2_115_ControlPanel.exe_. Pode fechar o Quartus II pois o programa já está carregado na placa.
+
+Vamos realizar os testes para ver se tudo está sendo reconhecido corretamente:
+  * Cartão SD
+    # Insira o cartão SD na lateral esquerda da placa, fica na parte de baixo.
+    # Clique em *SD CARD* no Control Panel. 
+    # Clique em *Read* e verifique se ele reconhece o cartão.
+
+  * Outros testes podem ser realizados, fique à vontade para mexer no Control Panel.
+
+Agora vamos carregar os arquivos na memória FLASH:
+  # Clique em *Memory*.
+  # Em _Memory Type_ escolha *_FLASH(400000h WORDS, 8MB)_*.
+  # Clique em *Chip Erase (75 sec)*.
+  # Aguarde o processo terminar.
+  # Em Sequential Write selecione a box _*File Length*_.
+  # Clique em _Write a File to Memory_.
+  # Escolha o arquivos *_bios.rom_* localizado na pasta _Zet-1.2.0\src\bios_.
+  # Aguarde o processo terminar.
+  # Agora no _Address_ também dentro de _Sequential Write_ vamos mudá-lo para *00020000* _(4 zeros depois do 2)._
+  # Clique em _Write a File to Memory_.
+  # Escolha agora o arquivo *_a-zet.img_*
+  # Aguarde o processo terminar.
+
+Pronto! Já carregamos os arquivos necessários na memória FLASH da DE2-115, pode fechar o Control Panel.
+
+=== Carregar o programa do Zet ===
+
+Vamos abrir o projeto *_kotku.qpf_* localizado em _Zet-1.2.0\boards\altera-de2-115\syn_ no Quartus II. Após aberto, temos de compilá-lo, lembrando que caso você esteja usando a ultima versão do Quartus II é necessário estar com sua licença cadastrada, caso contrário ele não irá compilar! Clique em _Processing/Start Compilation_ ou simplesmente aperte _CTRL+L_. O processo de compilação é demorado, favor aguardar, já estamos quase no final!
+
+Após compilado, vamos carregar o programa na DE2-115, abra o _Tools/Programmer_ e clique em _Start_! Pronto, nosso processador Zet já está funcionando!
+
+=== Algumas observações ===
+  * A chave *SW0* é o _Power ON/OFF_ utilize-a para ligar e desligar seu processador Zet.
+  * Os leds estão exibindo FEld e no monitor está escrito: _No more devices to boot - System halted._
+Neste caso a imagem do HD não foi escrito corretamente no cartão SD, é um problema usual, aqui nós simplesmente desistimos de entender como funciona o WinImage e partimos para o Ubuntu, utilizamos o comando no terminal e tudo funcionou corretamente, ele deixa apenas 50MB do cartão particionado como FAT16 e o resto não alocado.
+
 
 ----
 
@@ -88,4 +138,4 @@ As 3 instruções não implementadas são wait, esc e lock, essas instruções f
 == Visão Geral ==
 
 === Aprovado por Cthulhu ===
-http://img838.imageshack.us/img838/8921/cthulhuv.jpg
+[http://en.wikipedia.org/wiki/Cthulhu http://img838.imageshack.us/img838/8921/cthulhuv.jpg]
