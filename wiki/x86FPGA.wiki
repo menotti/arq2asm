@@ -116,7 +116,13 @@ Após compilado, vamos carregar o programa na DE2-115, abra o _Tools/Programmer_
   * A chave *SW0* é o _Power ON/OFF_ utilize-a para ligar e desligar seu processador Zet.
   * Os leds estão exibindo FEld e no monitor está escrito: _No more devices to boot - System halted._
 Neste caso a imagem do HD não foi escrito corretamente no cartão SD, é um problema usual, aqui nós simplesmente desistimos de entender como funciona o WinImage e partimos para o Ubuntu, utilizamos o comando no terminal e tudo funcionou corretamente, ele deixa apenas 50MB do cartão particionado como FAT16 e o resto não alocado.
-
+  * Ao carregar o MS-DOS caso queira acessar o Windows 3.0:
+    # cd WINDOWS
+    # win
+  * Há também outros programas:
+    * Diversos jogos na pasta GAMES - _o ROGUE é um RPG em ASCII!_
+    * TurboC na pasta TC - é possível programar e compilar seus códigos normalmente! Muito bacana :D
+    * QBasic na pasta QBASIC - testamos um "Hello, World" em BASIC, mas o TurboC é mais interessante.
 
 ----
 
