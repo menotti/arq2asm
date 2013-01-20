@@ -20,7 +20,7 @@ nomePontuacao2 BYTE 20 DUP(0)
 nomePontuacao3 BYTE 20 DUP(0)
 nomePontuacao4 BYTE 20 DUP(0)
 nomePontuacao5 BYTE 20 DUP(0)
-pontuacaoAtual DWORD 15
+pontuacaoAtual DWORD 0
 countLinhaPontuacao BYTE 5
 arquivoPontuacoes BYTE "src/Snake/melhoresPontuacoes.txt",0
 handlePontuacoes DWORD ?
