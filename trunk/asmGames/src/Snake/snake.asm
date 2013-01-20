@@ -20,7 +20,7 @@ nomePontuacao2 BYTE 20 DUP(0)
 nomePontuacao3 BYTE 20 DUP(0)
 nomePontuacao4 BYTE 20 DUP(0)
 nomePontuacao5 BYTE 20 DUP(0)
-pontuacaoAtual DWORD 0
+pontuacaoAtual DWORD 15
 countLinhaPontuacao BYTE 5
 arquivoPontuacoes BYTE "src/Snake/melhoresPontuacoes.txt",0
 handlePontuacoes DWORD ?
@@ -459,11 +459,13 @@ LOOP_ATUALIZA:
 	je PONTUACAO_MENOR
 	mov ecx,5
 	sub ecx,edx
+	jz NOVA_ATUALIZA
 LOOP_INTERNO_ATUALIZA:
 	mov ebx,[edi-4]
 	mov DWORD PTR [edi], ebx
 	sub edi,4
 	loop LOOP_INTERNO_ATUALIZA
+NOVA_ATUALIZA:
 	mov DWORD PTR [edi],eax
 	jmp FIM_ATUALIZA
 PONTUACAO_MENOR:
@@ -475,6 +477,7 @@ FIM_ATUALIZA:
 	mov ebx,0
 	mov ecx,5
 	sub ecx,edx
+	jz NOVO_NOME
 	push edx
 LOOP_ATUALIZA_NOMES:
 	mov eax,5
@@ -486,8 +489,8 @@ LOOP_ATUALIZA_NOMES:
 	invoke Str_copy,edx,esi
 	inc ebx
 	loop LOOP_ATUALIZA_NOMES
-
 	pop edx
+NOVO_NOME:
 	mov eax,edx
 	mov edx,OFFSET mensagemRecorde
 	call clrscr
