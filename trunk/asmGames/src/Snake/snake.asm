@@ -30,6 +30,7 @@ topoPontuacoes BYTE " ######################## MELHORES PONTUACOES #############
 fimPontuacoes BYTE " #####################################################################",0
 mensagemComecarJogo BYTE "Pressione ENTER para comecar o jogo",0
 mensagemErroArquivo BYTE "Erro ao abrir o arquivo de pontuações!",13, 10, 0
+mensagemRecorde BYTE "Parabens! Voce fez uma das 5 melhores pontuacoes!. Digite seu nome: ",0
 espacoBranco BYTE " ",0
 TempoInicial dWord ?
 velocidade Dword 60
@@ -78,6 +79,7 @@ leTecla:
 		mov cobraPrimeiroY,5
 		mov cobraUltimoX,20
 		mov cobraUltimoY,5
+		call atualizaMelhoresPontuacoes
 		call escreveArquivoPontuacao
 		
 ret
@@ -396,7 +398,7 @@ LOOP_INTERNO_NOMES_PONT:
 escreveArquivoPontuacao ENDP
 
 ;-----------------------------------------------------
-IntParaString PROC USES edi,
+IntParaString PROC USES edi ebx,
 		buffer_B:PTR BYTE
 		LOCAL neg_flag:BYTE
 ; Escreve inteiro em uma string
@@ -443,3 +445,55 @@ WIS3:	; retorna numero
 
 	ret
 IntParaString ENDP
+
+atualizaMelhoresPontuacoes PROC
+	mov edi,OFFSET melhoresPontuacoes
+	mov eax,pontuacaoAtual
+	add edi,16 ; aponta pro ultimo
+	mov edx,1
+	mov esi,0
+	mov ecx,5
+LOOP_ATUALIZA:
+	cmp melhoresPontuacoes[esi],eax
+	ja PONTUACAO_MENOR
+	je PONTUACAO_MENOR
+	mov ecx,5
+	sub ecx,edx
+LOOP_INTERNO_ATUALIZA:
+	mov ebx,[edi-4]
+	mov DWORD PTR [edi], ebx
+	sub edi,4
+	loop LOOP_INTERNO_ATUALIZA
+	mov DWORD PTR [edi],eax
+	jmp FIM_ATUALIZA
+PONTUACAO_MENOR:
+	inc edx
+	add esi,4
+	loop LOOP_ATUALIZA
+	ret
+FIM_ATUALIZA:
+	mov ebx,0
+	mov ecx,5
+	sub ecx,edx
+	push edx
+LOOP_ATUALIZA_NOMES:
+	mov eax,5
+	sub eax,ebx
+	call offsetNomePontuacao
+	mov esi,edx
+	sub eax,1
+	call offsetNomePontuacao
+	invoke Str_copy,edx,esi
+	inc ebx
+	loop LOOP_ATUALIZA_NOMES
+
+	pop edx
+	mov eax,edx
+	mov edx,OFFSET mensagemRecorde
+	call clrscr
+	call WriteString
+	call offsetNomePontuacao
+	mov ecx,20
+	call ReadString
+	ret
+atualizaMelhoresPontuacoes ENDP
