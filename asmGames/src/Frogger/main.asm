@@ -21,8 +21,8 @@ FROG_LINHAS	  = 15
 FROG_COLUNAS  = 15
 
 ; Define a coordenadas (X,Y), onde o campo comecara a ser desenhado
-FROG_CAMPO_INI_X = 3
-FROG_CAMPO_INI_Y = 5
+FROG_CAMPO_INI_X 	  = 3
+FROG_FROG_CAMPO_INI_Y = 5
 
 .data
 	FROG_Campo word FROG_LINHAS *FROG_COLUNAS dup(0)
@@ -35,11 +35,14 @@ FROG_CAMPO_INI_Y = 5
 	
 	FROG_ganhouJogo byte 0
 	FROG_perdeuJogo byte 0
+	FROG_Vidas byte 3
 
-	FROG_fCampo BYTE "src/Frogger/campo.txt", 0
-	FROG_IntroFile BYTE "src/Frogger/frogger.txt",0
+	; as tres variaveis abaixo sao utilizadas para recuperar a informacao contida em arquivos
+	FROG_fCampo BYTE "campo.txt", 0
+	FROG_IntroFile BYTE "frogger.txt",0
 	FROG_Handle DWORD ?
 
+	; variavel auxiliar para simular a respiracao do sapo
 	FROG_respiracao byte 0
 	
 	; Os quatro vetores seguintes sao utilizados pelo motor de movimentacao do cenario.
@@ -71,6 +74,7 @@ FROG_Clock proc
 		movzx eax, FROG_ganhouJogo
 		cmp eax, 1
 		jne FROG_Clock_NaoGanhou
+
 			call FROG_ExibirVitoria
 			jmp  FROG_Clock_Finally
 
@@ -83,15 +87,21 @@ FROG_Clock proc
 		call FROG_AtualizarTransito
 		call FROG_ControleMovimento
 		call FROG_VerificarColisao
+		call FROG_ExibirVidas
 		
-		movzx ebx, FROG_perdeuJogo
-		cmp   ebx, 1
+		cmp   FROG_perdeuJogo, 1
 		jne   ContinuaJogo
-			call FROG_ExibirDerrota
+			dec FROG_Vidas
+			cmp FROG_VIdas, 0
+			je FimJogo
+			call FROG_NovoJogo
 			jmp  FROG_Clock_Finally
 
-		ContinuaJogo:
-		
+	FimJogo:
+		call FROG_ExibirDerrota
+		jmp  FROG_Clock_Finally
+
+	ContinuaJogo:
 		cmp eax, 283
 		je FROG_Clock_Finally
 	jne Update
@@ -486,7 +496,7 @@ FROG_DesenharCampo proc
 	pushad
 	mov edx, 0
 	mov dh, FROG_CAMPO_INI_X
-	mov dl, FROG_CAMPO_INI_Y
+	mov dl, FROG_FROG_CAMPO_INI_Y
 	call Gotoxy
 
 	mov esi, 0
@@ -506,7 +516,7 @@ FROG_DesenharCampo proc
 		loop DesenharFROG_COLUNAS
 
 		add dh, 1
-		mov dl, FROG_CAMPO_INI_Y
+		mov dl, FROG_FROG_CAMPO_INI_Y
 		call Gotoxy
 		sub esi, 30
 		mov ecx, FROG_COLUNAS
@@ -521,7 +531,7 @@ FROG_DesenharCampo proc
 
 		pop ecx
 		add dh, 1
-		mov dl, FROG_CAMPO_INI_Y
+		mov dl, FROG_FROG_CAMPO_INI_Y
 		call Gotoxy
 	loop DesenharFROG_LINHAS
 	
@@ -807,6 +817,22 @@ FROG_DefinirCampo PROC
 	ret
 FROG_DefinirCampo ENDP
 
+FROG_ExibirVidas proc
+	pushad
+
+	mov dh, 0
+	mov dl, 3
+	call Gotoxy
+	
+	mWrite "Vidas: "
+	mov eax, 0
+	mov al, FROG_Vidas
+	call WriteDec
+	
+	popad
+	ret
+FROG_ExibirVidas endp
+
 FROG_ExibirVitoria proc
 	call FROG_DesenharCampo
 	mov	ax, red + (white * 16)
@@ -887,6 +913,14 @@ FROG_ExibirIntro ENDP
 
 FROG_InitJogo proc
 	call FROG_ExibirIntro
+	mov FROG_Vidas, 3
+	call FROG_NovoJogo
+	ret
+FROG_InitJogo endp
+
+FROG_NovoJogo proc
+	mov al, white + 16*black
+	call SetTextColor
 	call Clrscr
 
 	; o jogador quer sair do jogo, pois pressionou a tecla ESC na tela de intro.
@@ -915,7 +949,7 @@ FROG_InitJogo proc
     
 	FROG_InitJogo_Finally:
 	ret
-FROG_InitJogo endp
+FROG_NovoJogo endp
 
 main PROC
     call FROG_InitJogo
