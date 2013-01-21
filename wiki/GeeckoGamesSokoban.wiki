@@ -1,1 +1,37 @@
-Teste
+<h1>Introdução</h1>
+<p>Sokoban ( sōkoban, warehouse keeper, funcionário de armazém) é um tipo de quebra-cabeça, no qual o jogador empurra caixas para suas devidas posições no armazém. O jogador só pode empurrar as caixas, nunca puxá-las. O objetivo do jogo é resolver os quebra-cabeças com o menor número de movimentos possível.</p>
+<br>
+<p>Referencia: <a href="http://sokoban.info/">http://sokoban.info/</a></p>
+
+<h1>Detalhes</h1>
+<p>O jogo é dividido da seguinte forma:</p>
+<ul>
+	<li>GeeckoGamesSokoban.asm</li>
+	<ul>
+		<li>GeeckoGamesSokoban </li>
+		<li>UpdateGame</li>
+	</ul>
+	<li>GeeckoGamesFileIO.asm</li>
+	<ul>
+		<li>ReadMap</li>
+		<li>UpdateMapName</li>
+		<li>SaveNewMapScore</li>
+	</ul>
+	<li>GeeckoGamesDrawing.asm</li>
+	<ul>
+		<li>DrawBackground</li>
+		<li>DrawInteractive</li>
+		<li>DrawMainScreen</li>
+		<li>DrawFinishedGame</li>
+	</ul>
+	<li>GeeckoGamesLogic.asm</li>
+	<ul>
+		<li>CheckMapState</li>
+	</ul>
+	<li>GeeckoGamesCharacterControl.asm</li>
+	<ul>
+		<li>MoveChar</li>
+		<li>MoveDiamond</li>
+		<li>GetCharPos</li>
+	</ul>
+</ul>
