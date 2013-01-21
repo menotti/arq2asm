@@ -70,8 +70,16 @@ TITLE Space_Invaders
 
 	gameOver BYTE 0					;Variavel de fim de jogo.
 
+	windowRect    SMALL_RECT <0,0,79,28> ; left,top,right,bottom
+
 .code
 Space_Invaders PROC
+		INVOKE GetStdHandle, STD_OUTPUT_HANDLE
+
+		INVOKE SetConsoleWindowInfo,
+		EAX, ;aqui está o handle
+		TRUE,
+		ADDR windowRect ; window rectangle
 
 		
 		call reinicializaVariaveis		;Apenas para quando o jogo for re-selecionado no menu de jogos
