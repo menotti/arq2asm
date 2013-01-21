@@ -1,0 +1,31 @@
+#labels Featured
+#Descricao do projeto Frogger.
+
+= Introdução =
+
+Documentação do jogo Frogger, desenvolvido pela disciplina de Laboratório de Arquitetura e Organização de Computadores II.
+
+O objetivo do jogo consiste em, controlando um sapo, conseguir atravessar uma rodovia movimentada. O sapo deve evitar a colisão com os veículos a fim de sobreviver. Para vencer, o sapo deve alcançar a última faixa da rodovia sem ser emagado.
+
+
+*Data de criacao*: 18/12/2012
+*Última modificação*: 21/01/2013
+
+Grupo:
+
+Antonio Pedro Avanzi Nunes - 407852
+Lucas Oliveira David - 407917
+Pedro Padoveze Barbosa - 407895
+
+---
+= Detalhes =
+
+O jogo foi dividido em duas partes. Uma lógica e uma gráfica. Ambas as partes funcionam de forma independente.
+
+---
+= Procedimentos =
+
+---
+= Recursos gráficos =
+
+---
