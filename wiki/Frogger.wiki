@@ -21,6 +21,23 @@ Pedro Padoveze Barbosa - 407895
 = Detalhes =
 
 O jogo foi dividido em duas partes. Uma lógica e uma gráfica. Ambas as partes funcionam de forma independente.
+Para a implementação da parte lógica, foi utilizado uma estrutura de dados do tipo tabela, representada a partir do vetor FROG_Campo. O vetor armazena valores inteiros de 16 bits.
+Cada inteiro representa um determinado objeto, e é associado a diferentes desenhos:
+
+0: o asfalto da rodovia, por onde o sapo pode andar.
+1 - 6: diferentes veículos que estào na rodovia.
+9: o sapo.
+
+Quando as teclas são pressionadas, verificamos se o sapo está na fronteira da matriz através das variáveis FROG_sapoX e FROG_sapoY. Se sim, não fazemos nada. Caso contrário, subtraímos o valor do sapo na posição atual e adicionamos seu valor à nova posição, além de atualizar os indexadores FROG_sapoX e FROG_sapoY.
+
+A movimentação dos veículos acontece de forma similar: vetores armazenam quais linhas na matriz possuem veículos, seus sentidos e suas velocidades. A cada interação, o carro é movimentado para a esquerda ou direita através da subtração e da soma.
+
+A cada interação, de movimentação do sapo ou dos veículos, um procedimento (FROG_VerificarColisao) é chamado. Esse procedimento varre toda a tabela e verificamos se existe algum elemento que seja maior que o valor do sapo. Se sim, sabemos que o sapo está ocupando a mesma posição que um carro, e o jogo é finalizado, exibindo a tela de derrota.
+
+A cada interação também é verificado se o valor do sapo é encontrado na primeira linha da matriz. Se sim, significa que o sapo atingiu a última faixa da rodovia. O jogo é finalizado e a tela de vitória, exibida.
+
+---
+= Descrição da informação armazenada = 
 
 ---
 = Procedimentos =
