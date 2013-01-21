@@ -336,7 +336,7 @@ achouPontuacao:
 		mov dl, 24
 		inc countLinhaPontuacao
 		call GotoXY
-		call WriteInt
+		call WriteDec
 		call Crlf
 		inc esi
 		mov edi, OFFSET pontuacao
@@ -706,6 +706,6 @@ mostraPontuacaoAtual PROC uses edx eax
 	mov dl, 18			;Parâmetros para gotXY
 	call GotoXY
 	mov eax,pontuacaoAtual
-	call WriteInt
+	call WriteDec
 	ret
 mostraPontuacaoAtual ENDP
