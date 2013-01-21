@@ -33,6 +33,7 @@ snakeInicio BYTE " ***************************** SNAKE GAME ********************
 topoPontuacoes BYTE " ######################## MELHORES PONTUACOES ########################",0
 fimPontuacoes BYTE " #####################################################################",0
 mensagemComecarJogo BYTE "ENTER: Comecar o jogo  ESC: Voltar ao menu",0
+mensagemControlesJogo BYTE "P: Pausa o jogo  Setas Direcionais: Controlam a minhoca",0
 mensagemErroArquivo BYTE "Erro ao abrir o arquivo de pontuações!",13, 10, 0
 mensagemRecorde BYTE "Parabens! Voce fez uma das 5 melhores pontuacoes!. Digite seu nome: ",0
 TempoInicial dWord ?
@@ -73,6 +74,8 @@ comecaJogo:
 			call GetMseconds
 			mov tempoInicial, eax
 			call identificaDirecao
+			cmp ebx,-1
+			je FimDeJogo
 			call verificaColisao
 			cmp colidiu, 1
 				je FimDeJogo
@@ -184,7 +187,7 @@ movimentaEdesenha PROC
 movimentaEdesenha ENDP
 
 identificaDirecao PROC
-
+	mov ebx,0
 	call ReadKey
 
 	;Verifica quais teclas foram apertadas, pelo codigo em ax(retornado por ReadKey!)
@@ -196,6 +199,10 @@ identificaDirecao PROC
 		je SetaDireita
 	cmp ah, 50h
 		je SetaBaixo
+	cmp ah, 19h
+		je TeclaP
+	cmp ah, 01h;esc
+		je TeclaESC
 	ret
 	
 	SetaCima:
@@ -210,6 +217,15 @@ identificaDirecao PROC
 	SetaBaixo:
 		mov direcaoAtual, BAIXO
 		ret
+	TeclaP:
+		mov eax,10
+		call Delay
+		call ReadKey
+		cmp ah, 19h
+		jne TeclaP
+		ret
+	TeclaESC:
+		mov ebx,-1;verifica se é pra sair
 
 ret
 identificaDirecao ENDP
@@ -359,6 +375,12 @@ achouNomePontuacao:
 		call GotoXY
 		mov countLinhaPontuacao,5
 		mov edx, OFFSET mensagemComecarJogo
+		call WriteString
+		call Crlf
+		mov dh,12
+		mov dl,10
+		call GotoXY
+		mov edx, OFFSET mensagemControlesJogo
 		call WriteString
 		call Crlf
 		mov edx, OFFSET fimPontuacoes
