@@ -953,7 +953,7 @@ carregaHighscore PROC USES EAX EDX ECX ESI EDI
 		loop LP1
 		mov eax, valorHighscore
 		mov edi, OFFSET bufferStringConversao
-		call intParaString
+		call intToString
 		mov edi, OFFSET bufferStringConversao
 		push esi
 		push edi
@@ -977,7 +977,7 @@ carregaHighscore PROC USES EAX EDX ECX ESI EDI
 	ret
 carregaHighscore ENDP
 
-intParaString PROC
+intToString PROC
 ;Recebe ax =  numero
 ;Recebe edi = offset do buffer string
 mov bl, 100
@@ -995,5 +995,5 @@ add ah, 48
 mov [edi], ah
 	
 ret
-intParaString ENDP
+intToString ENDP
 
