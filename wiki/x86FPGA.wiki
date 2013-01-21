@@ -176,3 +176,7 @@ As etapas seguidas do Decoder são:
   * Execute: executa as operações na ALU
   * Memory: lê ou escreve na memória
   * Write back: escreve em um registrador 
+----
+<br>Fontes:<br>
+http://zet.aluzina.org/images/d/d8/Pres.pdf<br>
+http://www.swansontec.com/sintel.html
