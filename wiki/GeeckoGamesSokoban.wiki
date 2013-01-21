@@ -1,5 +1,5 @@
 <h1>Introdução</h1>
-<p>Sokoban ( sōkoban, warehouse keeper, funcionário de armazém) é um tipo de quebra-cabeça, no qual o jogador empurra caixas para suas devidas posições no armazém. O jogador só pode empurrar as caixas, nunca puxá-las. O objetivo do jogo é resolver os quebra-cabeças com o menor número de movimentos possível.</p>
+<p>Sokoban (倉庫番 sōkoban, warehouse keeper, funcionário de armazém) é um tipo de quebra-cabeça, no qual o jogador empurra caixas para suas devidas posições no armazém. O jogador só pode empurrar as caixas, nunca puxá-las. O objetivo do jogo é resolver os quebra-cabeças com o menor número de movimentos possível.</p>
 <br>
 <p>Referencia: <a href="http://sokoban.info/">http://sokoban.info/</a></p>
 
