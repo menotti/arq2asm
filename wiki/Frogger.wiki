@@ -41,6 +41,13 @@ A cada interação também é verificado se o valor do sapo é encontrado na pri
 -------------
 = Descrição da informação armazenada = 
 
+*sapoX:* armazena a posição horizontal do sapo no campo.
+*sapoY:* armazena a posição vertical do sapo no campo.
+*Campo*: o campo por onde toda a lógica do jogo está estruturada.
+
+*ganhouJogo*: 0 (default). Muda para o valor 1 quando o jogador chega a primeira linha (mais à cima) da matriz.
+*perdeuJogo*: 0 (default). Muda para o valor 1 quando o jogador colide com algum veículo ou cai na água.
+
 -------------
 = Procedimentos =
 
