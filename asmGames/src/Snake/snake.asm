@@ -10,6 +10,7 @@ XMAXIMO = 79
 COMIDA = 254
 VAZIO = 255
 PONTO = 219
+tempoMaxComida = 50
 cobraPontosX BYTE 20, 21, 22, 1700 dup (?)
 cobraPontosY BYTE 5, 5, 5, 1700 dup (?)
 contPontosCobra WORD 3
@@ -36,7 +37,9 @@ mensagemComecarJogo BYTE "ENTER: Comecar o jogo  ESC: Voltar ao menu",0
 mensagemControlesJogo BYTE "P: Pausa o jogo  Setas Direcionais: Controlam a minhoca",0
 mensagemErroArquivo BYTE "Erro ao abrir o arquivo de pontuações!",13, 10, 0
 mensagemRecorde BYTE "Parabens! Voce fez uma das 5 melhores pontuacoes!. Digite seu nome: ",0
+mensagemPontuacao BYTE "Pontuacao Atual: ",0
 TempoInicial dWord ?
+tempoComida DWORD 0
 velocidade Dword 60
 direcaoAtual DWORD DIREITA
 colidiu DWORD 0 
@@ -64,7 +67,7 @@ comecaJogo:
 		mov tempoInicial, eax
 
 		call geraComida
-		
+		call mostraPontuacaoAtual
 	GameLoop:
 	
 		call GetMseconds
@@ -99,6 +102,7 @@ comecaJogo:
 		mov contPontosCobra, 3
 		call atualizaMelhoresPontuacoes
 		call escreveArquivoPontuacao
+		mov pontuacaoAtual,0
 		jmp inicioJogo
 SaiJogo:		
 ret
@@ -106,7 +110,7 @@ Snake ENDP
 
 movimentaEdesenha PROC
 	pushad
-
+	inc tempoComida
 	;ESCREVE UM CARACTER EM BRANCO NO LUGAR DO ULTIMO PONTO DA COBRA
 	movsx ebp, cobraIndiceUltimo
 	mov dh, cobraPontosY[ebp]			;Parâmetros para gotXY
@@ -621,6 +625,7 @@ come PROC
 			mov eax, ebp
 			mov cobraIndiceUltimo, ax
 			inc contPontosCobra
+			call atualizaPontuacao
 			call geraComida
 	Nao_Come:
 
@@ -648,7 +653,8 @@ geraComida PROC
 			mov edi, OFFSET cobraPontosY
 			repne scasb
 			jz GERA_COMIDA
-		Comida_ok:
+Comida_ok:
+		mov tempoComida,0
 		mov ax, yellow							;Define cor da comida como verde
 		call setTextColor
 		mov dh, comidaY
@@ -660,3 +666,40 @@ geraComida PROC
 		call setTextColor
 ret
 geraComida ENDP
+
+atualizaPontuacao PROC USES eax ebx ecx edx
+	mov eax,tempoMaxComida
+	mov ebx,tempoComida
+	movzx ecx,contPontosCobra
+	sub ecx,1
+	cmp ebx,eax
+	ja SemPontoExtra
+	je SemPontoExtra
+	sub eax,ebx
+	mov edx,0
+	mov ebx,2
+	div ebx
+	mul ecx
+	add pontuacaoAtual,eax
+	jmp EscrevePontuacao
+SemPontoExtra:
+	mov eax,ecx
+	add pontuacaoAtual,eax
+EscrevePontuacao:
+	call mostraPontuacaoAtual
+	ret
+atualizaPontuacao ENDP
+
+mostraPontuacaoAtual PROC uses edx eax
+	mov dh, 24			;Parâmetros para gotXY
+	mov dl, 0			;Parâmetros para gotXY
+	call GotoXY
+	mov edx, OFFSET mensagemPontuacao
+	call WriteString
+	mov dh, 24			;Parâmetros para gotXY
+	mov dl, 18			;Parâmetros para gotXY
+	call GotoXY
+	mov eax,pontuacaoAtual
+	call WriteInt
+	ret
+mostraPontuacaoAtual ENDP
