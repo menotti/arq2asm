@@ -3,10 +3,13 @@
 <br>
 <p>Referencia: <a href="http://sokoban.info/">http://sokoban.info/</a></p>
 
+<wiki:toc max_depth="1" />
+ 
 <h1>Detalhes</h1>
 <p>O jogo é dividido da seguinte forma:</p>
 <ul>
-	<li>GeeckoGamesSokoban.asm</li>
+	<li>!GeeckoGamesSokoban.asm</li>
+       
 	<ul>
 		<li>GeeckoGamesSokoban </li>
 		<li>UpdateGame</li>
