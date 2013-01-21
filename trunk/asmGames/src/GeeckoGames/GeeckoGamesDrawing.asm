@@ -9,6 +9,7 @@ movesSTR BYTE "MOVES: ", 0
 bestSTR BYTE "	BEST: ", 0
 scoreTooHigh BYTE "----", 0
 
+;//Main and Endscreen
 mainScreen1				BYTE		"********************************************", 0Ah
 mainScreen2				BYTE		"*                                          *", 0Ah
 mainScreen3				BYTE		"*                                          *", 0Ah
@@ -60,11 +61,13 @@ endScreen23				BYTE		"********************************************",0
 
 .code
 
+;//Draws the background map
 DrawBackground PROC USES ECX, mapPtr:PTR BYTE, lineSize:BYTE, mapSize:DWORD
 	MOV ECX, mapSize
 	MOV DX, 0
 	MOV ESI, mapPtr	
-WriteC:
+WriteC: ;//Here we check if we have a wall char (*) or a target char (x), and if we do we draw an
+		;//special character in its palce
 	MOV AL, [ESI]
 	call GoToXY
 	CMP AL, '*'
@@ -73,12 +76,12 @@ WriteC:
 DRW1:
 	CMP AL, 'x'
 	JNE DRW2
-	MOV AX, gray + (white * 16)
+	MOV AX, gray + (white * 16) ;//changes the color for target characters
 	CALL SetTextColor
 	MOV AL, 0F0h
 DRW2:
 	CALL WriteChar
-	MOV AX, black + (white * 16)
+	MOV AX, black + (white * 16) ;//changes the color back to the default
 	CALL SetTextColor
 	INC ESI
 	INC DL
@@ -96,7 +99,8 @@ DrawInteractive PROC USES EDX ECX ESI EDI, mapPtr:PTR BYTE, mapBgPtr:PTR BYTE, l
 	MOV DX, 0
 	MOV ESI, mapPtr	
 	MOV EDI, mapBgPtr
-WriteC:
+WriteC: ;//Here we check for character characters (0) and diamond characters (+) and exchange them for
+		;//special characters
 	MOV AL, [ESI]
 	CALL gotoXY
 	CMP AL,'0'
@@ -113,7 +117,7 @@ WriteC:
 DontWrite1:
 	CMP AL, '+'
 	JNE DontWrite2
-	MOV AL, BYTE PTR [EDI]
+	MOV AL, BYTE PTR [EDI] ;//If we have a diamond character we check if it's over a target to decide its color
 	CMP AL, 'x'
 	JE DarkRed
 	MOV AX, lightred + (white * 16)
@@ -122,7 +126,7 @@ DontWrite1:
 DarkRed:
 	MOV AX, red + (white * 16)
 	CALL SetTextColor
-DRAW:
+DRAW: ;//We just write characters corresponding to players or diamonds
 	MOV AL, 04h
 	CALL WriteChar
 	MOV AX, black + (white * 16)
@@ -143,6 +147,9 @@ NextC:
 	MOV EDX, OFFSET movesSTR
 	CALL WriteString
 	MOV EAX, DWORD PTR [ESI + 4]
+
+	;//Here we write the map's best score and the current number of movements of the character
+	;//If the score is above "AAAA" we just write "----" instead, because it's our logical infinite
 CMP EAX, "AAAA"
 	JAE NOT_GOOD_ENOUGH
 	CALL WriteDec
@@ -164,6 +171,8 @@ NO_HIGH_DETECTED:
 FIN:
 	RET
 DrawInteractive ENDP
+
+;//Just two methods that draw the main and end screens
 
 DrawMainScreen PROC USES EDX
 	CALL ClrScr

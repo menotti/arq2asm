@@ -29,7 +29,7 @@ GetCharPos PROC USES ECX EAX ESI EDX,
 					lineSize : DWORD,
 					char : PTR DWORD
 	MOV ESI, fgMap
-	MOV ECX, mapSize
+	MOV ECX, mapSize ;//looks for the character '0' in the map and stores its position
 	L:
 		MOV AL, BYTE PTR[ESI]
 		CMP AL, '0'
@@ -57,17 +57,19 @@ MoveChar PROC USES ECX ESI,
 				dir : BYTE
 
 				LOCAL X: DWORD, Y : DWORD
-
+	;//checks if the input is saying UP, RIGHT, LEFT or DOWN
 	MOV ESI, char
-	CMP dir, 00b ;UP
+	CMP dir, 00b ;//UP
 	JE MovingUp
-	CMP dir, 01b ;RIGHT
+	CMP dir, 01b ;//RIGHT
 	JE MovingRight
-	CMP dir, 10b ;DOWN
+	CMP dir, 10b ;//DOWN
 	JE MovingDown
-	CMP dir, 11b ;LEFT
+	CMP dir, 11b ;//LEFT
 	JE MovingLeft
 
+
+	;//Calculating the new position
 MovingUp:
 	MOV EAX, [ESI]
 	MOV X, EAX
@@ -116,7 +118,7 @@ NEXT:
 	CMP AL, '*'
 	JE FIN1
 
-	;HERE WE TEST FOR DIAMONDS ON THE WAY
+	;//HERE WE TEST FOR DIAMONDS ON THE WAY
 
 	POP EAX
 	PUSH EAX
@@ -130,17 +132,17 @@ NEXT:
 	JNE NODIAMOND
 
 YESDIAMOND:
-	;IF THERE IS A DIAMOND WE CHECK IF IT CAN MOVE, EAX = 0 IF IT CAN'T
+	;//IF THERE IS A DIAMOND WE CHECK IF IT CAN MOVE, EAX = 0 IF IT CAN'T
 
-	;INVOKE MOVE DIAMOND HERE (REMEMBER TO RECEIVE THE POSITION OF THE DIAMOND, IT IS IN X, Y
+	;//INVOKE MOVE DIAMOND HERE, IT RETURNS A VALUE IN EAX SAYING IF THE DIAMOND WAS MOVED
 	INVOKE MoveDiamond, bgMap, fgMap, lineSize, X, Y, dir
 
 	CMP EAX, 0
 	JE FIN1
 NODIAMOND:
-	;IF CHARACTER CAN MOVE
+	;//IF CHARACTER CAN MOVE
 
-	;PAINT THE OLD POSITION BLANK
+	;//PAINT THE OLD POSITION BLANK
 	MOV ESI, char
 	MOV EAX, DWORD PTR[ESI + 4]
 	MUL lineSize
@@ -167,7 +169,7 @@ NODIAMOND:
 	JMP FIN2
 	MOV EAX, 1
 FIN1:
-	POP EAX ;if character doesn't move we need to pop EAX out of the stack before returning
+	POP EAX ;//if character doesn't move we need to pop EAX out of the stack before returning
 	MOV EAX, 0
 FIN2:
 	RET
@@ -189,7 +191,7 @@ MoveDiamond PROC,
 	JE MovingDown
 	CMP dir, 11b ;LEFT
 	JE MovingLeft
-
+;//SAME LOGIC AS THE CHARACTER'S MOVEMENT
 MovingUp:
 	DEC Y
 	JMP NEXT
@@ -221,7 +223,8 @@ NEXT:
 	CMP AL, '*'
 	JE FIN1
 
-	;HERE WE TEST FOR DIAMONDS ON THE WAY
+	;//HERE WE TEST FOR DIAMONDS ON THE WAY
+	;//PS: Diamonds can't "push" other diamonds
 
 	POP EAX
 	PUSH EAX
@@ -234,9 +237,9 @@ NEXT:
 	CMP AL, '+'
 	JE FIN1
 
-	;IF CHARACTER CAN MOVE
+	;//IF CHARACTER CAN MOVE
 
-	;PAINT THE OLD POSITION WITH CHAR
+	;//PAINT THE OLD POSITION WITH CHAR
 
 	POP EAX
 	ADD EAX, fgMap

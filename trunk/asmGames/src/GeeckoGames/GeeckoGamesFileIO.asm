@@ -15,14 +15,14 @@ SaveNewMapScore PROTO,
 
 .code
 
-;numero de bytes de 1 mapa
-;ponteiro para primeiro mapa
+;//Receives the number of bytes in one map and a pointer to the background map
+;//The foreground map and the score and adjacent to it
 ReadMap PROC USES ecx edx,
 	mapSize:DWORD, 
 	mapFileName:PTR BYTE,
 	mapAddress:PTR BYTE
 
-	;Open the file
+	;//Open the file
 	MOV EDX, mapFileName
 	CALL OpenInputFile
 
@@ -30,7 +30,7 @@ ReadMap PROC USES ecx edx,
 	JE ErrorOpenningFile
 
 	PUSH EAX
-	;Read the correct amount of data from the right file
+	;//Read the correct amount of data from the right file
 	MOV EDX, mapAddress
 	MOV ECX, mapSize
 	SHL ECX, 1
@@ -38,7 +38,7 @@ ReadMap PROC USES ecx edx,
 	CALL ReadFromFile
 	
 	POP EAX
-	;Close the file
+	;//Close the file
 	CALL CloseFile
 ErrorOpenningFile:
 	RET
@@ -49,14 +49,14 @@ SaveNewMapScore PROC USES ECX EDX ESI,
 	newScore:DWORD,
 	mapSize:DWORD
 
-	;Open the file
+	;//Open the file
 	MOV EDX, mapFileName
 	CALL OpenInputFile
 
 	CMP EAX, INVALID_HANDLE_VALUE
 	JE ErrorOpenningFile
 
-	;Calculate the file size
+	;//Calculate the file size
 	MOV ECX, mapSize
 	SHL ECX, 1
 	ADD ECX, 4
@@ -65,20 +65,20 @@ SaveNewMapScore PROC USES ECX EDX ESI,
 	PUSH ECX
 
 	PUSH EAX
-	;Read the correct amount of data from the right file
+	;//Read the correct amount of data from the right file
 	MOV EDX, ESP
 	ADD EDX, 8
 	CALL ReadFromFile
 	
 	POP EAX
-	;Close the file
+	;//Close the file
 	CALL CloseFile
 
 	;Change the score at the memory
 	MOV ESI, newScore
 	MOV DWORD PTR [EBP - 16], ESI
 
-	;Write everything back to the file
+	;//Write everything back to the file
 	MOV EDX, mapFileName
 	CALL CreateOutputFile
 
@@ -88,12 +88,12 @@ SaveNewMapScore PROC USES ECX EDX ESI,
 	POP ECX
 	PUSH ECX
 	PUSH EAX
-	;Read the correct amount of data from the right file
+	;//Read the correct amount of data from the right file
 	MOV EDX, ESP
 	ADD EDX, 8
 	CALL WriteToFile
 	POP EAX
-	;Close the file
+	;//Close the file
 	CALL CloseFile
 
 	POP ECX
@@ -103,12 +103,12 @@ ErrorOpenningFile:
 	RET
 SaveNewMapScore ENDP
 
-UpdateMapName PROC USES ax
+UpdateMapName PROC USES EAX
 
 	MOV AX, WORD PTR mapNumber
 	INC AH
 
-	;If the first digit is over 10
+	;//If the first digit is over 10
 	CMP AH, 3Ah
 	JNE Finish
 	MOV AH, 30h
