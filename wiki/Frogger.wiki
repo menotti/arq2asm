@@ -25,12 +25,10 @@ O jogo foi dividido em duas partes. Uma lógica e uma gráfica. Ambas as partes 
 Para a implementação da parte lógica, foi utilizado uma estrutura de dados do tipo tabela, de tamanho 15x15, representada a partir do vetor FROG_Campo. O vetor armazena valores inteiros de 16 bits.
 Cada inteiro representa um determinado objeto, e é associado a diferentes desenhos:
 
- * 0: caminho livre por onde o sapo pode andar.*  *
- * 1 - 6: diferentes veículos que estão na rodovia.*
- * 7: água.*
- * 9: o sapo.*
-
-  *_ Caso 0 esteja nas linhas do rio, ele será tronco._
+ * 0: chão ou tronco.
+ * 1 - 6: diferentes veículos que estão na rodovia.
+ * 7: água.
+ * 9: o sapo.
 
 Quando as teclas são pressionadas, verificamos se o sapo está na fronteira da matriz através das variáveis FROG_sapoX e FROG_sapoY. Se sim, não fazemos nada. Caso contrário, subtraímos o valor do sapo na posição atual e adicionamos seu valor à nova posição, além de atualizar os indexadores FROG_sapoX e FROG_sapoY.
 
