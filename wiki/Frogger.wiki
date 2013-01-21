@@ -46,9 +46,13 @@ A cada interação também é verificado se o valor do sapo é encontrado na pri
 === Constantes ===
 
 *FROG_SAPO*: define numérico referente ao sapo!
+
 *FROG_CAMPO_TAM*: tamanho de entrada do campo extraído de um arquivo.
+
 *FROG_INTRO_TAM*: tamanho da introdução extraída do arquivo.
+
 *FROG_LINHAS*: n. de linhas da matriz que representa o campo.
+
 *FROG_COLUNAS*: n. de colunas da matriz que representa o campo.
 
 *FROG_CAMPO_INI_X* e *FROG_FROG_CAMPO_INI_Y*: define a coordenadas (X,Y), onde o campo começará a ser desenhado.
@@ -61,26 +65,20 @@ A cada interação também é verificado se o valor do sapo é encontrado na pri
 
 *FROG_Intro*: matriz que armazena imagem da tela de introdução.
 
-	
-
 *FROG_sapoX*: armazena a posição horizontal do sapo no campo.
 
 *FROG_sapoY*: armazena a posição vertical do sapo no campo.
-
-	
 
 *FROG_ganhouJogo*: 0 (default). Muda para o valor 1 quando o jogador 
 chega a primeira linha (mais à cima) da matriz.
 
 *FROG_perdeuJogo*: 0 (default). Muda para o valor 1 quando o jogador colide com algum veículo ou cai na água.
 
-
 *FROG_fCampo*: arquivo de inicialização do campo. Default: (src/Frogger/campo.txt)
 
 *FROG_IntroFile*: arquivo do desenho inicial do sapo. Default: (src/Frogger/frogger.txt)
 
 *FROG_Handle*: manipulador geral dos arquivos.
-
 
 *FROG_respiracao*: variável auxiliar para a criação do efeito de respiração do sapo.
 	
