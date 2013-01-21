@@ -140,7 +140,39 @@ O conjunto de instruções do Zet suporta 89 das 92 instruções do 8086 e podem
 
 As 3 instruções não implementadas são wait, esc e lock, essas instruções foram desnecessárias pois não foi usado nenhum coprocessador. A falta deste coprocessador também acarretou no fato que o Zet não suporta instruções de ponto flutuante, pois o 8086 delegava estas instruções a um coprocessador Intel 8087 (vide http://www.cpu-world.com/CPUs/8086/index.html)
 
+----
 == Visão Geral ==
+[http://imageshack.us/a/img46/4925/zet.png]<br>
+Como a figura acima mostra, o processador Zet controla vários módulos responsáveis por tarefas específicas, como controle da memória flash, do teclado, dos led’s e switchs, do vídeo, da SRAM, da SDRAM e do cartão SD.
 
-=== Aprovado por Cthulhu ===
-[http://en.wikipedia.org/wiki/Cthulhu http://img838.imageshack.us/img838/8921/cthulhuv.jpg]
+== Formato das instruções 8086 ==
+Cada instrução pode ter tamanho de até 9 bytes onde cada campo de uma instrução pode ter tamanho de 1 byte ou 2, e toda instrução possui 1 Opcode.<br>
+[http://imageshack.us/a/img694/5791/instrl.png]<br>
+  * Instruction Prefixes
+Prefixos modificam o comportamento da instrução de várias maneiras, podendo mudar por exemplo o segmento padrão de uma instrução ou controlar o loop numa instrução de string.
+  * Opcode
+O Opcode diz ao processador qual instrução executar. No 8086 o tamanho do campo do Opcode é de 1 byte, o que limita o numero de instruções possíveis.
+  * Operand Address
+Endereço do Operando
+  * Displacement
+Campo contém o deslocamento do endereço
+  * Immediate
+Valor imediato utilizado para realizar uma operação
+
+== Decoder ==
+As etapas seguidas do Decoder são:
+  # É pego o endereço do sequenciador do Opcode e ModRM (O ModRM diz ao processador qual registrador ou posição de memória usar como operando da instrução). Para minimizar o uso da memória essa etapa é implementada na lógica.
+  # O sequenciador continua lendo na ROM até atingir o valor “1”
+  # Cada endereço no sequenciador é usado para indexar o microcode ROM para pegar a microinstrução atual
+
+[http://imageshack.us/a/img254/7793/zet01.png]
+
+== Pipeline de 8 estágios ==
+  * Fetch: busca 6 bytes da memória
+  * Decode: decodifica a instrução. Calcula o endereço do sequencer baseado no opcode no modrm, além do tamanho da instrução, realimentando o estado Fetch
+  * Sequencer: calcula o endereço do microcode e manda para a  microcode ROM
+  * Issue:  pega a microinstrução da microcode ROM
+  * Read: lê o conteúdo de um registrador
+  * Execute: executa as operações na ALU
+  * Memory: lê ou escreve na memória
+  * Write back: escreve em um registrador 
