@@ -128,7 +128,9 @@ cenário.
 
 *FROG_ExibirIntro*: exibe janela de introdução.
 
-*FROG_InitJogo*: restaura os valores inicias das variáveis e do campo.
+*FROG_InitJogo*: chama o procedimento acima, estabelece o número de vidas, e chama o procedimento abaixo.
+
+*FROG_NovoJogo*: restaura os valores inicias das variáveis e do campo.
 
 -------------
 
