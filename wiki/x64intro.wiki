@@ -148,7 +148,7 @@ Start ENDP
 End
 }}}
 
-2-Salve o arquivo como hello.asm na pasta do visual Studio nesse caminho:C:\arquivos de programa\microsoft Visual Studio 11.0 \VC
+2-Salve o arquivo como hello.asm na pasta do visual Studio nesse caminho:C:\arquivos de programa\microsoft Visual Studio 11.0 \VC ou qualquer outra pasta
 
 3-Abra o prompt de comando de ferramentas nativas do VS x64 e digite o seguinte comando: ML64 hello.asm /link /subsystem: Windows /defaultlib:kernel32.lib /defaultlib:user32.lib /entry:Start
 
