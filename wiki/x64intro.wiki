@@ -97,7 +97,7 @@ São bibliotecas que trabalham com a interface na hora de passar parâmetros ou 
 
 •	A pilha é alinhada em 16 bits.
 
-•	Os registradores RAX, RCX, RDX, R8, R9, R10 e R11 são considerados voláteis e por isso devem ser considerados destuidos em funções de chamada.
+•	Os registradores RAX, RCX, RDX, R8, R9, R10 e R11 são considerados voláteis e por isso devem ser considerados destruidos em funções de chamada.
 
 •	Os registradores RBX, RBP, RDI, RSI, R12, R13, R14 e R15 devem ser salvos nas funções que os usam.
 
