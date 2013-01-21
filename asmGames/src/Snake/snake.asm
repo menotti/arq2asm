@@ -36,9 +36,12 @@ fimPontuacoes BYTE " ###########################################################
 mensagemComecarJogo BYTE "ENTER: Comecar o jogo | ESC: Voltar ao menu",0
 mensagemControlesJogo BYTE "P: Pausa o jogo | Setas Direcionais: Controlam a minhoca",0
 mensagemErroArquivo BYTE "Erro ao abrir o arquivo de pontuações!",13, 10, 0
+mensagemPausa BYTE "PAUSADO",0
+mensagemDesPausa BYTE "       ",0
 mensagemRecorde BYTE "Parabens! Voce fez uma das 5 melhores pontuacoes!. Digite seu nome: ",0
 finalTelaMinhoca BYTE "-------------------------------------------------------------------------------",0
 mensagemPontuacao BYTE "Pontuacao Atual: ",0
+mensagemMelhorPontuacao BYTE "Melhor Pontuacao: ",0
 TempoInicial dWord ?
 tempoComida DWORD 0
 velocidade Dword 60
@@ -70,7 +73,7 @@ comecaJogo:
 		mov tempoInicial, eax
 
 		call geraComida
-		call mostraPontuacaoAtual
+		call mostraCabecalhoPontuacao
 	GameLoop:
 	
 		call GetMseconds
@@ -225,11 +228,22 @@ identificaDirecao PROC
 		mov direcaoAtual, BAIXO
 		ret
 	TeclaP:
+		mov dh, 24			;Parâmetros para gotXY
+		mov dl, 30			;Parâmetros para gotXY
+		call GotoXY
+		mov edx, OFFSET mensagemPausa
+		call WriteString
+	TeclaPLoop:
 		mov eax,10
 		call Delay
 		call ReadKey
 		cmp ah, 19h
 		jne TeclaP
+		mov dh, 24			;Parâmetros para gotXY
+		mov dl, 30			;Parâmetros para gotXY
+		call GotoXY
+		mov edx, OFFSET mensagemDesPausa
+		call WriteString
 		ret
 	TeclaESC:
 		mov ebx,-1;verifica se é pra sair
@@ -694,6 +708,15 @@ EscrevePontuacao:
 atualizaPontuacao ENDP
 
 mostraPontuacaoAtual PROC uses edx eax
+	mov dh, 24			;Parâmetros para gotXY
+	mov dl, 18			;Parâmetros para gotXY
+	call GotoXY
+	mov eax,pontuacaoAtual
+	call WriteDec
+	ret
+mostraPontuacaoAtual ENDP
+
+mostraCabecalhoPontuacao PROC
 	mov dh, 23			;Parâmetros para gotXY
 	mov dl, 0			;Parâmetros para gotXY
 	call GotoXY
@@ -705,9 +728,14 @@ mostraPontuacaoAtual PROC uses edx eax
 	mov edx, OFFSET mensagemPontuacao
 	call WriteString
 	mov dh, 24			;Parâmetros para gotXY
-	mov dl, 18			;Parâmetros para gotXY
+	mov dl, 50			;Parâmetros para gotXY
 	call GotoXY
-	mov eax,pontuacaoAtual
+	mov edx, OFFSET mensagemMelhorPontuacao
+	call WriteString
+	mov dh, 24			;Parâmetros para gotXY
+	mov dl, 68			;Parâmetros para gotXY
+	call GotoXY
+	mov eax, melhoresPontuacoes[0]
 	call WriteDec
 	ret
-mostraPontuacaoAtual ENDP
+mostraCabecalhoPontuacao ENDP
