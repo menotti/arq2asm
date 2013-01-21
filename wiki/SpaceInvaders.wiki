@@ -1,0 +1,33 @@
+Detalhes da nossa implementação, no geral:
+
+O procedure principal foi dividido, essencialmente, em três partes.
+A primeira parte: Inicialização do cenário, variáveis, carrega dificuldade do arquivo, etc.
+Segunda parte: Game loop
+Terceira parte: Game Over
+
+Utilizamos basicamente apenas variáveis globais, visto que muitos dos nossos procedures
+acabavam por utilizar dados globais.
+
+Tentamos seguir um padrão basico de implementação que utilizasse dos conceitos de Programação Orientada a objetos, e por isso
+temos vetores de tamanho igual, cujas posicoes correspondem a uma mesma "entidade" e seus componentes.
+Exemplo: Inimigo tem Vetor de posicoes X, vetor de posicoes Y, etc. A posicao "1" nesses vetores todos corresponderia, em nossa
+implementação, aos dados do inimigo "1", como um índice.
+
+No Game Loop, temos um trecho do código de capturar teclas, e logo em seguida outro trecho de código onde os dados são processados
+e o jogo atualizado e escrito em tela. Esse loop só termina quando o jogador perder todas as suas vidas.
+
+O Game Over termina o jogo, com uma tela avisando o GameOver, e quantos pontos o jogador fez.
+
+Nosso jogo, por fazer uso de "tempo real", ou seja, o jogo não é atualizado por turnos, acabou sendo um grande desafio até
+entendermos como "calibrar" o tempo entre as atualizações. 
+O método adotado foi o seguinte: Call GetMseconds nos dava quan tos milisegundos haviam passado desde a meia noite. Cada vez que um
+elemento era atualizado, o mesmo teria um vetor de "tempo", cuja posicao correspondente armazena o ultimo momento no qual o elemento
+foi atualizado. Por meio de uma subtraçao do tempo atual pelo tempo no vetor, tinhamos quanto tempo havia se passado desde a ultima 
+atualização de um dado elemento. Se essa diferença estivesse maior ou igual um valor estipulado, o elemento deveria ser atualizado
+novamente, redesenhado em tela, etc.
+
+Tirando isso, nosso jogo nada mais é do que a interpretação gráfica de uma matriz simples, onde tudo gira em torno das colisoes
+e atualizações a partir do tempo. Quando ocorre uma colisao (Dois elementos da matriz ocupam as mesmas coordenadas), os elementos
+serão atualizados conforme o código exigir (tiro e inimigo = ambos deletados. Tiro e topo da tela = tiro deletado. Entre outros)
+
+Nosso jogo tem uma cara bem simples e fácil de se entender, e nossos PROCs estão bem explicados.
