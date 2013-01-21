@@ -41,7 +41,7 @@
 
 ----
 
-<h1>!GeeckoGamesSokoban.asm</h1>
+==!GeeckoGamesSokoban.asm==
 <p>Esse é o arquivo principal do jogo. Ele inicia o jogo, controla o loop e chama todas as outras funções do jogo. </p>
 <h3>!GeeckoGamesSokoban</h3> 
 <p>É a função inicial do jogo. Ela é chamada somente uma vez a partir do menu inicial do projeto. Ela define a cor de fundo do console como branca e a cor de texto como preta pra facilitar a visualização. Ela desenha a tela inicial, quando o usuário aperta “enter” ela inicializa a primeira fase do jogo entrando no game loop.O game loop é uma parte do código onde esperamos um input do usuário, o processamos e chamamos a função que deve tratar disso. Ao final do processamento, chamamos as funções de desenhar na tela.</p>
