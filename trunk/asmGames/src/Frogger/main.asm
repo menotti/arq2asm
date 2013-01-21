@@ -13,8 +13,6 @@ INCLUDE Irvine32.inc
 INCLUDE macros.inc
 
 FROG_SAPO = 9 ; define numerico referente ao sapo!
-
-; tamanho da leitura dos elementos armazenados em arquivos
 FROG_CAMPO_TAM = 283
 FROG_INTRO_TAM = 1600
 
@@ -27,37 +25,35 @@ FROG_CAMPO_INI_X 	  = 3
 FROG_FROG_CAMPO_INI_Y = 5
 
 .data
-	FROG_Campo		word FROG_LINHAS *FROG_COLUNAS dup(0)
-	
+	FROG_Campo word FROG_LINHAS *FROG_COLUNAS dup(0)
 	FROG_Campo_Temp byte FROG_CAMPO_TAM dup(0)
-	FROG_Intro		byte FROG_INTRO_TAM dup(0)
+	FROG_Intro byte FROG_INTRO_TAM dup(0)
 	
 	; posicao do sapo
-	FROG_sapoX		byte 0
-	FROG_sapoY		byte 0
+	FROG_sapoX byte 0
+	FROG_sapoY byte 0
 	
 	FROG_ganhouJogo byte 0
 	FROG_perdeuJogo byte 0
 
-	FROG_fCampo	   byte "campo.txt",  0
-	FROG_IntroFile byte "frogger.txt",0
-	FROG_hCampo	   dword ?
-	FROG_Handle	   dword ?
-
+	FROG_fCampo BYTE "src/Frogger/campo.txt", 0
+	FROG_IntroFile BYTE "src/Frogger/frogger.txt",0
+	FROG_Handle DWORD ?
 
 	FROG_respiracao byte 0
 	
 	; Os quatro vetores seguintes sao utilizados pelo motor de movimentacao do cenario.
 	; FROG_TransitoLinha:	armazena quais FROG_LINHAS da matriz contem elementos nocivos ao sapo;
-	; TransitoVeloc:	armazena a velocidade com que os elementos contidos nas FROG_LINHAS
+	; FROG_TransitoVeloc:	armazena a velocidade com que os elementos contidos nas FROG_LINHAS
 	;					referenciadas por FROG_TransitoLinha andam no cenario;
-	; VelocAtual:		serve como contador para ajustar o delay de velocidade sem perder os
-	;					valores de TransitoVeloc;
-	; TransitoSentido:	armazena o sentido dos elementos contidos em FROG_TransitoLinha;	
-	FROG_TransitoLinha	word 1, 2, 3, 4, 5, 6, 8, 9, 10, 11, 12, 13
-	TransitoVeloc		word 3, 4, 4, 3, 3, 3, 4, 4,  2,  3,  1,  4					
-	VelocAtual			word 3, 4, 4, 3, 3, 3, 4, 4,  4,  3,  3,  4						
-	TransitoSentido 	word 1, 0, 1, 1, 0, 1, 1, 0,  1,  0,  1,  0
+	; FROG_VelocAtual:		serve como contador para ajustar o delay de velocidade sem perder os
+	;					valores de FROG_TransitoVeloc;
+	; FROG_TransitoSentido:	armazena o sentido dos elementos contidos em FROG_TransitoLinha;
+	
+	FROG_TransitoLinha	 word 1, 2, 3, 4, 5, 6, 8, 9, 10, 11, 12, 13
+	FROG_TransitoVeloc	 word 3, 4, 4, 3, 3, 3, 4, 4,  2,  3,  1,  4					
+	FROG_VelocAtual		 word 3, 4, 4, 3, 3, 3, 4, 4,  4,  3,  3,  4						
+	FROG_TransitoSentido word 1, 0, 1, 1, 0, 1, 1, 0,  1,  0,  1,  0
 	
 .code
 
@@ -205,13 +201,12 @@ FROG_MovimentaEsq proc
 
 	movzx eax, FROG_sapoX
 	movzx ecx, FROG_sapoY
-	mov esi, 0
+	mov esi, eax
 	
 	l:
 		add esi, FROG_LINHAS
 	loop l
 	
-	add esi, eax
 	shl esi, 1
 	
 	mov FROG_Campo[esi], 0
@@ -231,13 +226,12 @@ FROG_MovimentaDir proc
 
 	movzx eax, FROG_sapoX
 	movzx ecx, FROG_sapoY
-	mov esi, 0
+	mov esi, eax
 	
 	l:
 		add esi, FROG_LINHAS
 	loop l
 	
-	add esi, eax
 	shl esi, 1
 	
 	mov FROG_Campo[esi], 0
@@ -256,13 +250,12 @@ FROG_MovimentaCima proc
 
 	movzx eax, FROG_sapoX
 	movzx ecx, FROG_sapoY
-	mov esi, 0
+	mov esi, eax
 	
 	l:
 		add esi, FROG_LINHAS
 	loop l
 
-	add esi, eax
 	shl esi, 1
 	
 	mov FROG_Campo[esi], 0
@@ -281,13 +274,12 @@ FROG_MovimentaBaixo proc
 
 	movzx eax, FROG_sapoX
 	movzx ecx, FROG_sapoY
-	mov esi, 0
+	mov esi, eax
 	
 	l:
 		add esi, FROG_LINHAS
 	loop l
 	
-	add esi, eax
 	shl esi, 1
 	
 	mov FROG_Campo[esi], 0
@@ -309,25 +301,25 @@ FROG_AtualizarTransito proc
 	mov esi, 0
 	
 	Atualizar:
-		mov bx, FROG_TransitoLinha[esi]		;#?determina qual linha do trânsito sofrerá rotação
-		mov ax, TransitoSentido	  [esi]		;#?determina qual sentido o trânsito está orientado [1 <- / 0 ->]
-		mov dx, VelocAtual        [esi]		;#?determina o delay de ciclos para que a rotação seja efetuada
+		mov dx, FROG_VelocAtual        [esi]		;#?determina o delay de ciclos para que a rotação seja efetuada
 		cmp dx, 0
 		
 		jne skip
-			cmp bx, 5
+			mov bx, FROG_TransitoLinha[esi]		;#?determina qual linha do trânsito sofrerá rotação
+			mov ax, FROG_TransitoSentido	  [esi]		;#?determina qual sentido o trânsito está orientado [1 <- / 0 ->]
+			cmp bx, 6
 			jna Agua
 			call FROG_RotacionarTransito
 			jmp QualLinha
 		Agua:
 			call FROG_RotacionarAgua
 		QualLinha:
-			mov dx, TransitoVeloc[esi]
-			mov VelocAtual[esi], dx
+			mov dx, FROG_TransitoVeloc[esi]
+			mov FROG_VelocAtual[esi], dx
 
 		skip:
 		dec dx
-		mov VelocAtual[esi], dx
+		mov FROG_VelocAtual[esi], dx
 		add esi, type FROG_TransitoLinha
 	loop Atualizar
 	
@@ -550,7 +542,7 @@ FROG_DesenharCaracteres proc
 	cmp ax, FROG_SAPO
 	je DesenharSapoA
 	cmp ax, 0
-	je DesenharChaoA
+	je DesenharChao0A
 	cmp ax, 1
 	je DesenharCarro0A
 	cmp ax, 2
@@ -565,13 +557,15 @@ FROG_DesenharCaracteres proc
 	je DesenharCarro5A
 	cmp ax, 7
 	je DesenharAgua0A
+	cmp ax, FROG_SAPO
+	ja DesenharMortoA
 	
 	SegundaLinha:
 		
 	cmp ax, FROG_SAPO
 	je DesenharSapoB
 	cmp ax, 0
-	je DesenharChaoB
+	je DesenharChao0B
 	cmp ax, 1
 	je DesenharCarro0B
 	cmp ax, 2
@@ -586,12 +580,14 @@ FROG_DesenharCaracteres proc
 	je DesenharCarro5B
 	cmp ax, 7
 	je DesenharAgua0B
+	cmp ax, FROG_SAPO
+	ja DesenharMortoB
 
 ;------- Sapo --------
 	DesenharSapoA:
 		mov	al, blue + (lightgreen * 16)
 		call SetTextColor
-		mWrite "O O"
+		mWrite "• ¢"
 		jmp D_Finally
 	DesenharSapoB:
 		mov	al, blue + (lightgreen * 16)
@@ -599,116 +595,178 @@ FROG_DesenharCaracteres proc
 		cmp FROG_respiracao, 3
 		ja SapoFROG_respiracao
 			mWrite ")”("
-			add FROG_respiracao, 1
+			inc FROG_respiracao
 			jmp D_Finally
 		SapoFROG_respiracao:
 			mWrite ")™("
-			add FROG_respiracao, 1
+			inc FROG_respiracao
 			cmp FROG_respiracao, 6
 			jne D_Finally
 			mov FROG_respiracao, 0
 			jmp D_Finally
 ;------- Chao --------
-	DesenharChaoA:
-		cmp esi, 12*15 - 2
-		jna DesenharMadeiraA
+	DesenharChao0A:
+		cmp esi, 28*15 - 2
+		jna DesenharRuaA
+		mov	al, lightgray + (white * 16)
+		call SetTextColor
+		mWrite "±° "
+		jmp D_Finally
+
+	DesenharRuaA:
+		cmp esi, 16*15 - 2
+		jna DesenharChao1A
 		mov	al, lightgray + (gray * 16)
 		call SetTextColor
 		mWrite "±°²"
 		jmp D_Finally
-	DesenharMadeiraA:
+
+	DesenharChao1A:
+		cmp esi, 14*15 - 2
+		jna DesenharMadeira
+		mov	al, lightgray + (white * 16)
+		call SetTextColor
+		mWrite "±° "
+		jmp D_Finally
+
+	DesenharMadeira:
+		cmp esi, 2*15 - 2
+		jna DesenharGrama
 		mov	al, black + (brown * 16)
 		call SetTextColor
 		mWrite "ÍÍÍ"
 		jmp D_Finally
-	DesenharChaoB:
-		cmp esi, 12*15 - 2
-		jna DesenharMadeiraB
+
+	DesenharGrama:
+		mov	al, Green + (brown * 16)
+		call SetTextColor
+		mWrite "±°±"
+		jmp D_Finally
+
+	DesenharChao0B:
+		cmp esi, 28*15 - 2
+		jna DesenharRuaB
+		mov	al, lightgray + (white * 16)
+		call SetTextColor
+		mWrite "° °"
+		jmp D_Finally
+
+	DesenharRuaB:
+		cmp esi, 16*15 - 2
+		jna DesenharChao1B
 		mov	al, lightgray + (gray * 16)
 		call SetTextColor
 		mWrite "²±°"
 		jmp D_Finally
-	DesenharMadeiraB:
-		mov	al, black + (brown * 16)
+
+	DesenharChao1B:
+		cmp esi, 14*15 - 2
+		jna DesenharMadeira
+		mov	al, lightgray + (white * 16)
 		call SetTextColor
-		mWrite "ÍÍÍ"
+		mWrite "° °"
 		jmp D_Finally
+
+
 ;------- Carro 0 --------
 	DesenharCarro0A:
-		mov	al, white + (red * 16)
+		mov	al, white + (blue * 16)
 		call SetTextColor
-		mWrite "ÍÍÍ"
+		mWrite "ÉÍ»"
 		jmp D_Finally
 	DesenharCarro0B:
-		mov	al, white + (red * 16)
+		mov	al, white + (black * 16)
 		call SetTextColor
 		mWrite "ÍÍÍ"
 		jmp D_Finally
 ;------- Carro 1 --------
 	DesenharCarro1A:
-		mov	al, red + (white * 16)
+		mov	al, white + (blue * 16)
 		call SetTextColor
-		mWrite "ÃÃÄ"
+		mWrite "ÉÍ»"
 		jmp D_Finally
 	DesenharCarro1B:
-		mov	al, red + (white * 16)
+		mov	al, white + (black * 16)
 		call SetTextColor
-		mWrite "ÃÃÄ"
+		mWrite "È©©"
 		jmp D_Finally
 ;------- Carro 2 --------
 	DesenharCarro2A:
-		mov	al, white + (lightred * 16)
+		mov	al, blue + (white * 16)
 		call SetTextColor
-		mWrite "ÌÌÑ"
+		mWrite "ÉËÍ"
 		jmp D_Finally
 	DesenharCarro2B:
-		mov	al, white + (lightred * 16)
+		mov	al, white + (blue * 16)
 		call SetTextColor
-		mWrite "ÌÌÑ"
+		mWrite "Í¸Í"
 		jmp D_Finally
 ;------- Carro 3 --------
 	DesenharCarro3A:
-		mov	al, white + (lightred * 16)
+		mov	al, blue + (white * 16)
 		call SetTextColor
-		mWrite "[´´"
+		mWrite "ÍÍ»"
 		jmp D_Finally
 	DesenharCarro3B:
-		mov	al, white + (lightred * 16)
+		mov	al, white + (blue * 16)
 		call SetTextColor
-		mWrite "[´´"
+		mWrite "Í¸Ê"
 		jmp D_Finally
 ;------- Carro 4 --------
 	DesenharCarro4A:
-		mov	al, gray + (black * 16)
+		mov	al,  red + (white * 16)
 		call SetTextColor
-		mWrite "ÌÎÎ"
+		mWrite "ÍÍÍ"
 		jmp D_Finally
 	DesenharCarro4B:
-		mov	al, gray + (black * 16)
+		mov	al, black + (red * 16)
 		call SetTextColor
-		mWrite "ÌÎÎ"
+		mWrite "ÍÍÍ"
 		jmp D_Finally
 ;------- Carro 5 --------
 	DesenharCarro5A:
-		mov	al, black + (lightcyan * 16)
+		mov	al, gray + (lightcyan * 16)
 		call SetTextColor
-		mWrite "Ìºº"
+		mWrite "ËÍ»"
 		jmp D_Finally
 	DesenharCarro5B:
-		mov	al, black + (lightcyan * 16)
+		mov	al, white + (black * 16)
 		call SetTextColor
-		mWrite "Ìºº"
+		mWrite "©©Î"
 		jmp D_Finally
 ;------- Agua 0 --------
 	DesenharAgua0A:
 		mov al, cyan +(blue * 16)
 		call SetTextColor
+	cmp FROG_respiracao, 3
+	ja Agua0AChange
 		mWrite "°±°"
 	jmp D_Finally
+	Agua0AChange:
+		mWrite "±°°"
+	jmp D_Finally
+
 	DesenharAgua0B:
 		mov al, cyan +(blue * 16)
 		call SetTextColor
+	cmp FROG_respiracao, 3
+	ja Agua0BChange
 		mWrite "±°°"
+	jmp D_Finally
+	Agua0BChange:
+		mWrite "°±°"
+	jmp D_Finally
+
+	;------- Sapo Morti --------
+	DesenharMortoA:
+		mov	al, white + (magenta * 16)
+		call SetTextColor
+		mWrite "X X"
+		jmp D_Finally
+	DesenharMortoB:
+		mov	al, white + (magenta * 16)
+		call SetTextColor
+		mWrite ")™("
 
 
 	D_Finally:
@@ -716,12 +774,11 @@ FROG_DesenharCaracteres proc
 	ret
 FROG_DesenharCaracteres endp
 
-; Carregar o campo atual de um arquivo de texto.
 FROG_DefinirCampo PROC
-	mov dx, FROG_Campo
+
 	mov edx, OFFSET FROG_fCampo
 	call OpenInputFile
-	mov FROG_hCampo, eax
+	mov FROG_Handle, eax
 	cmp eax, INVALID_HANDLE_VALUE
 	jne Definir_Cont
 	ret
@@ -729,7 +786,7 @@ FROG_DefinirCampo PROC
 	mov edx, OFFSET FROG_Campo_Temp
 	mov ecx, FROG_CAMPO_TAM
 	call ReadFromFile
-	mov eax, FROG_hCampo
+	mov eax, FROG_Handle
 	call CloseFile
 
 	mov ecx, 15
@@ -791,9 +848,9 @@ FROG_ExibirCoordenada proc
 FROG_ExibirCoordenada endp
 
 FROG_ExibirVitoria proc
+	call FROG_DesenharCampo
 	mov	ax, red + (white * 16)
 	call SetTextColor
-	call Clrscr
 
 	mov dl, 7
 	mov dh, 8
@@ -813,15 +870,16 @@ FROG_ExibirVitoria proc
 FROG_ExibirVitoria endp
 
 FROG_ExibirDerrota proc
+	call FROG_DesenharCampo
 	mov	ax, red + (white * 16)
 	call SetTextColor
-	call Clrscr
+	
 
 	mov dl, 7
 	mov dh, 8
 	call Gotoxy
 	
-	mWrite " V O C E   P E R  D E U ! ! ! ! ! ! ! ! ! ! ! ! ! "	
+	mWrite " V O C E   P E R D E U ! ! ! ! ! ! ! ! ! ! ! ! ! "	
 	add dh, 2
 	call Gotoxy
 	mWrite " Que pena! O sapo agora se encontra no plano espiritual. "
@@ -835,7 +893,6 @@ FROG_ExibirDerrota proc
 FROG_ExibirDerrota endp
 
 FROG_ExibirIntro PROC
-	call Clrscr
 
 	mov edx, OFFSET FROG_IntroFile
 	call OpenInputFile
