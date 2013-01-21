@@ -6,13 +6,14 @@ INCLUDE GeeckoGamesLogic.asm
 .data
 CursorInfoA DWORD 1 
 CursorInfoB DWORD 0
-mapFileName BYTE "Code\\GeeckoGames\\Maps\\Map"
+mapFileName BYTE "src\\GeeckoGames\\Maps\\Map"
 mapNumber BYTE "00", 0
 currentMapBg BYTE 880 DUP (?)
 currentMapFg BYTE 880 DUP (?)
 best DWORD ?
 moves DWORD ?
 
+;//'Struct' holding the position of the character (X, Y)
 charPos DWORD ?, ?
 
 LEAVE_THE_GAME_FLAG = 1b
@@ -26,10 +27,13 @@ MAP_LINE_SIZE = 44
 
 .code
 
+;//This is the main PROC of the game, that's what is called to begin the game loop
 GeeckoGamesSokoban PROC
+	PUSHA
+	;//We use an specific color scheme, so we set it here
 	MOV AX, black + (white * 16)
 	CALL SetTextColor
-	PUSHA
+	;//Here we make the cursor invisible
 	MOV CursorInfoA, 1
 	MOV CursorInfoB, 0
 	INVOKE GetStdHandle, STD_OUTPUT_HANDLE
@@ -37,38 +41,46 @@ GeeckoGamesSokoban PROC
 	CALL ClrScr
 	MOV EDX, OFFSET mapFileName
 
+	;//Here's the main loop
 MainScreen:
 	MOV ECX, 0
 	CALL DrawMainScreen
 	CALL UpdateGame
+
+	;//Testing if the games state changed
 	TEST ECX, LEAVE_THE_GAME_FLAG
 	JNZ LeaveGame
 	TEST ECX, LEVEL_PLAY_FLAG
 	JZ MainScreen
 
+	;//This Part is designated to load the first map of the game
 FirstMap:
 	MOV AL, '0'
 	MOV mapNumber, AL
-	MOV mapNumber[1], AL
-	;LOAD FIRST MAP AND START A NEW GAME
-LoadMap:
+	MOV mapNumber[1], AL ;//sets the map number to 00
+	;//LOAD FIRST MAP AND START A NEW GAME
+LoadMap: ;//Load the map designated by the mapFileName variable
 	call ClrScr
 	INVOKE ReadMap, SIZEOF currentMapBg, ADDR mapFileName, ADDR currentMapBg
-	CMP EAX, INVALID_HANDLE_VALUE ; if loaded map does not exist the game has been beated
+	CMP EAX, INVALID_HANDLE_VALUE ;//if loaded map does not exist the game has been beated (automatic end game loop) 
 	JE EndScreen
 
 	MOV moves, 0
 	MOV ECX, LEVEL_PLAY_FLAG
-
+	;//After successfully loading a map we look at the foreground of the map to find the player's position
 	INVOKE GetCharPos, ADDR currentMapFg, SIZEOF currentMapFg, MAP_LINE_SIZE, ADDR charPos
 
+	;//This part of the game loop 
 LevelPlay:
 	INVOKE DrawBackground, ADDR currentMapBg, MAP_LINE_SIZE, SIZEOF currentMapBg
 	INVOKE DrawInteractive, ADDR currentMapFg, ADDR currentMapBg, MAP_LINE_SIZE, SIZEOF currentMapFg
+	;//Updates the game : waits for a key press and process the read input
 	CALL UpdateGame
 
+	;//Checks if all diamonds are at the right place
 	INVOKE CheckMapState, ADDR currentMapBg, ADDR currentMapFg, SIZEOF currentMapBg
 
+	;//Checks for state changes
 	TEST ECX, LEAVE_THE_GAME_FLAG
 	JNZ LeaveGame
 	TEST ECX, LEVEL_PLAY_FLAG
@@ -80,17 +92,18 @@ LevelPlay:
 	TEST ECX, NEXT_LEVEL_FLAG
 	JZ LevelPlay
 
+	;//when a level is complete we check if the map's high score's been beated
 	MOV EAX, moves
 	CMP EAX, best
 	JAE LOW_SCORE
 	CMP EAX, "AAAA"
 	JAE LOW_SCORE
 	INVOKE SaveNewMapScore, ADDR mapFileName, EAX, SIZEOF currentMapBg
-LOW_SCORE:
+LOW_SCORE: ;//the high socre hasn't been beated
 	CALL UpdateMapName
 	JMP LoadMap
 
-EndScreen:
+EndScreen: ;//draws the end game screen
 	CALL DrawFinishedGame
 
 	CALL UpdateGame
@@ -106,44 +119,26 @@ EndScreen:
 	JNZ LeaveGame
 	JMP EndScreen
 LeaveGame:
+	;//Here we return the cursor and color scheme to their windows default settings
 	MOV CursorInfoA, 25
 	MOV CursorInfoB, 1
 	INVOKE GetStdHandle, STD_OUTPUT_HANDLE
 	INVOKE SetConsoleCursorInfo, EAX, ADDR CursorInfoA
 
-	POPA
-
 	MOV AX, lightgray + (black * 16)
 	CALL SetTextColor
-
+	POPA
 	RET
 GeeckoGamesSokoban ENDP
 
-;RECEIVES THE ADDRESS OF THE MAP IN ESI AND THE NUMBER OF CHARS IN IT IN ECX
-DrawMap PROC USES EAX EBX EDX
-	mov dx, 0
-L:	mov al, BYTE PTR [esi]
-	call gotoXY
-	call WriteChar
-	inc ESI
-	inc dl
-	cmp dl, 44
-	jl L2
-	mov dl, 0
-	inc dh
-L2:	loop L
-	;call Crlf
-	ret 
-DrawMap ENDP
-
-;THIS FUNCTION UPDATES THE GAME LOOP
+;//THIS FUNCTION UPDATES THE GAME LOOP
 UpdateGame PROC USES EAX
 CheckForInput:
 	MOV EAX, 10
 	CALL Delay
 	CALL ReadKey
-	;JZ CheckForInput ;no keys pressed
 
+	;//Checks if a valid input has been received
 	CMP AH, 01h ;ESC
 	JE ESC_PRESSED
 	CMP AH, 1Ch ;ENTER
@@ -160,8 +155,11 @@ CheckForInput:
 	JE PRESSED_S
 	CMP AH, 20h ;D
 	JE PRESSED_D
+
+	;//If no valid input has been received keep checking
 	JMP CheckForInput
 
+	;//Process inputs and sets flags
 ESC_PRESSED:
 	OR ECX, LEAVE_THE_GAME_FLAG
 	JMP LeaveProc
@@ -174,6 +172,9 @@ X_PRESSED:
 R_PRESSED:
 	OR ECX, RESTART_LEVEL_FLAG
 	JMP LeaveProc
+	;//If any movement key's been pressed process this input and try to move the character
+	;//If the caracter moves increase the movement count, unless it's over "AAAA", which is considered
+	;//an invalid score
 PRESSED_W:
 	INVOKE MoveChar, ADDR currentMapBg, ADDR currentMapFg, MAP_LINE_SIZE, ADDR charPos, 00b
 	CMP EAX, 0
