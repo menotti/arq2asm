@@ -4,7 +4,7 @@
 
 Documentação do jogo Frogger, desenvolvido pela disciplina de Laboratório de Arquitetura e Organização de Computadores II.
 
-O objetivo do jogo consiste em, controlando um sapo, conseguir atravessar uma rodovia movimentada. O sapo deve evitar a colisão com os veículos a fim de sobreviver. Para vencer, o sapo deve alcançar a última faixa da rodovia sem ser esmagado.
+O objetivo do jogo consiste em, controlando um sapo, conseguir caminhar até o gramado do outro lado do cenário. O cenário oferece dois tipos de obstáculos: a rodovia e o rio. Para atravessar a rodovia, basta impedir que o sapo colida com qualquer um dos veículos. Para atravessar o rio, por outro lado, é necessário caminha pelos troncos flutuantes, sem deixar o sapo cair na água.
 
 
 *Data de criação*: 18/12/2012
