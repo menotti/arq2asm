@@ -649,7 +649,7 @@ geraComida PROC
 			repne scasb
 			jz GERA_COMIDA
 		Comida_ok:
-		mov ax, 02h							;Define cor da comida como verde
+		mov ax, yellow							;Define cor da comida como verde
 		call setTextColor
 		mov dh, comidaY
 		mov dl, comidaX
