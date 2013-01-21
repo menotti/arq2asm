@@ -3,11 +3,14 @@ TITLE Space_Invaders
 
 ;INCLUDE Irvine32.inc
 .data
-	fHighscore BYTE "highscore.txt", 0
+	fHighscore BYTE "src\SpaceInvaders\highscore.txt", 0
 	fDificuldades BYTE "src\SpaceInvaders\dificuldades.txt", 0
 
-	bufferHighscore BYTE 4096 DUP(0)
+	bufferArquivo BYTE 4096 DUP(0)
+	contadorArquivo DWORD 0
 	bufferConversaoHighscore BYTE 10 DUP(?)
+	nomeHighscore BYTE 0,0,0,0
+	valorHighscore DWORD 0
 	erroDificuldades BYTE "ARQUIVO DE DIFICULDADES NAO ENCONTRADO",0
 
 	enemyTop BYTE 219,"    ", 219, 0
@@ -27,7 +30,7 @@ TITLE Space_Invaders
 	scoreLabel BYTE "SCORE: ",0
 	livesLabel BYTE "VIDAS: ",0
 	countLives BYTE 0				;Contagem de "vidas" do personagem
-	countScore BYTE 0				;Contagem dos pontos do personagem
+	countScore DWORD 0				;Contagem dos pontos do personagem
 	placarBool BYTE 0				;Verifica se o placar precisa ser atualizado
 
 	tiroX BYTE 0, 0					;Vetor de coordenadas X dos tiros correspondentes, i.e. tiroX[0] -> coord X do primeiro tiro
@@ -50,6 +53,7 @@ TITLE Space_Invaders
 	enemyTime DWORD 5 DUP(0)		;Vetor de variaveis de controle de tempo de atualização (similar aos tiros)
 	enemyHitBool BYTE 5 DUP(0)		;Vetor de variáveis de controle de colisão do inimigo
 	enemyHitLabel BYTE -1		;Indica qual o inimigo (indice) atingido pelo ultimo tiro, com -1 sendo NENHUM
+	enemyspeed DWORD 500			;Velocidade de descida dos inimigos, muda de acordo com a pontuação
 
 	personagemX BYTE 39				;Coordenadas do personagem principal
 	personagemY BYTE 24
@@ -68,8 +72,9 @@ TITLE Space_Invaders
 
 .code
 Space_Invaders PROC
+
 		
-		call reinicializaVariaveis
+		call reinicializaVariaveis		;Apenas para quando o jogo for re-selecionado no menu de jogos
 	
 		call ClrScr
 		call GetMseconds		;Inicializa a variavel do tempo do gerador e as vidas
@@ -112,7 +117,7 @@ Space_Invaders PROC
 		pop edx
 		add dl, (LENGTHOF scoreLabel - 1)
 		call GotoXY
-		movzx eax, countScore
+		mov eax, countScore
 		call WriteDec
 
 		mov dh, 27
@@ -142,12 +147,12 @@ Space_Invaders PROC
 	push eax						;Guarda na pilha o valor de manipular arquivo.
 
 	;se carregou:
-	mov edx, OFFSET bufferHighscore
+	mov edx, OFFSET bufferArquivo
 	mov ecx, 4096					;Tamanho do arquivo
 	call ReadFromFile
 
 
-	mov esi, OFFSET bufferHighscore	;esi aponta para primeira dificuldade
+	mov esi, OFFSET bufferArquivo	;esi aponta para primeira dificuldade
 	mov edi, OFFSET bufferConversaoHighscore
 	mov ebx, 0						;ebx será o índice para acessar o vetor das dificuldades
 
@@ -262,11 +267,6 @@ PROCESSAMENTO:					;Secao de processamento dos dados
 		call EscrevePersonagem	;Escreve o personagem com suas alteracoes
 NO_UPDATE_HERO:
 
-;==================CHECAGEM DE COLISÕES
-call checaColisoes
-
-;==================FIM CHECAGEM DE COLISÕES 
-
 ;==================ATUALIZA E ESCREVE INIMIGOS
 mov ecx, 5		;Numero maximo de inimigos
 mov esi, 0		;indice dos inimigos
@@ -278,9 +278,12 @@ LOOP_INIMIGOS:
 	add esi, 1
 loop LOOP_INIMIGOS
 
-
-
 ;==================FIM DA ATUALIZACAO E ESCRITA DE INIMIGOS
+
+;==================CHECAGEM DE COLISÕES
+call checaColisoes
+
+;==================FIM CHECAGEM DE COLISÕES 
 
 ;==================ATUALIZA E ESCREVE TIROS
 mov ecx, LENGTHOF tiroBool		;Numero max de tiros
@@ -293,6 +296,11 @@ LOOP_TIROS:
 		add esi, 1
 loop LOOP_TIROS
 ;==================FIM ATUALIZAÇÃO E ESCRITA DE TIROS
+
+;==================CHECAGEM DE COLISÕES
+call checaColisoes
+
+;==================FIM CHECAGEM DE COLISÕES ;Duas checagens para evitar "ghosts", quando o tiro atravessa o inimigo e nao atinge
 
 ;==================ATUALIZA E ESCREVE: PLACAR E VIDA
 cmp placarBool, 0
@@ -315,7 +323,7 @@ je NO_UPDATE_PLACAR
 	pop edx
 	add dl, (LENGTHOF scoreLabel - 1)
 	call GotoXY
-	movzx eax, countScore
+	mov eax, countScore
 	call WriteDec
 
 	mov dh, 27
@@ -363,7 +371,7 @@ GAME_OVER:
 	call Crlf
 	mov edx, OFFSET frasePontuacaoFinal
 	call WriteString
-	movzx eax, countScore
+	mov eax, countScore
 	call WriteDec
 	call Crlf
 	call WaitMsg
@@ -421,12 +429,20 @@ escreveTiro1 PROC USES EBX EDX ECX EAX
 	mov dl, tiroX[esi]
 	call GotoXY
 	add dh, 1
+
+	call GetTextColor
+	push eax
+	mov ah, 0h
+	mov al, 0Ch
+	call SetTextColor
+
 	mov al, 30
 	call WriteChar
 	call GotoXY
 	mov al, " "
 	call WriteChar
-
+	pop eax
+	call SetTextColor
 	jmp FIM_TIRO
 
 ATINGIU_HIT:				;Desativa o tiro, e apaga da tela o tiro
@@ -535,7 +551,7 @@ escreveInimigo1 PROC USES EBX EDX EAX
 	call GetMseconds
  	mov ebx, eax
 	sub eax, enemyTime[esi * 4]			;Regula a atualizacao, nesse caso 0.5 segundos
-	cmp eax, 500
+	cmp eax, enemySpeed					;Tempo que inimigo leva para atualizar
 	jb FIM_ENEMY
 	
 	
@@ -573,6 +589,12 @@ escreveInimigo1 PROC USES EBX EDX EAX
 
 
 	;Agora escreve o novo desenho
+	call GetTextColor
+	push eax
+	mov ah, 0h
+	mov al, 0Ah
+	call SetTextColor ;Cor da nave
+
 	mov edx, ebx
 	call GotoXY
 	mov edx, OFFSET enemyBottom
@@ -591,6 +613,9 @@ escreveInimigo1 PROC USES EBX EDX EAX
 	call GotoXY
 	mov edx, OFFSET enemyTop
 	call WriteString
+
+	pop eax
+	call SetTextColor
 	
 	jmp FIM_ENEMY
 
@@ -756,6 +781,7 @@ verificaScore PROC
 	cmp countScore, 30
 	jne NOT_30
 		mov dificuldade, 4
+		mov enemySpeed, 450
 	NOT_30:
 	cmp countScore, 45
 	jne NOT_45
@@ -764,7 +790,16 @@ verificaScore PROC
 	cmp countScore, 60
 	jne NOT_60
 		mov dificuldade, 7
+		mov enemySpeed, 350
 	NOT_60:
+	cmp countScore, 75
+	jne NOT_75
+		mov enemySpeed, 300
+	NOT_75:
+	cmp countScore, 100
+	jne NOT_100
+		mov enemySpeed, 200
+	NOT_100:
 
 
 	ret
@@ -825,6 +860,6 @@ reinicializaVariaveis PROC
 	mov dificuldade, 0
 
 	mov gameOver, 0					;Variavel de fim de jogo.
-
+	mov enemyspeed, 500
 	ret
 reinicializaVariaveis ENDP
