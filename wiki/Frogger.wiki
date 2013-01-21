@@ -123,8 +123,11 @@ cenário.
 *FROG_DefinirCampo*: busca, do arquivo "campo.txt", os valores que devem ser inseridos na matriz.
 
 *FROG_ExibirVitoria*: exibe janela de vitória.
+
 *FROG_ExibirDerrota*: exibe janela de derrota.
+
 *FROG_ExibirIntro*: exibe janela de introdução.
+
 *FROG_InitJogo*: restaura os valores inicias das variáveis e do campo.
 
 -------------
