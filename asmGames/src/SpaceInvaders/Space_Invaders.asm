@@ -57,6 +57,8 @@ TITLE Space_Invaders
 
 	personagemX BYTE 39				;Coordenadas do personagem principal
 	personagemY BYTE 24
+
+	bufferStringConversao BYTE 3 DUP (0)
 	
 	geradorTime DWORD 0				;Variavel de controle do tempo do "gerador aleatório" de inimigos
 
@@ -67,6 +69,9 @@ TITLE Space_Invaders
 	emptyLine BYTE 80 DUP(" "), 0
 	fraseGameOver BYTE "GAME OVER",0
 	frasePontuacaoFinal BYTE "PONTUACAO FINAL: ",0
+	fraseHighScore BYTE "HIGH SCORE: ",0
+	congratsHighscore BYTE "PARABENS! O HIGHSCORE AGORA E SEU!", 13, 10,
+						   "ESCREVA AGORA SEU NOME (3 LETRAS): ",0
 
 	gameOver BYTE 0					;Variavel de fim de jogo.
 
@@ -373,6 +378,11 @@ jmp FINAL_PROGRAMA
 	
 
 GAME_OVER:
+	;Carrega arquivo de highscore 
+	call carregaHighscore
+	;Verifica highscore
+	;Atualiza arquivo de highscore
+
 	call ClrScr
 	mov edx, OFFSET fraseGameOver
 	call WriteString
@@ -380,6 +390,15 @@ GAME_OVER:
 	mov edx, OFFSET frasePontuacaoFinal
 	call WriteString
 	mov eax, countScore
+	call WriteDec
+	call Crlf
+	mov edx, OFFSET fraseHighScore
+	call WriteString
+	mov edx, OFFSET nomeHighscore
+	call WriteString
+	mov al, ' '
+	call WriteChar
+	mov eax, valorHighscore
 	call WriteDec
 	call Crlf
 	call WaitMsg
@@ -871,3 +890,110 @@ reinicializaVariaveis PROC
 	mov enemyspeed, 500
 	ret
 reinicializaVariaveis ENDP
+
+carregaHighscore PROC USES EAX EDX ECX ESI EDI
+	LOCAL handleValue:DWORD
+	mov edx, OFFSET fHighscore
+	call OpenInputFile
+	cmp eax, INVALID_HANDLE_VALUE
+	jne CARREGOU_HIGHSCORE_CORRETAMENTE
+		mov edx, OFFSET fHighscore
+		call CreateOutputFile
+		mov handleValue, eax
+		jmp CRIOU_ARQUIVO_HIGHSCORE
+	CARREGOU_HIGHSCORE_CORRETAMENTE:
+	mov handleValue, eax
+	mov edx, OFFSET bufferArquivo
+	mov ecx, 4096
+	call ReadFromFile
+	mov esi, OFFSET bufferArquivo
+	mov edi, OFFSET nomeHighscore
+	mov contadorArquivo, 0								
+
+	BUSCA_NOME:
+	mov al, [esi]
+	call IsDigit
+	jz ENCONTROU_NOME
+		mov [edi], al
+		add esi, 1
+		add edi, 1
+		add contadorArquivo, 1
+		jmp BUSCA_NOME
+	ENCONTROU_NOME:
+		mov edx, esi
+		mov ecx, 5
+		call ParseDecimal32
+		mov valorHighscore, eax
+		jmp VERIFICAR_HIGHSCORE
+	CRIOU_ARQUIVO_HIGHSCORE:
+		mov eax, countScore
+		mov valorHighscore, eax
+
+	VERIFICAR_HIGHSCORE:
+	mov eax, valorHighscore
+	cmp eax, countScore
+	ja HIGHSCORE_NAO_MUDA
+		mov eax, countScore
+		mov valorHighscore, eax
+		call ClrScr
+		mov edx, OFFSET congratsHighscore
+		call WriteString
+		mov edx, OFFSET nomeHighscore
+		mov ecx, SIZEOF nomeHighscore
+		call ReadString
+
+		mov esi, OFFSET bufferArquivo
+		mov edi, OFFSET nomeHighscore
+		mov ecx, 3
+		LP1:
+			mov al, [edi]
+			mov [esi],al
+			add esi,1
+			add edi,1
+		loop LP1
+		mov eax, valorHighscore
+		mov edi, OFFSET bufferStringConversao
+		call intParaString
+		mov edi, OFFSET bufferStringConversao
+		push esi
+		push edi
+		call Str_copy
+	HIGHSCORE_NAO_MUDA:
+	
+	mov eax, handleValue
+	call CloseFile
+
+	mov edx, OFFSET fHighscore
+	call CreateOutputFile
+
+	mov edx, OFFSET bufferArquivo
+	mov ecx, 8
+	call WriteToFile
+
+	mov eax, handleValue
+	call CloseFile
+
+	;Fim carregar highscore
+	ret
+carregaHighscore ENDP
+
+intParaString PROC
+;Recebe ax =  numero
+;Recebe edi = offset do buffer string
+mov bl, 100
+div bl
+add al, 48
+mov [edi], al
+add edi, 1
+movzx ax, ah
+mov bl, 10
+div bl
+add al, 48
+mov [edi], al
+add edi, 1
+add ah, 48
+mov [edi], ah
+	
+ret
+intParaString ENDP
+
