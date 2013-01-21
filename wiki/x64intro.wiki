@@ -1,3 +1,4 @@
+#summary Introdução a Arquitetura X64
  = Introdução: =
 
 O rápido avanço tecnológico da computação no século XXI cria margem para computadores cada vez mais rápidos e poderosos. Só que esse avanço encontrou uma barreira na própria arquitetura dos processadores: palavras de 32 bits só poderiam acessar até 4GB de memoria RAM. Foi para resolver esse problema que a Intel projetou a arquitetura conhecida como x64. A primeira implementação desse tipo de arquitetura foi da empresa AMD,com a arquitetura hoje conhecida por AMD64,logo depois a Intel criou a EMT64, ambas possuem apenas algumas pequenas diferenças, mas a maioria do código pode ser implementado em ambos, e a esse tipo de código foi dado o nome de flavor x64.
@@ -155,8 +156,6 @@ End
 
 5-Clique no executável 
 
-  
- 
 
  = Usando o assembly dentro do Visual Studio =
 
