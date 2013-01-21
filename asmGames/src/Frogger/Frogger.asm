@@ -36,8 +36,8 @@ FROG_FROG_CAMPO_INI_Y = 5
 	FROG_ganhouJogo byte 0
 	FROG_perdeuJogo byte 0
 
-	FROG_fCampo	   byte "campo.txt",  0
-	FROG_IntroFile byte "frogger.txt",0
+	FROG_fCampo	   byte "src/Frogger/campo.txt",  0
+	FROG_IntroFile byte "src/Frogger/frogger.txt",0
 	FROG_hCampo	   dword ?
 	FROG_Handle	   dword ?
 
