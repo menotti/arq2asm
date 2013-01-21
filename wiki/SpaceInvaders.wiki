@@ -1,4 +1,4 @@
-#Detalhes da implementação do jogo Space Invaders
+#summary Detalhes da implementação do jogo Space Invaders
 
 = Introdução =
 
