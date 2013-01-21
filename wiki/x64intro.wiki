@@ -37,7 +37,7 @@ Os 16 registradores XMM (eram 8 na x86)de 128 bits são citados mais adiante.
 
 Outros registradores incluem registradores de segmento, quase não utilizados em x64, registradores de controle, de gerenciamento de memoria, de debug, registrador de virtualização e registradores de performance que buscam todo tipo de parâmetro interno.
 
-
+[http://i50.tinypic.com/mps45.png]
 
 Maiores detalhes no manual da Intel disponível em: http://www.intel.com/content/www/us/en/processors/architectures-software-developer-manuals.html
 
@@ -156,7 +156,11 @@ End
 
 5-Clique no executável 
 
+[http://i48.tinypic.com/2qc3v4x.png]
 
+Hello.exe
+
+[http://i45.tinypic.com/25ut9jq.png]
  = Usando o assembly dentro do Visual Studio =
 
 1-Crie um empty project
