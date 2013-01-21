@@ -86,6 +86,8 @@ Ao termino de uma fase, checamos se existe uma próxima fase para ser jogada. Se
 <h3>CheckMapState</h3>
 <p>Essa função verifica se todos os diamantes estão sobre um alvo, ou seja, fase completa. Ela recebe o endereço da camada background, o endereço da camada interactive e o tamanho do mapa. Ela define uma flag para avisar se a fase já terminou.</p>
  
+----
+
 <h1>GeeckoGamesCharacterControl.asm</h1>
 <p>É o arquivo que controla a movimentação de elementos dentro do jogo.</p>
  
