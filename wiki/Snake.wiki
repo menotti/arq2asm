@@ -7,7 +7,7 @@ O jogo Snake se trata de um dos mais tradicionais jogos presentes no mundo, onde
 O jogador tem o controle sobre os movimentos da cobra e visualiza a comida, procurando então comê-la para que o tamanho da cobra aumente, quanto maior a cobra ficar até o final do jogo, maior a pontuação do jogador.
 
 = Detalhes da Implementação =
-
+Os procedimentos de desenho e movimentação, junto com algumas verificações, são feitas no segmento de código chamado "GameLoop" em que é repetido em intervalos de 60 milisegundos. As verificações feitas são de colisão com paredes (verificaColisao), colisão com a própria cobra (autoColisao), de passar pela comida (come) e de teclas lidas pelo teclado (identificaDirecao).
 
 
 = Procedures =
