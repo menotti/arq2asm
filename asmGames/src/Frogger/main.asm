@@ -21,8 +21,8 @@ FROG_LINHAS	  = 15
 FROG_COLUNAS  = 15
 
 ; Define a coordenadas (X,Y), onde o campo comecara a ser desenhado
-FROG_CAMPO_INI_X 	  = 3
-FROG_FROG_CAMPO_INI_Y = 5
+FROG_CAMPO_INI_X = 3
+FROG_CAMPO_INI_Y = 5
 
 .data
 	FROG_Campo word FROG_LINHAS *FROG_COLUNAS dup(0)
@@ -165,9 +165,6 @@ FROG_VerificarVitoria endp
 FROG_ControleMovimento proc
 	mov eax, 0
 	call ReadKey
-
-	call FROG_ExibirTeclaPress
-	call FROG_ExibirCoordenada
 
 	cmp eax, 19200
 	jne OutLeft
@@ -489,7 +486,7 @@ FROG_DesenharCampo proc
 	pushad
 	mov edx, 0
 	mov dh, FROG_CAMPO_INI_X
-	mov dl, FROG_FROG_CAMPO_INI_Y
+	mov dl, FROG_CAMPO_INI_Y
 	call Gotoxy
 
 	mov esi, 0
@@ -509,7 +506,7 @@ FROG_DesenharCampo proc
 		loop DesenharFROG_COLUNAS
 
 		add dh, 1
-		mov dl, FROG_FROG_CAMPO_INI_Y
+		mov dl, FROG_CAMPO_INI_Y
 		call Gotoxy
 		sub esi, 30
 		mov ecx, FROG_COLUNAS
@@ -524,7 +521,7 @@ FROG_DesenharCampo proc
 
 		pop ecx
 		add dh, 1
-		mov dl, FROG_FROG_CAMPO_INI_Y
+		mov dl, FROG_CAMPO_INI_Y
 		call Gotoxy
 	loop DesenharFROG_LINHAS
 	
@@ -809,43 +806,6 @@ FROG_DefinirCampo PROC
 
 	ret
 FROG_DefinirCampo ENDP
-
-FROG_ExibirTeclaPress proc
-	pushad
-
-	cmp eax, 1
-	je PTP_Finally
-
-	mov edx, 0
-	call Gotoxy
-	mWrite "Tecla pressionada: "
-	call WriteDec
-
-	PTP_Finally:
-	popad
-	ret
-FROG_ExibirTeclaPress endp
-
-FROG_ExibirCoordenada proc
-	pushad
-
-	mov dh, 0
-	mov dl, 32
-	call Gotoxy
-	
-	mWrite "X: "
-	movzx eax, FROG_sapoX
-	call WriteDec
-	mWrite "  "
-	
-	mWrite "Y: "
-	movzx eax, FROG_sapoY
-	call WriteDec
-	mWrite " "
-	
-	popad
-	ret
-FROG_ExibirCoordenada endp
 
 FROG_ExibirVitoria proc
 	call FROG_DesenharCampo
