@@ -33,8 +33,8 @@ topoPontuacoes2 BYTE "			Pontuacao	Nome",0
 snakeInicio BYTE " ***************************** SNAKE GAME ****************************",0
 topoPontuacoes BYTE " ######################## MELHORES PONTUACOES ########################",0
 fimPontuacoes BYTE " #####################################################################",0
-mensagemComecarJogo BYTE "ENTER: Comecar o jogo  ESC: Voltar ao menu",0
-mensagemControlesJogo BYTE "P: Pausa o jogo  Setas Direcionais: Controlam a minhoca",0
+mensagemComecarJogo BYTE "ENTER: Comecar o jogo | ESC: Voltar ao menu",0
+mensagemControlesJogo BYTE "P: Pausa o jogo | Setas Direcionais: Controlam a minhoca",0
 mensagemErroArquivo BYTE "Erro ao abrir o arquivo de pontuações!",13, 10, 0
 mensagemRecorde BYTE "Parabens! Voce fez uma das 5 melhores pontuacoes!. Digite seu nome: ",0
 finalTelaMinhoca BYTE "-------------------------------------------------------------------------------",0
@@ -51,6 +51,8 @@ colidiu DWORD 0
 
 Snake PROC
 inicioJogo:	
+		mov ax, 0Fh							;Volta a cor original
+		call setTextColor
 		call  clrscr
 		call exibeMelhoresPontuacoes
 leTecla:
