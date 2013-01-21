@@ -1,15 +1,21 @@
  = Introdução: =
 
 O rápido avanço tecnológico da computação no século XXI cria margem para computadores cada vez mais rápidos e poderosos. Só que esse avanço encontrou uma barreira na própria arquitetura dos processadores: palavras de 32 bits só poderiam acessar até 4GB de memoria RAM. Foi para resolver esse problema que a Intel projetou a arquitetura conhecida como x64. A primeira implementação desse tipo de arquitetura foi da empresa AMD,com a arquitetura hoje conhecida por AMD64,logo depois a Intel criou a EMT64, ambas possuem apenas algumas pequenas diferenças, mas a maioria do código pode ser implementado em ambos, e a esse tipo de código foi dado o nome de flavor x64.
-É necessário um bom conhecimento de Assembly para entende-la, pois boa parte do programa será escrito nele e além do mais é útil na hora de debuggar o código, pois o código em C++ pode produzir um código incorreto em Assembly e comprometer o funcionamento do programa, nesse caso um bom conhecimento da linguagem ajudará o programador a encontrar e consertar o erro. A x64 pode emular e usa muito das arquiteturas de 32 bits da Intel, logo, conhecimento prévio do Assembly das mesmas ajuda muito na programação.
+
+É necessário um bom conhecimento de Assembly para entende-la, pois boa parte do programa será escrito nele e além do mais é útil na hora de debugar o código, pois o código em C++ pode produzir um código incorreto em Assembly e comprometer o funcionamento do programa, nesse caso um bom conhecimento da linguagem ajudará o programador a encontrar e consertar o erro. A x64 pode emular e usa muito das arquiteturas de 32 bits da Intel, logo, conhecimento prévio do Assembly ajuda muito na programação.
 
  = Arquitetura: =
 
-Inicialmente agora temos mais bits para trabalhar, além dos tipos de dados já conhecidas da versão de 32 bits (byte,word,doubleword e quadword), agora temos um double quadword de 128 bits para utilizarmos. Antes havia a letra “E” ligada aos registradores para indicar que eram de 32 bits, agora utiliza-se a letra “R” para tal, com isso os oito registadores já conhecidos permanecem do mesmo modo, mas como um R no lugar do E no início.
-Com o aumento na capacidade também foram criados 8 novos registadores, que diferente dos outros 8, não possuem um nome, mas sim uma indicação numérica, vão de R8 até R15, uma diferença entre os dois “grupos” de registadores é que para utilizar as partes com menos bits, nos 8 primeiros permanece igual, substitui o R por E ou o X por H ou L, já nos novos registradores para se usar os outros tamanhos deve-se seguir a seguinte notação R8(quadword), R8D(lower dword), R8W(lowest word) e R8B(lowest byte) equivale ao R8L na arquitetura Intel e não existe R8H.
+A arquitetura x86-64 foi criada para aumentar a capacidade de processamento do x86. A forma encontrada para essa otimização foi a expansão dos registradores atuais e a criação de novos registradores, além dos já conhecidos da versão de 32 bits, agora temos um Double Quadword de 128 bits para utilizarmos. Antes havia a letra “E” ligada aos registradores para indicar que eram de 32 bits, agora utiliza-se a letra “R” para tal, com isso os oito registradores de uso geral tiveram a sua capacidade de armazenamento de dados dobrada.
+
+Com o aumento na capacidade também foram criados oito novos registadores, que vai de R8 ate R15, , uma diferença entre os dois “grupos” de registradores é que para utilizar as partes com menos bits é necessário substituir o R(64) por E(32) ou o X(16) por H(8) ou L(8), já nos novos registradores para se usar os outros tamanhos deve-se seguir a seguinte notação R8(quadword), R8D(lower dword), R8W(lowest word) e R8B(lowest byte) equivale ao R8L na arquitetura Intel e não existe R8H.
+
 Para poder acessar a parte alta, AH, por exemplo, é necessário usar o prefixo REX seguido de BPL, SPL, DIL ou SIL para acessar AH, BH, CH e DH respectivamente.
+
 O instruction pointer, RIP, funciona do mesmo modo que o de 32 bits, mas agora para 64 bits. O stack pointer, RSP aponta para o ultimo item a sofrer um push na pilha e serve para guardar endereços de retorno para sub-rotinas e para passar parâmetros para linguagens de alto nível.
+
 Temos ainda o RFLAGS que como o próprio nome diz, guarda os flags do programa, os flags mais importantes são:
+
 ||Carry, bit 0||Operação necessita ou gera um carry||
 ||Paridade, bit 2||O ultimo byte tem um numero igual de 1’s, senão 0||
 ||Ajuste, bit 4||Denota código binário convertido para decimal no byte de  carry||
@@ -24,50 +30,160 @@ A unidade de ponto flutuante(FPU) possui 8 registradores próprios FPR0 – FPR7
 ||*Tipo de dado*||*Tamanho*||*Precisão(bits)*||*Precisão em dígitos decimais*||*Capacidade decimal*||
 ||Precisão simples||32||24||7||1,18*10^-38 a 3,40*10^38||
 ||Precisão dupla||64||53||15||2,23*10^-308 a 1,79*10^308||
-||Precisão extendida||80||64||19||3,37*10^-4932 a 1.18*10^4932||
+||Precisão estendida ||80||64||19||3,37*10^-4932 a 1.18*10^4932||
 
 Os 16 registradores XMM (eram 8 na x86)de 128 bits são citados mais adiante. 
 
 Outros registradores incluem registradores de segmento, quase não utilizados em x64, registradores de controle, de gerenciamento de memoria, de debug, registrador de virtualização e registradores de performance que buscam todo tipo de parâmetro interno.
+
+
 
 Maiores detalhes no manual da Intel disponível em: http://www.intel.com/content/www/us/en/processors/architectures-software-developer-manuals.html
 
  = Arquitetura SIMD =
 
 Instruções individuais que executam muitos dados, SIMD, são instruções executadas por meio de um único comando que atua em varias partes de dados em paralelo e é mais comumente utilizada na linguagem Assembly.
-MMZ e SSE suportam os comandos SIMD e podem acessar até 8 partes diferentes da memoria com apenas um comando.
-Existem 8 registadores MMX de 64 bits, chamados de MMX0 – MMX7 que estão logo em seguida do FPR0-7, o que significa que deve-se tomar cuidado para não utilizar os registradores errados quando for realizar algum tipo de operação, não houveram alterações quanto ao uso ou nomenclatura das instruções MMX em relação a versão de 32 bits.
-Instruções SSE são instruções utilizadas por registradores XMM de 128 bits e podem realizar comparações, cálculos aritméticos, moves, entre outras funções e introduziu instruções para realizar uma busca prévia na memoria, visando uma melhor performance e “cercas” de memoria para aumentar a segurança.
+
+MMX e SSE suportam os comandos SIMD e podem acessar até 8 partes diferentes da memória com apenas um comando.
+
+Existem oito registadores MMX de 64 bits, chamados de MMX0 – MMX7 que estão logo em seguida do FPR0-7, o que significa que deve-se tomar cuidado para não utilizar os registradores errados quando for realizar algum tipo de operação, não houveram alterações quanto ao uso ou nomenclatura das instruções MMX em relação a versão de 32 bits.
+
+Instruções SSE são instruções utilizadas por registradores XMM de 128 bits e podem realizar comparações, cálculos aritméticos, moves, entre outras funções e introduziu instruções para realizar uma busca prévia na memória, visando uma melhor performance e “cercas” de memoria para aumentar a segurança.
+
+A tabela a seguir mostra a quantidade de dados que podem ser processados em paralelo por cada tecnologia.
+
+|| *Tecnologia* || *Tamanho/tipo do registrador* || *tipo de Dado* || *Itens em paralelo* ||
+|| MMX || 64 MMX || Inteiro || 8,4,2,1||
+||SSE ||64 MMX || Inteiro || 8,4,2,1||
+||SSE ||128 XMM || Ponto flutuante || 4||
+||SSE2/SSE3/SSSE3 || 64 MMX || Inteiro || 2,1||
+||SSE2/SSE3/SSSE3 || 128 XMM || Ponto flutuante || 2||
+||SSE2/SSE3/SSSE3 || 128 XMM || Inteiro || 16,8,4,2,1||
 
  = Ferramentas =
 
  = Assembly: =
+
 Existem alguns tipos diferentes, o MASM que é o que estamos acostumados a usar, NASM que é usado para trabalhar em rede, FASM que é mais rápido que os outros. Iremos nos focar somente no MASM de 64 bits.
 
  = Compiladores C/C++: =
+
 Inicialmente não existe mais o comando inline, ele foi removido na versão de 64 bits para deixar o código mais otimizado, então é recomendado que seja utilizado um header como o código assembly dentro dele.
 
  = Instruções Básicas: =
+
 Nenhuma delas sofreu alteração alguma, o MOV é do mesmo jeito, tal como MUL, DIV, ADD, etc.
 
  = Calling Convention: =
+
 São bibliotecas que trabalham com a interface na hora de passar parâmetros ou trabalhar com a pilha. O x64 da Microsoft para a linguagem C possui algumas regras:
+
 •	RCX, RDX, R8 e R9 são usados para números inteiros e ponteiros da esquerda para a direita.
+
 •	XMM0, 1, 2 e 3 são usados para ponto flutuante.
+
 •	Argumentos adicionais são colocados na pilha da esquerda para a direita.
+
 •	Parâmetros com menos de 64 bits não são estendidos com zero, a parte alta ficará com lixo.
+
 •	É responsabilidade da função de chamada alocar 32 bits de espaço vazio antes de chamar as funções.
+
 •	Também é sua função limpar a pilha depois de utiliza-la.
+
 •	Os valores inteiros são retornados no RAX se possuírem 64 bits ou menos.
+
 •	Os valores do ponto flutuante são retornados no registrador XMM0.
+
 •	A pilha é alinhada em 16 bits.
+
 •	Os registradores RAX, RCX, RDX, R8, R9, R10 e R11 são considerados voláteis e por isso devem ser considerados destuidos em funções de chamada.
+
 •	Os registradores RBX, RBP, RDI, RSI, R12, R13, R14 e R15 devem ser salvos nas funções que os usam.
+
 •	Não há uma calling convention para ponto flutuante e nem para seus registradores.
+
 •	Existem outras regras que não serão tratadas nesse documento. 
 
+
+ = Vantagens do X64: =
+
+- Quantidade maior de memória permite ao sistema operacional e aos programas  ter mais endereços virtuais para usar, melhorando o desempenho geral.
+
+- Com registradores maiores, operações que antes usavam dois registradores agora usam apenas um.
+
+ = Desvantagens do x64: =
+
+- Com mais espaço algumas operações podem deixar um grande vazio, por exemplo um numero que ocupe apenas 14 bits, deixará 50 inutilizados, deixando o registrador “menos” útil.
+
+- Nenhum chip atual consegue utilizar toda a capacidade de endereçamento do sistema de 64 bits.
+
+- O sistema operacional armazena mais tabelas de paginação, o que consome muito mais memória.
+
+ = Como rodar arquivo .asm em x64 =
+Para usar a arquitetura x64 é necessário ter instalado o Microsoft Windows x64 SDK, porém esse arquivo só precisa ser baixado se você utilizar a versão expressa do visual Studio.
+
+ = Usando assembly de forma independente =
+
+1-Abra o bloco de notas e copie o código:
+{{{
+; Sample x64 Assembly Program
+; Chris Lomont 2009 www.lomont.org
+extrn ExitProcess: PROC   ; external functions in system libraries
+extrn MessageBoxA: PROC
+.data
+caption db 'Laboratorio de ARQ 2 ', 0
+message db 'Introdução a arquitetura X64!', 0
+.code
+Start PROC
+  sub    rsp,28h      ; shadow space, aligns stack
+  mov    rcx, 0       ; hWnd = HWND_DESKTOP
+  lea    rdx, message ; LPCSTR lpText
+  lea    r8,  caption ; LPCSTR lpCaption
+  mov    r9d, 0       ; uType = MB_OK
+  call   MessageBoxA  ; call MessageBox API function
+  mov    ecx, eax     ; uExitCode = MessageBox(...)
+  call ExitProcess
+Start ENDP
+End
+}}}
+
+2-Salve o arquivo como hello.asm na pasta do visual Studio nesse caminho:C:\arquivos de programa\microsoft Visual Studio 11.0 \VC
+
+3-Abra o prompt de comando de ferramentas nativas do VS x64 e digite o seguinte comando: ML64 hello.asm /link /subsystem: Windows /defaultlib:kernel32.lib /defaultlib:user32.lib /entry:Start
+
+4-O macro assembler (x64) ira gerar um arquivo .obj e um executável.
+
+5-Clique no executável 
+
+  
+ 
+
+ = Usando o assembly dentro do Visual Studio =
+
+1-Crie um empty project
+
+2-Clique com o botão direito em cima do nome do projeto
+
+3-Va ate build customizations e marque a opção masm(.targets, .props) e de ok.
+
+4-Após feito isso, repita o passo mas agora va ate a opção properties.
+
+5-Clique no botão configuration manager e selecione new na caixa active solution platform
+
+6-Selecione x64 e de ok
+
+7-Feito essas configurações o visual Studio esta pronto para ser usado.
+
+8-Crie dois arquivos, um main.cpp e um teste.asm
+
+9-Compile e execute.
+
+
+
  = Exemplos de Programas: =
+
 Neste exemplo é feito uma chamada de função em C e outra em assembly usando instruções de ponto flutuante.
+
 É usado dois arquivos diferentes pois a arquitetura x64 não suporta inline assembly .
 
  = Main.cpp =
@@ -124,7 +240,9 @@ CombineA proc
 CombineA ENDP
 End
 }}}
+
 Exemplo extraído do site http://software.intel.com/en-us/articles/introduction-to-x64-assembly
+
 Uma tabuada onde o calculo é feito em assembly
 
  = Main.cpp =
@@ -170,3 +288,25 @@ testeAsm endp
 end
 
 }}}
+
+= Bibliografia =
+
+http://software.intel.com/en-us/articles/introduction-to-x64-assembly
+
+http://stackoverflow.com/questions/1282206/what-are-the-lower-level-advantages-and-disadvantages-of-64-bit-32-bit
+
+http://en.wikipedia.org/wiki/64-bit
+
+http://www.amd.com/us/products/technologies/amd-64/Pages/amd-64.aspx
+
+http://www.codinghorror.com/blog/2007/11/is-it-time-for-64-bit-on-the-desktop.html
+
+http://arstechnica.com/features/2008/09/x86-64/
+
+http://www.infopackets.com/news/hardware/2006/20060824_32_bit_vs_64_bit_systems_whats_the_difference.htm
+
+http://www.ehow.com/list_6117910_advantages-64_bit-vs_-32_bit.html
+
+http://www.ehow.com/list_6185356_advantages-disadvantages-64-bit-processing.html
+
+http://neilkemp.us/src/sse_tutorial/sse_tutorial.html
