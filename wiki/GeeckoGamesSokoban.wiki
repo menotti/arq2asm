@@ -48,7 +48,7 @@ Ao termino de uma fase, checamos se existe uma próxima fase para ser jogada. Se
 <p>É a função que desenha as paredes e alvos do mapa. Recebe como parâmetros o tamanho do mapa, endereço da camada background e o tamanho da linha.</p>
 ==!DrawInteractive==
 <p>É a função que desenha os diamantes e o personagem do mapa. Quando um diamante está em cima de um alvo, a cor do mesmo muda. Recebe como parâmetros o tamanho do mapa, endereço da camada interactive, endereço da camada background e o tamanho da linha.</p>
-<p>Devido às dificuldades encontradas em se achar um editor de texto cujo output tivesse uma codificação de caracteres comum àquela usada pelo console do asm fizemos uso de caracteres comuns ((asterisco), 0, +, x) para representar nossos objetos e na hora de desenhá-los os trocamos por caracteres especiais que deixaram o jogo mais agradável aos olhos.</p>
+<p>Devido às dificuldades encontradas em se achar um editor de texto cujo output tivesse uma codificação de caracteres comum àquela usada pelo console do asm fizemos uso de caracteres comuns ({{{*}}}, 0, +, x) para representar nossos objetos e na hora de desenhá-los os trocamos por caracteres especiais que deixaram o jogo mais agradável aos olhos.</p>
 
 ==!DrawMainScreen==
 <p>Desenha a tela inicial do jogo(menu). Não recebe nenhum parâmetro pois a tela está salva em uma variável global.</p>
