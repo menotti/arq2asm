@@ -1,4 +1,4 @@
-#summary One-sentence summary of this page.
+#Detalhes da implementação do jogo Space Invaders
 
 = Introdução =
 
