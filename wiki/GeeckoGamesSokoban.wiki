@@ -3,102 +3,73 @@
 <br>
 <p>Referencia: <a href="http://sokoban.info/">http://sokoban.info/</a></p>
 
-<wiki:toc max_depth="1" />
+
  
 <h1>Detalhes</h1>
 <p>O jogo é dividido da seguinte forma:</p>
-<ul>
-	<li>!GeeckoGamesSokoban.asm</li>
-       
-	<ul>
-		<li>!GeeckoGamesSokoban </li>
-		<li>UpdateGame</li>
-	</ul>
-	<li>GeeckoGamesFileIO.asm</li>
-	<ul>
-		<li>ReadMap</li>
-		<li>UpdateMapName</li>
-		<li>SaveNewMapScore</li>
-	</ul>
-	<li>GeeckoGamesDrawing.asm</li>
-	<ul>
-		<li>DrawBackground</li>
-		<li>DrawInteractive</li>
-		<li>DrawMainScreen</li>
-		<li>DrawFinishedGame</li>
-	</ul>
-	<li>GeeckoGamesLogic.asm</li>
-	<ul>
-		<li>CheckMapState</li>
-	</ul>
-	<li>GeeckoGamesCharacterControl.asm</li>
-	<ul>
-		<li>MoveChar</li>
-		<li>MoveDiamond</li>
-		<li>GetCharPos</li>
-	</ul>
-</ul>
+
+<wiki:toc max_depth="2" />
 
 ----
 
-==!GeeckoGamesSokoban.asm==
+=!GeeckoGamesSokoban.asm=
 <p>Esse é o arquivo principal do jogo. Ele inicia o jogo, controla o loop e chama todas as outras funções do jogo. </p>
-<h3>!GeeckoGamesSokoban</h3> 
+==!GeeckoGamesSokoban==
 <p>É a função inicial do jogo. Ela é chamada somente uma vez a partir do menu inicial do projeto. Ela define a cor de fundo do console como branca e a cor de texto como preta pra facilitar a visualização. Ela desenha a tela inicial, quando o usuário aperta “enter” ela inicializa a primeira fase do jogo entrando no game loop.O game loop é uma parte do código onde esperamos um input do usuário, o processamos e chamamos a função que deve tratar disso. Ao final do processamento, chamamos as funções de desenhar na tela.</p>
 <p>
 Ao termino de uma fase, checamos se existe uma próxima fase para ser jogada. Se não existir o jogo exibe a tela final.
 </p>
-<h3>UpdateGame</h3>
+==!UpdateGame==
 <p>
 É a função responsável por atualizar o jogo logicamente. Ela espera um input do usuário e o processa, chamando a função de mover personagem quando necessária. Caso o input não seja de movimentação é definida uma “flag” que será tratada no game loop.
 </p>
 
 ----
 
-<h1>GeeckoGamesFileIO.asm</h1>
+=!GeeckoGamesFileIO.asm=
 
 <p>É onde se encontram todas as funções de escrita e leitura de arquivos. </p>
 <p>O mapa está salvo no arquivo sequencialmente em duas camadas e score. Primeiro a camada background, depois a camada interactive e no fim do arquivo o score.</p>
-<h3>ReadMap</h3>
+==!ReadMap==
 <p>Le o mapa de um arquivo. Para fazer isso recebe o tamanho do mapa, o nome do mapa e o endereço na memória em que deve ser colocado. </p>
-<h3>UpdateMapName</h3>
+==!UpdateMapName==
 <p>Função que simplesmente incrementa um no nome do mapa. Para isso ela utiliza o nome do mapa que está em uma variável global.</p>
-<h3>SaveNewMapScore</h3>
+==!SaveNewMapScore==
 <p>Função que atualiza o menor número de movimentos do jogador em uma fase. Essa função não analisa se o score é realmente menor. Essa verificação é feita antes dessa função ser chamada. Ela recebe como parâmetro onde o mapa está na memória, o tamanho do mapa e o nome do mapa.</p>
 
 ----
 
-<h1>GeeckoGamesDrawing.asm</h1>
+=!GeeckoGamesDrawing.asm=
 
 <p>É o arquivo onde estão implementadas as funções de desenhar na tela. O jogo trabalha com duas camadas: background e interactive. Na camada background estão as paredes e os alvos. Na camada interactive estão o personagem e os diamantes.</p>
-<h3>DrawBackground</h3>
+==!DrawBackground==
 <p>É a função que desenha as paredes e alvos do mapa. Recebe como parâmetros o tamanho do mapa, endereço da camada background e o tamanho da linha.</p>
-<h3>DrawInteractive</h3>
+==!DrawInteractive==
 <p>É a função que desenha os diamantes e o personagem do mapa. Quando um diamante está em cima de um alvo, a cor do mesmo muda. Recebe como parâmetros o tamanho do mapa, endereço da camada interactive, endereço da camada background e o tamanho da linha.</p>
 <p>Devido às dificuldades encontradas em se achar um editor de texto cujo output tivesse uma codificação de caracteres comum àquela usada pelo console do asm fizemos uso de caracteres comuns ((asterisco), 0, +, x) para representar nossos objetos e na hora de desenhá-los os trocamos por caracteres especiais que deixaram o jogo mais agradável aos olhos.</p>
 
-<h3>DrawMainScreen</h3>
+==!DrawMainScreen==
 <p>Desenha a tela inicial do jogo(menu). Não recebe nenhum parâmetro pois a tela está salva em uma variável global.</p>
 <h3>DrawFinishedGame</h3>
 <p>Desenha a tela final do jogo. Não recebe nenhum parâmetro pois a tela está salva em uma variável global.</p>
  
 ----
 
-<h1>GeeckoGamesLogic.asm</h1>
+=!GeeckoGamesLogic.asm=
 <p>É o arquivo que contem uma única função para checar o final de jogo.</p>
-<h3>CheckMapState</h3>
+==!CheckMapState==
 <p>Essa função verifica se todos os diamantes estão sobre um alvo, ou seja, fase completa. Ela recebe o endereço da camada background, o endereço da camada interactive e o tamanho do mapa. Ela define uma flag para avisar se a fase já terminou.</p>
  
 ----
 
-<h1>GeeckoGamesCharacterControl.asm</h1>
+=!GeeckoGamesCharacterControl.asm=
 <p>É o arquivo que controla a movimentação de elementos dentro do jogo.</p>
  
-<h3>MoveChar</h3>
+==!MoveChar==
 <p>É a função que move efetivamente o personagem. Ela checa a possibilidade de movimento e chama quando necessário MoveDiamond. Recebe o endereço da camada background, o endereço da camada interactive, o tamanho da linha, o tamanho do mapa, a posição do personagem e a direção do movimento.</p>
 
-<h3>MoveDiamond</h3>
+==!MoveDiamond==
 <p>É a função que tenta mover um diamante quando necessário. Recebe o endereço da camada background, o endereço da camada interactive, o tamanho da linha, o tamanho do mapa, a posição do personagem e a direção do movimento.</p>
 
-<h3>GetCharPos</h3>
+==!GetCharPos==
 <p>É a função que procura no mapa onde está o personagem e retorna esse valor em uma variável passada por referência. Essa função recebe o endereço da camada interactive, o tamanho do mapa, o tamanho da linha e onde deve ser retornada a posição xy do personagem.</p>
