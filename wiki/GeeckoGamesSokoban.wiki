@@ -52,7 +52,7 @@ Ao termino de uma fase, checamos se existe uma próxima fase para ser jogada. Se
 
 ==!DrawMainScreen==
 <p>Desenha a tela inicial do jogo(menu). Não recebe nenhum parâmetro pois a tela está salva em uma variável global.</p>
-<h3>!DrawFinishedGame</h3>
+==!DrawFinishedGame==
 <p>Desenha a tela final do jogo. Não recebe nenhum parâmetro pois a tela está salva em uma variável global.</p>
  
 ----
