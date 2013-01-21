@@ -37,6 +37,7 @@ mensagemComecarJogo BYTE "ENTER: Comecar o jogo  ESC: Voltar ao menu",0
 mensagemControlesJogo BYTE "P: Pausa o jogo  Setas Direcionais: Controlam a minhoca",0
 mensagemErroArquivo BYTE "Erro ao abrir o arquivo de pontuações!",13, 10, 0
 mensagemRecorde BYTE "Parabens! Voce fez uma das 5 melhores pontuacoes!. Digite seu nome: ",0
+finalTelaMinhoca BYTE "-------------------------------------------------------------------------------",0
 mensagemPontuacao BYTE "Pontuacao Atual: ",0
 TempoInicial dWord ?
 tempoComida DWORD 0
@@ -691,6 +692,11 @@ EscrevePontuacao:
 atualizaPontuacao ENDP
 
 mostraPontuacaoAtual PROC uses edx eax
+	mov dh, 23			;Parâmetros para gotXY
+	mov dl, 0			;Parâmetros para gotXY
+	call GotoXY
+	mov edx, OFFSET finalTelaMinhoca
+	call WriteString
 	mov dh, 24			;Parâmetros para gotXY
 	mov dl, 0			;Parâmetros para gotXY
 	call GotoXY
