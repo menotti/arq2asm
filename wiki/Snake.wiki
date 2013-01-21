@@ -2,7 +2,9 @@
 
 = Introdução =
 
+O jogo Snake se trata de um dos mais tradicionais jogos presentes no mundo, onde um segmento de 3 quadrados consecutivos (normalmente são 3, em algumas implementações do jogo mais, menos ou mesmo outras representações que não sejam quadrados) se movimenta pela tela. Esse segmento é chamado de "cobra" (uma alusão ao próprio réptil) e tem como objetivo movimentar-se na tela a procura de quadrados menores os quais são intitulados como "comida". Quando a cobra chega com seu primeiro quadrado em cima da comida, o segmento da própria cobra aumenta em um quadrado. O jogo segue assim até a cobra chocar-se com um quadrado de seu próprio corpo ou com o limite da tela destinado para ela andar.
 
+O jogador tem o controle sobre os movimentos da cobra e visualiza a comida, procurando então comê-la para que o tamanho da cobra aumente, quanto maior a cobra ficar até o final do jogo, maior a pontuação do jogador.
 
 = Detalhes da Implementação =
 
