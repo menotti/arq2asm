@@ -835,6 +835,7 @@ FROG_ExibirDerrota proc
 FROG_ExibirDerrota endp
 
 FROG_ExibirIntro PROC
+	call Clrscr
 
 	mov edx, OFFSET FROG_IntroFile
 	call OpenInputFile
