@@ -26,7 +26,7 @@ Ao termino de uma fase, checamos se existe uma próxima fase para ser jogada. Se
 
 ----
 
-=!GeeckoGamesFileIO.asm=
+=GeeckoGamesFileIO.asm=
 
 <p>É onde se encontram todas as funções de escrita e leitura de arquivos. </p>
 <p>O mapa está salvo no arquivo sequencialmente em duas camadas e score. Primeiro a camada background, depois a camada interactive e no fim do arquivo o score.</p>
