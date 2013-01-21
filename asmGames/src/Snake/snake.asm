@@ -86,6 +86,7 @@ comecaJogo:
 			cmp ebx,-1
 			je FimDeJogo
 			call verificaColisao
+			call autoColisao				;nao altera valor de colidiu anterior
 			cmp colidiu, 1
 				je FimDeJogo
 			call come
@@ -216,15 +217,23 @@ identificaDirecao PROC
 	ret
 	
 	SetaCima:
+		cmp direcaoAtual, BAIXO
+		je Nao_muda_direcao
 		mov direcaoAtual, CIMA
 		ret
 	SetaEsquerda:
+		cmp direcaoAtual, DIREITA
+		je Nao_muda_direcao
 		mov direcaoAtual, ESQUERDA
 		ret
 	SetaDireita:
+		cmp direcaoAtual, ESQUERDA
+		je Nao_muda_direcao
 		mov direcaoAtual, DIREITA
 		ret
 	SetaBaixo:
+		cmp direcaoAtual, CIMA
+		je Nao_muda_direcao
 		mov direcaoAtual, BAIXO
 		ret
 	TeclaP:
@@ -248,6 +257,7 @@ identificaDirecao PROC
 	TeclaESC:
 		mov ebx,-1;verifica se é pra sair
 
+Nao_muda_direcao:
 ret
 identificaDirecao ENDP
 
@@ -739,3 +749,44 @@ mostraCabecalhoPontuacao PROC
 	call WriteDec
 	ret
 mostraCabecalhoPontuacao ENDP
+
+autoColisao PROC
+	pushad
+
+	movzx ebp, cobraIndiceUltimo
+	;ATUALIZA ebp PARA APONTAR PARA O PRIMEIRO PONTO DA COBRA
+	dec ebp
+	cmp ebp, -1					
+	jne NaoAtualizaIndice
+		movsx ebp, contPontosCobra
+		dec ebp
+	NaoAtualizaIndice:
+
+	mov ax, -1
+	xchg al, cobraPontosX[ebp]			;é usado exchange para q o próprio primeiro ponto não seja considerado na busca
+	xchg ah, cobraPontosY[ebp]
+	movzx ecx, contPontosCobra			;nro de itens no vetor
+	mov edi, 0							;ponteiro pro vetor
+	Procura_em_x:
+		;repne scasb
+		cmp al, cobraPontosX[edi]
+		je Procura_em_y
+		inc edi
+		loop Procura_em_x
+		jmp Sem_autocolisao
+			Procura_em_y:
+			cmp ah, cobraPontosY[edi]
+			je Autocolidiu
+			inc edi
+			loop procura_em_x
+			jmp Sem_autocolisao
+			Autocolidiu:
+				mov colidiu, 1
+		
+	Sem_Autocolisao:
+	xchg al, cobraPontosX[ebp]
+	xchg ah, cobraPontosY[ebp]
+
+popad
+ret
+autoColisao ENDP
