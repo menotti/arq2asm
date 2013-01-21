@@ -34,6 +34,8 @@ A ultima coisa do gameloop é a verificação de se o jogo deve terminar, vendo 
 ===Game Over:===
 Quando o jogo termina(vidas = 0), o programa entra na sessão do Game Over, que nada mais é do que uma limpeza geral da tela e informa que o jogo terminou, e indica a pontuação final do jogador nessa sessão.
 
+A verificação do highscore por arquivo acontece nessa parte também, por meio do procedimento carregaHighscore.
+
 
 
 =Procedures=
@@ -53,5 +55,11 @@ Nossas procedures foram as seguintes:
 
 *reinicializaVariaveis*: Apenas reinicia tudo, caso o jogador deseje iniciar outra sessão do jogo, a partir do menu inicial que o professor Menotti escreveu.
 
+*intToString*: Converte um inteiro para string.
+
+*carregaHighscore*: Carrega e atualiza o arquivo de highscore. Crian ovo arquivo caso não exista nenhum.
+
 ==Arquivo complementar:==
 Nosso jogo também faz uso de um arquivo complementar "dificuldades.txt", cujo conteúdo corresponde aos valores, em milisegundos, dos intervalos de geração de inimigos. Estes valores são carregados no início do jogo, e são utilizados como parâmetros na geração de inimigos novos.
+
+Além disso, usamos um arquivo "highscore.txt", cujo conteúdo é apenas uma string que contem 3 caracteres com o nome de quem fez o highscore, e  o highscore em seguida.
