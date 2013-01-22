@@ -15,8 +15,8 @@ O objetivo do jogo consiste em um personagem O que percebe que sua mulher L some
 = Grupo de alunos =
 
  * Camilo Moreira - 359645
- * George Pagliuso
- * Heitor Chiquito
+ * George Pagliuso - 407623
+ * Heitor Chiquito - 407500
  * Pedro Augusto Vicente - 407658
 
 -------------
@@ -94,7 +94,7 @@ PROC desliberaMapa: reinicia o mapa liberado.
 
 PROC escreveLabirinto: passa para o procedimento escreveChar para desenhar a parte já percorrida do mapa, mostra o número de passos percorridos do usuário, seu melhor tempo e o recorde (menor possível) do labirinto.
 
-PROC escreveChar: escreve os caracteres definidos no mapa. Para o usuário O, o início I, o fim F, o minotauro M e as paredes. Para as paredes, existe uma lógica que troca o valor da memória * por #, para saber o que já foi percorrido.
+PROC escreveChar: escreve os caracteres definidos no mapa. Para o usuário O, o início I, o fim F, o minotauro M e as paredes. Para as paredes, existe uma lógica que troca o valor da memória *** por #, para saber o que já foi percorrido.
 
 PROC movimento: recebe a direção que o usuário escolheu e contém a lógica de movimenta quando possível o usuário no mapa.
 
@@ -102,7 +102,7 @@ PROC verificaMovimento: verifica se o movimento é possível (não irá passar p
 
 PROC atualizaLabirinto: atualiza o que mudou no labirinto a cada passo. Aparece novas paredes e minotauros encontrados. O método carrega de acordo com o tamanho da visão.
 
-PROC substituiParede: troca o valor de * por # na memória, para saber que aquela parede já foi descoberta no percurso. Chama a função substituiMino.
+PROC substituiParede: troca o valor de *** por # na memória, para saber que aquela parede já foi descoberta no percurso. Chama a função substituiMino.
 
 PROC substituiMino: idem a função anterior, troca o caractere P por M, quando o minotauro foi descoberto.
 
