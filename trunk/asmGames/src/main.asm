@@ -23,9 +23,8 @@ myMenu	BYTE	80 dup ('='),
 				'2 - Sokoban', 13, 10,
 				'3 - Space Invaders', 13, 10,
 				'4 - Labirinto da Morte', 13, 10,
-				'5 - Grupo...', 13, 10,
-				'6 - Frogger', 13, 10,
-				'7 - Snake', 13, 10,
+				'5 - Frogger', 13, 10,
+				'6 - Snake', 13, 10,
 				'0 - Sair!', 13, 10, 13, 10,
 				'Opcao: ', 0
 .code
@@ -33,6 +32,8 @@ myMenu	BYTE	80 dup ('='),
 main PROC
 
 menu:
+	mov al, white + 16*black ; reseta cores iniciais.
+	call SetTextColor
 	call Clrscr
 	mov edx, offset myMenu
 	call WriteString
@@ -56,21 +57,16 @@ SpaceInv:
 
 Labirinto: 	
 	cmp eax, 4
-	jne Grupo5
+	jne Frogger
 	call jogaLabirinto 
 
-Grupo5: ;seguir exemplo acima	
-	cmp eax, 5
-	jne Frogger
-	;call Grupo5.asm 
-
 Frogger:
-	cmp eax, 6
+	cmp eax, 5
 	jne SnakeGame
 	call FROG_InitJogo
 
 SnakeGame:
-	cmp eax, 7
+	cmp eax, 6
 	jne menu
 	call snake
 
