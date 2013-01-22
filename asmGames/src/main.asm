@@ -10,6 +10,7 @@ INCLUDE forca/forca.asm
 INCLUDE GeeckoGames/GeeckoGamesSokoban.asm
 INCLUDE SpaceInvaders/Space_Invaders.asm
 INCLUDE Labirinto/labirinto.asm
+;INCLUDE LaserMan/lman_proc.asm
 Include Snake/snake.asm
 INCLUDE Frogger/Frogger.asm
 
