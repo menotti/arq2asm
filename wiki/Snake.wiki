@@ -16,6 +16,7 @@ Os procedimentos de atualização de pontuações são feitos, em sua maioria, s
 A pontuação atual é atualizada a cada vez que o jogador come uma das comidas, sendo feita então um cálculo relacionado a quantos pontos extras ele terá de acordo com o tempo que ele demorou para comer. O cálculo é:
 
 *ValorMax* - valor maximo da razão de bônus
+
 *tempoUltimaComida* - tempo que o jogador demorou para comer a comida
 *numeroQuadradosCobra* - número de quadrados que a cobra tem no momento que comeu
 
