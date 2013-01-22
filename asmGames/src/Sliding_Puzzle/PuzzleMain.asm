@@ -1,11 +1,11 @@
-TITLE MASM Template						(main.asm)
+TITLE MASM TioGaedes					
 
 ; Description:
 ; 
 ; Revision date:
 
-INCLUDE Irvine32.inc
 INCLUDE Macros.inc
+
 .data
 
 ;lista de procedimentos desenvolvidos
@@ -14,6 +14,11 @@ draw_matrix PROTO,
 	matrix_ptr:DWORD, dimension:WORD, position:WORD, color:BYTE
 resposta_entrada PROTO
 ExibirDicas PROTO
+MovePiece PROTO
+VerifyCollision PROTO
+VerifyEGENDNESS PROTO
+IntParaString PROTO,
+ buffer_B:PTR BYTE
 
 
 ;lista de estados
@@ -37,39 +42,55 @@ saida		byte	1h	; tecla para voltar ao menu
 
 pedidoDica	byte 116d	; tecla para comprar uma dica
 
-proxEG		byte 100d	; tecla para ir para a proxima EG
-antEG		byte	97d	; tecla para ir para a EG anterior
-
 estadoAtual	byte 0	; estado em que o jogo se encontra	
 selecionado	byte 0	; diz qual das opçoes está selecionado
 
+proxEG		byte 100d	; tecla para ir para a proxima EG
+antEG		byte	97d	; tecla para ir para a EG anterior
 
-dicasCompradas	byte 0	;numero de dicas que o jogador pediu
+pontuacao		dword 0	;pontuação que o jogador recebeu por jogar TioGaedes
+
+pontosFase	dword 100000000	;pontuação que você começa em uma fase
+
+
+;vetores auxiliares para a ordenação da pontuação
+iniciais		byte  63 DUP(?)
+chaves		dword 21 DUP(0)
 
 
 faseAtual		byte 0	;fase em q TioGaedes se encontra e que o jogador está jogando
 
-contEG		byte 0	;numero de EGS na tela
-EGescolhida	byte 17	;posição da eg escolhida
-EG_escolhida_tipo BYTE 5
-EG_escolhida_pos WORD 0103h
-
+EGescolhida	byte 0	;posição da eg escolhida
+EGantEscolhida byte 0 ;posicao da eg previamente escolhida
+VoidEgendPos BYTE 0
 
 pontuacoes	byte		"pontos.txt",0
 dicas		byte		"aquinaotemdicas/0.txt",0
-buffer		byte		100 DUP(?),0
+mapa			byte		"mapas/0.txt",0
+confCompraDica BYTE 0
+dicasCompradas	byte 0	;numero de dicas que o jogador pediu
+valorDica DWORD 0
+buffer		byte		280 DUP(?),0
 MapCovered BYTE 64 DUP(0)
-MapInfo BYTE 16 DUP(1), 1, 7, 0, 7, 0, 6, 1, 1, 1, 5, 0, 0, 0, 6, 0, 0, 1, 0, 0, 0, 0, 6, 0, 0, 1, 7, 0, 7, 0, 6, 1, 1, 16 DUP(1)
+MapInfo BYTE 70 DUP(0)
+movCount DWORD 0
+
+EpicWinAux BYTE 0
+
+CursorInfoA DWORD 1 
+CursorInfoB DWORD 0
+
 .code
 
-main PROC
+SlidingPuzzle PROC
 
-;call intro_state
+INVOKE GetStdHandle, STD_OUTPUT_HANDLE
+INVOKE SetConsoleCursorInfo, EAX, ADDR CursorInfoA
+
+call intro_state
 
 mov ebx,0
-
 LoopPrincipal:
-
 
 cmp estadoAtual,0
 jne jogo
@@ -103,7 +124,7 @@ jmp LoopPrincipal
 
 encerrarPrograma:
 exit
-main ENDP
+SlidingPuzzle ENDP
 
 
 ;-------------------------------------------------------
@@ -265,7 +286,7 @@ interface_layout_upperleft BYTE 0C9h, 38 DUP(0CDh), 0BBh,
 								0BAh, 6 DUP(20h), 0C9h, 24 DUP(0CDh), 0BBh, 6 DUP(20h), 0BAh,
 								16 DUP( 0BAh, 6 DUP(20h), 0BAh, 24 DUP(20h), 0BAh, 6 DUP(20h), 0BAh ),
 								0BAh, 6 DUP(20h), 0C8h, 24 DUP(0CDh), 0BCh, 6 DUP(20h), 0BAh
-							
+
 interface_layout_lowerleft BYTE 0BAh, 0C9h, 36 DUP(0CDh), 0BBh, 0BAh,
 								3 DUP( 0BAh, 0BAh, 36 DUP(20h), 0BAh, 0BAh ),
 								0BAh, 0C8h, 36 DUP(0CDh), 0BCh, 0BAh,
@@ -276,6 +297,11 @@ interface_layout_right BYTE 0C9h, 38 DUP(0CDh), 0BBh, 23 DUP( 0BAh, 38 DUP(20h),
 .code
 pushfd
 ;inicializacao
+
+call LoadMap	;carrega o mapa;carrega o mapa
+;cria o mapa de posicoes ocupadas
+call GenerateMapCovered
+
 INVOKE draw_matrix, OFFSET interface_layout_upperleft, 2813h, 0000h, YELLOW + RED*16
 INVOKE draw_matrix, OFFSET interface_layout_lowerleft, 2806h, 1300h, YELLOW + RED*16
 INVOKE draw_matrix, OFFSET interface_layout_right, 2819h, 0028h, YELLOW + RED*16
@@ -285,9 +311,15 @@ call Gotoxy
 
 call CarregarDicas
 
+;adiciona para a pontuação do jogador os pontos máximos da fase
+mov eax,pontosFase
+add pontuacao,eax
+
 GameLoop:	;game loop
 
 call ExibirDicas
+call ExibirPontuacao
+call ExibirMovimentos
 
 mov eax, OFFSET MapInfo
 ;desenha o mapa na tela
@@ -395,7 +427,7 @@ colocacao:
 	mWrite<"º - ">
 	inc ecx
 		;nome e pontuação do jogador
-		pontuacao:
+		pontos:
 		mov al,[edx]
 		cmp al,'/'
 		je proximaLinha
@@ -403,7 +435,7 @@ colocacao:
 		je listaTerminada		
 		Call WriteChar
 		inc edx
-		jmp pontuacao
+		jmp pontos
 		proximaLinha:
 		call crlf
 		inc edx
@@ -567,7 +599,6 @@ ret
 draw_matrix ENDP
 ;--------------------------------------------------------------
 
-
 ;------------------------------------------------------------------------
 intro_state PROC USES ecx
 ;animacao inicial do jogo, apenas para deixar o jogo um pouco mais EGEND
@@ -694,12 +725,12 @@ draw_map PROC USES eax ebx ecx edx
 ;-----------------------------------------
 .data
 EG_WALL BYTE 9 DUP(0B1h)
-
 EG_PIECE_1 BYTE 0C9h, 0CAh, 0BBh, 0C8h, 0CBh, 0BCh
 EG_PIECE_2 BYTE 0CAh, 0BBh, 0CCh, 0CBh, 0CBh, 0CAh, 0CBh, 0CAh, 0CAh, 0B9h, 0C8h, 0CBh
 EG_PIECE_3 BYTE 0C9h, 0CEh, 0BBh, 0BCh, 0BAh, 0C8h, 0BBh, 0BAh, 0C9h, 0C8h, 0CEh, 0BCh
-;EG_MASTERPIECE BYTE 0CEh, 020h, 0D0h, 020h, 020h, 0CEh, 0B9h, 0F4h, 0BEh, 20h, 20h, 0CCh, 0B9h, 20h, 9Ch, 20h, 20h, 0CCh, 0CEh, 0CBh, 0CBh, 0CBh, 0CBh, 0CEh
 EG_MASTERPIECE BYTE 218, 196, 208, 196, 196, 191, 179, 201, 190, 205, 162, 179, 179, 228, 204, 187, 032, 179, 192, 196, 186, 219, 196, 217
+EG_ZERO BYTE 6 DUP(20h)
+
 .code
 ;desenha os objetos do mapa 
 mov ecx, 0
@@ -749,6 +780,7 @@ draw_map_L1:
 			INVOKE draw_matrix, OFFSET EG_MASTERPIECE, 0604h, dx, YELLOW + 16*RED
 
 		draw_map_END:
+
 		inc eax
 		inc cl
 		jmp draw_map_L2
@@ -826,8 +858,7 @@ mov ebx, 0	; codigo de colisão para colisão para cima
 Call VerifyCollision
 ;testa se a colisão realmente ocorreu e trata a colisão
 cmp edx,0
-je finalizar	; se não teve colisão não faz nada e recomeça o loop
-;trecho para tratar a colisão
+je ToTheEgend	; se não teve colisão ele movimenta
 jmp finalizar
 
 
@@ -840,8 +871,7 @@ mov ebx, 1	; codigo de colisão para colisão para baixo
 Call VerifyCollision
 ;testa se a colisão realmente ocorreu e trata a colisão
 cmp edx,0
-je finalizar	; se não teve colisão não faz nada e recomeça o loop
-;trecho para tratar a colisão
+je ToTheEgend	; se não teve colisão ele movimenta
 jmp finalizar
 
 ;se apertou para esquerda
@@ -849,12 +879,11 @@ paraEsquerda:
 cmp ah,esquerda
 jne paraDireita
 mov al, EGescolhida		; posição qualquer pra testar, depois entender como funciona isso com o nicolas
-mov ebx, 2	; codigo de colisão para colisão para baixo
+mov ebx, 2	; codigo de colisão para colisão para a esquerda
 Call VerifyCollision
 ;testa se a colisão realmente ocorreu e trata a colisão
 cmp edx,0
-je finalizar	; se não teve colisão não faz nada e recomeça o loop
-;trecho para tratar a colisão
+je ToTheEgend	; se não teve colisão ele movimenta
 jmp finalizar
 
 ;se apertou para direita
@@ -862,12 +891,11 @@ paraDireita:
 cmp ah,direita
 jne trocaEG
 mov al, EGescolhida	; posição qualquer pra testar, depois entender como funciona isso com o nicolas
-mov ebx, 3	; codigo de colisão para colisão para baixo
+mov ebx, 3	; codigo de colisão para colisão para a direita
 Call VerifyCollision
 ;testa se a colisão realmente ocorreu e trata a colisão
 cmp edx,0
-je finalizar	; se não teve colisão não faz nada e recomeça o loop
-;trecho para tratar a colisão
+je ToTheEgend	; se não teve colisão ele movimenta
 jmp finalizar
 
 
@@ -896,13 +924,62 @@ jmp finalizar
 
 ;se apertou T para comprar uma dica
 compraDica:
+cmp dicasCompradas, 3
+je finalizar
+
+cmp confCompraDica, 1
+je EGUnleash
+
+push eax
+push edx
+push ebx
+mov ax, YELLOW+RED*16
+call SetTextColor
+mov dx, 0429h
+call Gotoxy
+mWrite "Deseja receber uma dica de TioGaedes?"
+inc dh
+call Gotoxy
+mWrite "Para ve-la, tecle T. EG Cost: "
+movzx eax, dicasCompradas
+inc eax
+mov ebx, 100000
+mul ebx
+mov valorDica, eax
+call WriteDec
+pop ebx
+pop edx
+pop eax
+mov confCompraDica, 1
+jmp finalizar
+
+EGUnleash:
 cmp al,pedidoDica
 jne finalizar
+mov confCompraDica, 0
 inc dicasCompradas
+mov ebx, valorDica
+sub pontuacao, ebx
 jmp finalizar
 
 voltarMenu:
 mov estadoAtual,0
+jmp finalizar
+
+ToTheEgend:
+Call MovePiece
+cmp EpicWinAux, 1
+je EGEND
+call GenerateMapCovered
+inc movCount
+cmp pontuacao,0
+je finalizar
+sub pontuacao,5000
+jmp finalizar
+
+EGEND:
+call EGEND_state;chama tela de vitoria
+jmp voltarMenu
 
 finalizar:
 
@@ -917,7 +994,9 @@ VerifyCollision PROC USES ecx
 ; Receives: AL receives the position. EBX receives the moviment
 ; UP, DOWN, LEFT, RIGHT
 ; 0 ,  1  ,  2  ,   3
-; Returns: If NO COLLISION EDX = 0, if COLLISION EDX = 1 
+; Returns: If NO COLLISION EDX = 0, if COLLISION EDX = 1
+;
+;AUTOR: NICOLAS OE
 ;------------------------------------------------------
 
 movzx eax, al
@@ -954,12 +1033,16 @@ movzx ecx, al
 sub ecx, 8
 cmp MapCovered[ecx], 1
 je Collision
+cmp MapCovered[ecx], 2
+je Collision
 jmp NoCollision
 
 PecaMenorDown:
 movzx ecx, al
 add ecx, 8
 cmp MapCovered[ecx], 1 
+je Collision
+cmp MapCovered[ecx], 2
 je Collision
 jmp NoCollision
 
@@ -968,12 +1051,16 @@ movzx ecx, al
 sub ecx, 1
 cmp MapCovered[ecx], 1
 je Collision
+cmp MapCovered[ecx], 2
+je Collision
 jmp NoCollision
 
 PecaMenorRight:
 movzx ecx, al
 add ecx, 1
 cmp MapCovered[ecx], 1
+je Collision
+cmp MapCovered[ecx], 2
 je Collision
 jmp NoCollision
 
@@ -997,8 +1084,13 @@ movzx ecx, al
 sub ecx, 8
 cmp MapCovered[ecx], 1
 je Collision
+cmp MapCovered[ecx], 2
+je Collision
 add ecx, 1
 cmp MapCovered[ecx], 1
+je Collision
+cmp MapCovered[ecx], 2
+je Collision
 jmp NoCollision
 
 PecaDeitadaDown:
@@ -1006,8 +1098,12 @@ movzx ecx, al
 add ecx, 8
 cmp MapCovered[ecx], 1 
 je Collision
+cmp MapCovered[ecx], 2
+je Collision
 add ecx, 1
 cmp MapCovered[ecx], 1 
+je Collision
+cmp MapCovered[ecx], 2
 je Collision
 jmp NoCollision
 
@@ -1016,12 +1112,16 @@ movzx ecx, al
 sub ecx, 1
 cmp MapCovered[ecx], 1
 je Collision
+cmp MapCovered[ecx], 2
+je Collision
 jmp NoCollision
 
 PecaDeitadaRight:
 movzx ecx, al
 add ecx, 2
 cmp MapCovered[ecx], 1
+je Collision
+cmp MapCovered[ecx], 2
 je Collision
 jmp NoCollision
 
@@ -1044,12 +1144,16 @@ movzx ecx, al
 sub ecx, 8
 cmp MapCovered[ecx], 1
 je Collision
+cmp MapCovered[ecx], 2
+je Collision
 jmp NoCollision
 
 PecaEmPeDown:
 movzx ecx, al
 add ecx, 16
 cmp MapCovered[ecx], 1 
+je Collision
+cmp MapCovered[ecx], 2
 je Collision
 jmp NoCollision
 
@@ -1058,8 +1162,12 @@ movzx ecx, al
 sub ecx, 1
 cmp MapCovered[ecx], 1
 je Collision
+cmp MapCovered[ecx], 2
+je Collision
 add ecx, 8
 cmp MapCovered[ecx], 1 
+je Collision
+cmp MapCovered[ecx], 2
 je Collision
 jmp NoCollision
 
@@ -1068,8 +1176,12 @@ movzx ecx, al
 add ecx, 1
 cmp MapCovered[ecx], 1
 je Collision
+cmp MapCovered[ecx], 2
+je Collision
 add ecx, 8
 cmp MapCovered[ecx], 1 
+je Collision
+cmp MapCovered[ecx], 2
 je Collision
 jmp NoCollision
 
@@ -1094,6 +1206,7 @@ cmp MapCovered[ecx], 1
 je Collision
 add ecx, 1
 cmp MapCovered[ecx], 1
+je Collision
 jmp NoCollision
 
 PecaMaeDown:
@@ -1137,6 +1250,7 @@ EndVerify:
 
 ret
 VerifyCollision ENDP
+
 
 ;---------------------------------------------------------
 NextEGSelect PROC USES ebx
@@ -1220,13 +1334,15 @@ ExibirDicas PROC uses EDX ECX
 mov ecx,0
 
 ;contador de linhas puladas, começa na linha dois 
-mov bh,2
+mov bh,7
 
 
 mov ax,YELLOW + RED*16
 call SetTextColor
 mGotoxy 41,1
-mWrite "Pressione T para comprar uma dica"
+mWrite "Pressione T para pedir ajuda a"
+mGotoxy 41,2
+mWrite "TioGaedes, The Egend."
 mGotoxy 41,bh
 
 ;passa para edx o Offset do buffer e para ECX o numero de dicas que o jogador pediu
@@ -1242,7 +1358,7 @@ je fimDicas
 cmp cl,dicasCompradas
 je fimDicas
 
-;se for o fim de uma dica, aumenta o ecx e dpeois ve se ele nao passou
+;se for o fim de uma dica, aumenta o ecx e depois ve se ele nao passou
 mov al,";"
 cmp [edx],al
 je dicafim
@@ -1283,22 +1399,623 @@ pushfd
 ;altera o caminho para que este aponte para o arquivo da fase
 mov edx, OFFSET dicas
 add edx, 16
-;mov al,faseAtual
-;mov [ebx],al
+mov al,faseAtual
+add al,48
+mov [edx],al
 
 
 ;abre o arquivo em que as pontuações estão salvas
 mov edx, OFFSET dicas
 Call OpenInputFile
-
+push eax
 ;grava tudo que está no arquivo em um local da memória
 mov edx, OFFSET buffer
 mov ecx,100
 Call ReadFromFile
 
+pop eax
+call CloseFile
 popfd
 ret
 CarregarDicas ENDP
 ;-------------------------------------------------------
 
-END main
+;-------------------------------------------------------
+GenerateMapCovered PROC USES eax esi
+;Gera a matriz de posicoes ocupadas no mapa
+;recebe: nada
+;retorna: nada
+;AUTOR: LUCAS Y
+;-------------------------------------------------------
+mov esi, 0
+
+GMC_INIT:
+cmp esi, 64
+je GMC_INIT_END
+mov MapCovered[esi], 0
+inc esi
+jmp GMC_INIT
+
+GMC_INIT_END:
+mov esi, 0
+GMC_L1:
+	cmp esi, 64
+	je GMC_SAIRLOOP
+	mov al, MapInfo[esi]
+	cmp al, 0
+	je GMC_NFAZNADA
+
+	cmp al, 1
+	jne GMC_J1
+	mov MapCovered[esi], 1
+	jmp GMC_NFAZNADA
+
+	GMC_J1:
+	cmp al, 5
+	jne GMC_J2
+	mov MapCovered[esi], 1
+	mov MapCovered[esi + 1], 1
+	mov MapCovered[esi + 8], 1
+	mov MapCovered[esi + 9], 1
+	jmp GMC_NFAZNADA
+
+	GMC_J2:
+	cmp al, 6
+	jne GMC_J3
+	mov MapCovered[esi], 1
+	jmp GMC_NFAZNADA
+
+	GMC_J3:
+	cmp al, 7
+	jne GMC_J4
+	mov MapCovered[esi], 1
+	mov MapCovered[esi + 1], 1
+	jmp GMC_NFAZNADA
+
+	GMC_J4:
+	mov MapCovered[esi], 1
+	mov MapCovered[esi + 8], 1
+	jmp GMC_NFAZNADA
+
+	GMC_NFAZNADA:
+	inc esi
+	jmp GMC_L1
+
+GMC_SAIRLOOP:
+	movzx esi, VoidEgendPos
+	mov MapCovered[esi], 2
+	mov MapCovered[esi + 1], 2
+	mov MapCovered[esi + 8], 2
+	mov MapCovered[esi + 9], 2
+ret
+GenerateMapCovered ENDP
+
+;------------------------------------------------------
+MovePiece PROC USES ebx ecx edx
+;
+; Updates the game (Map info and Map Covered)
+; Receives:AL receives the position of the selected piece
+;	   EBX receives the movement of the piece
+;
+; 	   UP, DOWN, LEFT, RIGHT
+; 	   0 ,  1  ,  2  ,   3
+;
+; Returns: Only courage to the player
+; AUTOR: NICOLAS OE, LUCAS Y
+;------------------------------------------------------
+.data
+movement_undoing_1 BYTE 6 DUP(20h)
+movement_undoing_2 BYTE 12 DUP(20h)
+movement_undoing_3 BYTE 24 DUP(20h)
+
+.code
+movzx edx, al
+movzx ecx, MapInfo[edx]
+mov MapInfo[edx], 0
+mov EGantEscolhida, al
+
+MP_NJ2:
+cmp ebx, 0
+jne Down
+	sub edx, 8
+	sub EGescolhida, 8
+jmp ExitMove
+
+Down:
+cmp ebx, 1
+jne Left
+	add edx, 8
+	add EGescolhida, 8
+jmp ExitMove
+
+Left:
+cmp ebx, 2
+jne Right
+	sub edx, 1
+	sub EGescolhida, 1
+jmp ExitMove
+
+Right:
+	add edx, 1
+	add EGescolhida, 1
+jmp ExitMove
+
+ExitMove:
+mov ebx, 0604h
+mov MapInfo[edx], cl
+
+;parte responsavel pela limpeza
+push edx
+movzx dx, al
+call GetEgendCoords
+mov bl, dl
+shl dx, 1
+add dl, bl
+add dx, 0208h
+mov ax, dx
+pop edx
+
+cmp cl, 5
+jne MPU1
+
+INVOKE draw_matrix, OFFSET movement_undoing_3, 0604h, ax, RED+RED*16
+jmp MPUEGCheck
+
+MPU1:
+cmp cl, 6
+jne MPU2
+
+INVOKE draw_matrix, OFFSET movement_undoing_1, 0302h, ax, RED+RED*16
+jmp MPUEND
+
+MPU2:
+cmp cl, 7
+jne MPU3
+
+INVOKE draw_matrix, OFFSET movement_undoing_2, 0602h, ax, RED+RED*16
+jmp MPUEND
+
+MPU3:
+INVOKE draw_matrix, OFFSET movement_undoing_2, 0304h, ax, RED+RED*16
+jmp MPUEND
+
+MPUEGCheck:
+cmp dl, VoidEgendPos
+jne MPUEND
+	mov EpicWinAux, 1
+
+MPUEND:
+
+ret
+MovePiece ENDP
+
+;------------------------------------------------------
+VerifyEGENDNESS PROC USES ecx
+;
+; Verify if the player GOT THE EGENDEEEEEEEEEEEEEEEEESS
+; Receives:AL receives the position of the mother
+; Returns: EDX rerturns the EGENDNESS of the player
+; 	   If is Egend, return 1, else return 0
+; AUTOR: NICOLAS OE
+;------------------------------------------------------
+
+mov edx, 1
+movzx ecx, al
+cmp MapCovered[ecx], 2
+je EGENDNESS
+mov edx, 0
+EGENDNESS:
+ret
+VerifyEGENDNESS ENDP
+;------------------------------------------------------
+
+
+;------------------------------------------------------
+ExibirPontuacao PROC USES EAX
+;
+; Exibe a pontuação que TioGaedes deu a você  
+; AUTOR: THIAGO FARIA 
+;------------------------------------------------------
+
+mGotoxy 2,20
+mWrite"\||||||||||||||||||||||||||||||||||/"
+mGotoxy 2,21
+mWrite"-------------"
+mov eax, pontuacao
+call WriteDec
+mWrite"-------------"
+mGotoxy 2,22
+mWrite"/||||||||||||||||||||||||||||||||||\"
+
+
+ret
+ExibirPontuacao ENDP
+;------------------------------------------------------
+
+;------------------------------------------------------
+LoadMap PROC
+;
+; Loads the map with EGEND
+; Receives: EDX points to the filename.
+; Returns: MapInfo receives the map's EGENDS!
+;------------------------------------------------------
+
+;altera o caminho para que este aponte para o arquivo da fase
+mov edx, OFFSET mapa
+add edx, 6
+mov al,faseAtual
+add al,48
+mov [edx],al
+sub edx,6
+
+call OpenInputFile
+push eax
+mov edx, OFFSET MapInfo
+mov ecx, 70
+call ReadFromFile
+
+pop eax
+call CloseFile
+
+mov ah, 0
+mov edx, 0
+mov ecx, 64
+
+LoadMapLoop1:
+
+mov al, MapInfo[edx]
+sub al,48
+mov MapInfo[edx], al
+
+cmp MapInfo[edx], 1
+je Parede
+
+cmp MapInfo[edx], 6
+je PecaMenor
+
+cmp MapInfo[edx], 7
+je PecaDeitada
+
+cmp MapInfo[edx], 8
+je PecaEmPe
+
+cmp MapInfo[edx], 5
+je PecaMae
+
+jmp LoadMapVerifyExit
+
+Parede:
+mov MapInfo[edx], 1
+jmp LoadMapVerifyExit
+
+PecaMenor:
+mov MapInfo[edx], 6
+jmp LoadMapVerifyExit
+
+LoadMapLoop:
+jmp LoadMapLoop1
+
+PecaDeitada:
+mov MapInfo[edx], 7
+jmp LoadMapVerifyExit
+
+PecaEmPe:
+mov MapInfo[edx], 8
+jmp LoadMapVerifyExit
+
+PecaMae:
+mov MapInfo[edx], 5
+mov EGescolhida, ah
+mov EGantEscolhida, ah
+
+LoadMapVerifyExit:
+
+add edx, 1
+inc ah
+loop LoadMapLoop
+
+add edx, OFFSET MapInfo
+call ConverteInt
+mov VoidEgendPos, bl
+
+ret
+
+LoadMap ENDP
+
+;------------------------------------------------------
+ExibirMovimentos PROC
+; imprime na tela a quantidade de movimentos feitos
+;
+;AUTOR: LUCAS Y
+;------------------------------------------------------
+pushad
+mov ax, YELLOW+RED*16
+call SetTextColor
+mov dx, 1729h
+call Gotoxy
+mWrite "Movimentos: "
+mov eax, movCount
+call WriteDec
+popad
+ret
+ExibirMovimentos ENDP
+;------------------------------------------------------
+
+
+
+;------------------------------------------------------
+SalvarPontuacao PROC USES  eax ebx ecx edx esi
+;
+; Salva a pontuação que TioGaedes deu a você  
+; AUTOR: THIAGO FARIA 
+;------------------------------------------------------
+
+;abre o arquivo em que as pontuações estão salvas
+mov edx, OFFSET pontuacoes
+Call OpenInputFile
+
+;grava tudo que está no arquivo em um local da memória
+mov edx, OFFSET buffer
+mov ecx,280
+Call ReadFromFile
+
+;passa para edx o Offset do buffer, para ecx o offset das iniciais e para esi o offset das pontuacoes
+mov edx, OFFSET buffer
+mov ecx, OFFSET iniciais
+mov esi, OFFSET chaves
+
+
+;colocada de todos os valores em seus vetores auxiliares
+mov al,";"
+
+copiando:
+cmp [edx],al
+je ordenar
+
+;carrega as inciais
+mov bl,[edx]
+mov [ecx],bl
+inc ecx
+inc edx
+mov bl,[edx]
+mov [ecx],bl
+inc ecx
+inc edx
+mov bl,[edx]
+mov [ecx],bl
+add ecx,2
+add edx,2
+
+;carrega a pontuação como uma lista de inteiros
+Call ConverteInt
+mov [esi],ebx
+add esi,4
+inc edx
+jmp copiando
+
+ordenar:
+; agora é inserido a pontuação atual do jogador no final do vetor, e depois ordena
+mov ebx, pontuacao
+mov [esi],ebx
+;os valores aqui são só temporarios
+mov bl,"T"
+mov [ecx],bl
+inc ecx
+mov bl,"I"
+mov [ecx],bl
+inc ecx
+mov bl,"o"
+mov [ecx],bl
+
+ordenando:
+mov eax,pontuacao
+cmp eax,[esi-4]
+jna gravar
+Call TrocaPosicoes
+jmp ordenando
+
+gravar:
+
+
+ret
+SalvarPontuacao ENDP
+;------------------------------------------------------
+
+
+;------------------------------------------------------
+ConverteInt PROC USES eax ecx esi
+;
+; Le uma string até um "/" e a transforma em um inteiro  
+; Recebe: EDX=OFFSET da string
+; Retorna: EBX = inteiro convertido, EDX aponta para o final do inteiro
+; AUTOR: THIAGO FARIA e LUCAS Y
+;------------------------------------------------------
+
+mov eax,1		;multiplicador
+mov ecx,0
+mov ebx, 0
+push eax
+;anda no vetor até chegar em um "/"
+mov al,"/"
+andando:
+cmp [edx],al
+je andado
+inc edx
+inc ecx
+jmp andando
+
+andado:
+pop eax
+push edx
+;aqui começa a conversão propriamente dita
+convertendo:
+dec edx
+mov esi,[edx]
+shl esi, 24
+shr esi, 24
+sub esi, 48
+;agora começam as multiplicações
+push edx	
+push eax
+mul esi
+add ebx,eax
+pop eax
+mov edx,10
+mul edx
+pop edx
+
+loop convertendo
+
+;Call GravaNovaPontuacao
+pop edx
+ret
+ConverteInt ENDP
+;------------------------------------------------------
+
+
+
+;------------------------------------------------------
+TrocaPosicoes PROC USES eax ebx
+;
+; Inverte as posições de duas iniciais e chaves (pontuações)
+; Recebe: ecx= OFFSET iniciais, esi= OFFSET chaves
+; AUTOR: THIAGO FARIA 
+;------------------------------------------------------
+
+;troca as iniciais
+mov eax,[ecx]
+mov ebx,[ecx-3]
+mov [ecx-3],eax
+mov [ecx],ebx
+dec ecx
+mov eax,[ecx]
+mov ebx,[ecx-3]
+mov [ecx-3],eax
+mov [ecx],ebx
+dec ecx
+mov eax,[ecx]
+mov ebx,[ecx-3]
+mov [ecx-3],eax
+mov [ecx],ebx
+dec ecx
+
+;troca os inteiros
+mov eax,[esi]
+mov ebx,[esi-4]
+mov [esi-4],eax
+mov [esi],ebx
+dec esi
+
+ret
+TrocaPosicoes ENDP
+;------------------------------------------------------
+
+
+
+
+
+
+
+;-----------------------------------------------------
+IntParaString PROC USES edi,
+ buffer_B:PTR BYTE
+ LOCAL neg_flag:BYTE
+; Escreve inteiro em uma string
+; em ASCII decimal.
+; Receives: EAX = o inteiro e buffer_B um ponteiro a uma string que tem 12 posicoes
+; Returns:  EDX = o endereço p/ a string, ECX = o tamanho da string
+;-----------------------------------------------------
+WI_Bufsize = 12
+true  =   1
+false =   0
+
+
+mov   neg_flag,false    ; assume neg_flag is false
+or    eax,eax             ; is AX positive?
+jns   WIS1              ; yes: jump to B1
+neg   eax                ; no: make it positive
+mov   neg_flag,true     ; set neg_flag to true
+
+WIS1:
+mov   ecx,0              ; digit count = 0
+mov   edi,buffer_B
+add   edi,(WI_Bufsize-1)
+mov   ebx,10             ; will divide by 10
+
+WIS2:
+mov   edx,0              ; set dividend to 0
+div   ebx                ; divide AX by 10
+or    dl,30h            ; convert remainder to ASCII
+dec   edi                ; reverse through the buffer
+mov   [edi],dl           ; store ASCII digit
+inc   ecx                ; increment digit count
+or    eax,eax             ; quotient > 0?
+jnz   WIS2              ; yes: divide again
+
+; Insert the sign.
+cmp   neg_flag,false    	; was the number positive?
+jz    WIS3              	; yes
+dec   edi	; back up in the buffer
+inc   ecx               ; increment counter
+mov   BYTE PTR [edi],'-' ; no: insert negative sign
+
+WIS3:	; retorna numero
+mov  edx,edi
+
+ret
+IntParaString ENDP
+;-----------------------------------------------------
+;-------------------------------------------------------
+; ID DO ESTADO: 5
+EGEND_state PROC  
+;	Estado em que parabeniza o player por chegar
+;	um pouco mais perto de ser EGEND
+;
+;AUTOR: NICOLAS OE
+;-------------------------------------------------------
+.data
+EGENDARY_congrats1 BYTE  "                              _                                    ",
+					"/\_/\___  _   _    __ _  ___ | |_   ___  ___  _ __ ___   ___       ",
+					"\_ _/ _ \| | | |  / _` |/ _ \| __| / __|/ _ \| '_ ` _ \ / _ \      ",
+					" / \ (_) | |_| | | (_| | (_) | |_  \__ \ (_) | | | | | |  __/_ _ _ ",
+					" \_/\___/ \__,_|  \__, |\___/ \__| |___/\___/|_| |_| |_|\___(_|_|_)",
+					"                  |___/                                            "
+EGENDARY_congrats2 BYTE	 "   __  ___   __    __  ___  ",
+					 "  /__\/ _ \ /__\/\ \ \/   \ ",
+					 " /_\ / /_\//_\ /  \/ / /\ / ",
+					 "//__/ /_\\//__/ /\  / /_//  ",
+					 "\__/\____/\__/\_\ \/___,'   "
+                                                             
+.code
+call Clrscr
+
+INVOKE draw_matrix, OFFSET EGENDARY_congrats1, 4306h, 0208h, LIGHTRED+BLACK*16
+INVOKE draw_matrix, OFFSET EGENDARY_congrats2, 1C05h, 0A1Ah, LIGHTRED+BLACK*16
+
+mov ax, bx
+call SetTextColor
+
+mGotoxy 5,17
+mWrite "Preesione T para ir para a proxima fase ou Enter para salvar sua pontuação"
+Call ReadChar
+
+cmp al,pedidoDica
+jne testaInicial
+inc faseAtual
+mov dicasCompradas,0
+mov estadoAtual,1
+mov movCount, 0
+mov EpicWinAux, 0
+jmp voltaJogo
+
+testaInicial:
+cmp al,escolha
+jne voltaJogo
+
+
+
+voltaJogo:
+
+
+ret
+EGEND_state ENDP
