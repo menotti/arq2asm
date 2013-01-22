@@ -11,3 +11,11 @@ Os procedimentos de desenho e movimentação, junto com algumas verificações, 
 
 
 = Procedures =
+== autoColisao ==
+Essa procedure tem por objetivo verificar se a cobra colidiu com ela mesma setando a flag colidiu para 1, faz isso comparando o valor do primeiro ponto da cobra com os demais valores do vetor cobraPontos, com o detalhe que o ponto que esta sendo verificado é trocado temporariamente por um valor que não representa uma coordenada na tela para que o primeiro ponto não seja considerado nas comparações.
+
+== geraComida ==
+Essa procedure tem por objetivo gerar coordenadas aleatórias para a posição da comida e desenhá-la com a cor amarela definida pela procedure setTextColor. Os números aleatórios são gerados pelas procedures randomize (gera semente) e randomRange (número aleatório dentro da tela). As coordenadas geradas não podem ter o mesmo valor da coordenada de qualquer ponto da cobra, por esse fato é feita uma busca em vetor, através da instrução "repne scasb", para verificar se a comida gerada tem posição diferente da cobra, caso tenha, uma nova comida é gerada.
+
+== verificaColisao ==
+Essa é uma procedure que verifica se a cobra colidiu com as paredes da extremidade da tela. Ela defini colidiu como 1 quando duas condições são atendidas: o primeiro ponto da cobra estar em uma das extremidades da tela e a cobra estar se movimentando em direção à extremidade em questão.
