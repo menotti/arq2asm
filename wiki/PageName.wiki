@@ -1,0 +1,30 @@
+#summary One-sentence summary of this page.
+
+=*Introdução*=
+
+    O jogo projetado é conhecido como Genius, onde o objetivo é ver a sequência mostrada pelo jogo e ser repetida ao final da sequência. Ao conseguir sucesso, o próximo nível é somado mais um comando ao final da sequência.
+   Mais informações:  http://pt.wikipedia.org/wiki/Genius_(jogo)
+   Exemplo de jogo :  http://neave.com/pt/genius/
+
+
+=*Detalhes de estrutura*=
+
+   O game tem início com a criação de uma sequência com 30 comandos, criados aleatoriamente podendo ser cima, baixo, direita ou esquerda.
+   Genius tem a entrada de comandos feita pelas teclas de direção, e de acordo com o comando armazenado, seu respectivo bloco será destacado na tela de execução.   
+   Em seguida o jogador inicia no level 1, assim deve conter apenas 1 comando para ser memorizado pelo jogador, e se conseguir sucesso ele passa de nível, aumentando mais um comando no próximo level. Caso o jogador erre, o jogo é encerrado.
+
+=*Procedures*=
+ 
+==Menu==
+  
+   O procedimento Menu tem como objetivo mostrar as instruções e o objetivo do jogo logo na tela inicial da execução. Além de ter a espera de leitura de uma tecla para prosseguir para a próxima tela.
+   Na próxima tela, temos uma espera para que o jogador possa se preparar.
+
+ 
+==CriaSequência==
+
+   O CriaSequencia tem como objetivo criar os 30 comandos da sequencia utilizando o RandomRange variando de 0 a 3, onde cada número tem sua respectiva direção para ser associada, e assim que criado é armazenado na memória o código das setas do teclado.
+
+==MostraSequencia==
+
+   O MostraSequencia tem como função mostrar os comandos respectivo da fase atual e de acordo do comando ele vai destacando o seu bloco na tela de execução.
