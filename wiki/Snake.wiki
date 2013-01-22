@@ -21,9 +21,11 @@ A pontuação atual é atualizada a cada vez que o jogador come uma das comidas,
 *numeroQuadradosCobra* - número de quadrados que a cobra tem no momento que comeu
 
 *Se (ValorMax - tempoUltimaComida) > 0*
+
 pontuaçãoAtual += (ValorMax - tempoUltimaComida)/2*numeroQuadradosCobra 
 
 *Senão*
+
 pontuacaoAtual += numeroQuadradosCobra 
 
 Essa razão beneficia quem demora pouco tempo até comer a comida gerada pelo jogo, estimulando o jogador a não ficar apenas se movimentando pela tela, mas sim a fazer o propósito do jogo, que é aumentar o número de quadrados da cobra.
