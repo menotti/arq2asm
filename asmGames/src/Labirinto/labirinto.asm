@@ -4,7 +4,6 @@ TITLE Labirinto da Morte (labirinto.asm)
 msgInicio BYTE "Labirinto da Morte", 0dh, 0ah, 0
 msgMenu BYTE "______Menu______", 0dh, 0ah,
              "1-Iniciar", 0dh, 0ah,
-			 "2-Tutorial", 0dh, 0ah,
 			 "0-Sair", 0dh, 0ah, 0
 
 msgDificuldade BYTE "0-Voltar ao menu inicial", 0dh, 0ah, 0ah,
@@ -23,26 +22,39 @@ msgFase04 BYTE "4-Labirinto do Troll 4 ", 0dh, 0ah, 0
 msgFase05 BYTE "5-Labirinto do Minotauro ", 0dh, 0ah, 0       
 msgFase06 BYTE "6-Labirinto do Minotauro 2", 0dh, 0ah, 0  
 msgFase07 BYTE "7-Labirinto do Minotauro 3", 0dh, 0ah, 0  
-msgFase08 BYTE "8-Labirinto Móvel", 0dh, 0ah, 0  
-msgFase09 BYTE "9-Labirinto Móvel 2 ", 0dh, 0ah, 0   
-msgFase10 BYTE "10-Labirinto Móvel 3 ", 0dh, 0ah, 0          
+msgFase08 BYTE "8-Labirinto do Dragao", 0dh, 0ah, 0  
+msgFase09 BYTE "9-Labirinto do Dragao 2", 0dh, 0ah, 0   
+msgFase10 BYTE "10-Labirinto do Dragao 3", 0dh, 0ah, 0
 
-nomeArq01 BYTE "src/Labirinto/labirinto01.txt", 0
-nomeArq02 BYTE "src/Labirinto/labirinto02.txt", 0
-nomeArq03 BYTE "src/Labirinto/labirinto03.txt", 0
-nomeArq04 BYTE "src/Labirinto/labirinto04.txt", 0
-nomeArq05 BYTE "src/Labirinto/labirinto05.txt", 0
-nomeArq06 BYTE "src/Labirinto/labirinto06.txt", 0
-nomeArq07 BYTE "src/Labirinto/labirinto07.txt", 0
-nomeArq08 BYTE "src/Labirinto/labirinto08.txt", 0
-nomeArq09 BYTE "src/Labirinto/labirinto09.txt", 0
-nomeArq10 BYTE "src/Labirinto/labirinto10.txt", 0
-nomeArq11 BYTE "src/Labirinto/medalha.txt", 0
+msg1 BYTE "- O tempo parou quando te conheci...", 0
+msg2 BYTE "- E o meu coracao parou quando voce foi embora...", 0
+msg3 BYTE "- Ela sumiu... me abandonou...", 0
+msg4 BYTE "- Serah mesmo que ela me abandonou?", 0
+msg5 BYTE "- O que eh isso no chao?", 0
+msg6 BYTE "- Pegadas?",	 0
+msg7 BYTE "- Para onde elas estao me levando?", 0
+msg8 BYTE "- Uma caverna...", 0
+
+nomeArq01 BYTE "src/Labirinto/Fases/labirinto01.txt", 0
+nomeArq02 BYTE "src/Labirinto/Fases/labirinto02.txt", 0
+nomeArq03 BYTE "src/Labirinto/Fases/labirinto03.txt", 0
+nomeArq04 BYTE "src/Labirinto/Fases/labirinto04.txt", 0
+nomeArq05 BYTE "src/Labirinto/Fases/labirinto05.txt", 0
+nomeArq06 BYTE "src/Labirinto/Fases/labirinto06.txt", 0
+nomeArq07 BYTE "src/Labirinto/Fases/labirinto07.txt", 0
+nomeArq08 BYTE "src/Labirinto/Fases/labirinto08.txt", 0
+nomeArq09 BYTE "src/Labirinto/Fases/labirinto09.txt", 0
+nomeArq10 BYTE "src/Labirinto/Fases/labirinto10.txt", 0
+nomeArq11 BYTE "src/Labirinto/MISC/medalha.txt", 0
+
+nomeArqLore1 BYTE "src/Labirinto/Historia/lore1.txt", 0
+nomeArqLore2 BYTE "src/Labirinto/Historia/lore2.txt", 0
+nomeArqLore3 BYTE "src/Labirinto/Historia/lore3t.txt", 0
+
+nomeArqMino1 BYTE "src/Labirinto/MISC/morteMino.txt", 0
 
 msgErro BYTE "Não foi possivel carregar o arquivo desejado.", 0dh, 0ah, 0
 msgErro2 BYTE "Por favor, selecione um labirinto valido.", 0dh, 0ah, 0
-
-aux BYTE 10 DUP(0)
 
 tamanhoX DWORD 64
 tamanhoY DWORD 24
@@ -58,6 +70,7 @@ mapa BYTE 0
 mapaPossivel BYTE 1
 liberado BYTE 0
 visao BYTE 1
+lore BYTE 1
 
 msgPassos BYTE "PASSOS:", 0
 msgPassos2 BYTE "MELHOR:", 0
@@ -73,9 +86,185 @@ msgPont7 BYTE "VOCE OBTEVE UMA MEDALHA DE BRONZE :| ", 0dh, 0ah, 0
 
 passos WORD 0
 seusMelhoresPassos WORD 10 DUP (1000)
-melhoresPassos WORD 141, 101, 102, 103, 104, 100, 100, 100, 100, 100
+melhoresPassos WORD 129, 141, 102, 103, 104, 100, 100, 100, 100, 100
 
 .code
+
+jogaLabirinto PROC
+; funcao MAIN onde a parte logica do jogo acontece
+
+    mov eax, 0
+    mov ah, blue
+	shr ax, 4
+	add al, white
+    call SetTextColor
+
+	call Clrscr
+
+	
+
+menuInicial:
+	call escreveMenu
+	call escreveOpcao
+	
+	call ReadInt
+	jc menuInicial
+
+	cmp eax, 1
+	je dif
+
+	jmp voltar
+
+dif:
+	call escreveDificuldade
+	call escreveOpcao
+
+	call ReadInt
+	jc dif
+
+	cmp eax, 1
+	je v1
+
+	cmp eax, 2
+	je v2
+
+	cmp eax, 0
+	je menuInicial
+
+  v1:
+	mov visao, 2
+	jmp historia
+	
+  v2: 
+	mov visao, 1
+	jmp historia
+
+historia:
+	
+	;antes da fase eh mostrado uma historia
+	cmp lore, 1  ; mostra a historia inicial uma vez
+	je fase
+	call LoreInicial
+	mov lore, 1
+
+fase:
+
+	call escreveFase
+	call escreveOpcao
+
+	call ReadInt
+	jc fase
+
+	cmp eax, 0
+	je menuInicial
+
+	mov mapa, al
+	mov dl, mapaPossivel
+	cmp mapa, dl
+	jbe jogo
+	call Crlf
+	mov edx, offset msgErro2
+	call WriteString
+	call WaitMsg
+
+	cmp eax, 666
+	jne fase
+	mov mapaPossivel, 10
+	jmp fase
+
+jogo:
+	call leLabirinto
+	mov ecx, 1
+	call atualizaLabirinto
+	mov passos, 0	
+
+continua:
+	mov eax, posicaoVelha
+	cmp eax, posicao
+	je naoConta
+    inc passos
+	mov eax, posicao
+	mov posicaoVelha, eax
+  naoConta:
+	mov dx, 0
+	call Gotoxy
+    call escreveLabirinto
+ 
+ volta:   
+    call ReadChar
+    
+    cmp ah, 48h
+    je mCima
+    
+	cmp ah, 50h
+    je mBaixo
+    
+    cmp ah, 4Dh
+    je mDireita
+    
+    cmp ah, 4Bh
+    je mEsquerda
+    
+    cmp al, 108
+    je mLibera
+    
+    jmp volta
+    
+  mCima: 
+    mov dl, 0
+    mov direcao, dl
+    jmp m
+    
+  mBaixo:
+    mov dl, 2
+    mov direcao, dl
+    jmp m
+    
+  mDireita:
+     mov dl, 1
+     mov direcao, dl
+     jmp m
+     
+  mEsquerda:
+	mov dl, 3
+	mov direcao, dl 
+	jmp m
+    
+  mLibera:
+	call liberaMapa
+	mov liberado, 1
+	jmp continua
+
+  m: 
+    mov ecx, 0
+    call atualizaLabirinto
+    
+    call movimento
+    
+    mov eax, posicao
+    cmp eax, posicaoS
+    je fim
+    
+    jmp continua
+
+fim:
+	call Clrscr
+	call mostraPontuacao
+	;call liberaMapa
+	call ReadKey
+    
+sair::
+    call Clrscr
+	jmp fase
+
+voltar:
+	mov eax, 0
+    mov ah, black
+	shr ax, 4
+	add al, white
+    call SetTextColor
+	ret
+jogaLabirinto ENDP
 
 escreveMenu PROC
 ; Exibe as opcoes iniciais do jogo
@@ -243,6 +432,9 @@ desliberaMapa ENDP
 
 liberaMapa PROC
 
+	mov edx, 0h
+	call Gotoxy
+
 	mov ecx, tamanhoM
 	mov edx, offset matriz
 
@@ -364,9 +556,8 @@ escreveChar PROC
 	cmp al, 79
 	je p
 
-
-	cmp al, 35
-	je pa
+	cmp al, 77
+	je p
 
 	cmp al, 0dh
 	je p
@@ -374,8 +565,11 @@ escreveChar PROC
 	cmp al, 0ah
 	je p
 
+	cmp al, 35
+	je parede
+
 	cmp passos, 1 ;mostra o inicio e fim por 3 passos
-	ja parede
+	ja nParede
 
 	cmp al, 73
 	je p
@@ -383,18 +577,18 @@ escreveChar PROC
 	cmp al, 70
 	je p
 
-	jmp parede
+	jmp nParede
 
 p:
 	call WriteChar
 	jmp escreveu
 
-pa:
+parede:
 	mov al, 35
 	call WriteChar
 	jmp escreveu
 
-parede:
+nParede:
 	mov al, 32
 	call WriteChar
 	jmp escreveu
@@ -487,8 +681,44 @@ verificaMovimento PROC uses EAX
 
 	cmp al, 73
     je sair
+
+	cmp al, 78
+    je morreMino
     
     jmp nMove
+
+morreMino:
+
+	call Clrscr
+retornaErro:
+	mov esi, OFFSET matriz
+	mov edx, OFFSET nomeArqMino1
+	call OpenInputFile
+	cmp eax, INVALID_HANDLE_VALUE
+	jne semErro
+	call Crlf
+	mov edx, offset msgErro
+	call WriteString
+	call WaitMsg
+	jmp retornaErro
+semErro:
+	push eax
+	mov edx, OFFSET matriz
+	mov ecx, tamanhoM
+	call ReadFromFile
+	mov ecx, eax
+L3:
+	mov al, [esi]
+	call WriteChar
+	inc esi
+	loop L3
+	
+	mov ebx, 5000
+	call esperaXms
+	call Clrscr
+	pop eax
+	call CloseFile
+	jmp sair
     
 move: 
     mov eax, posicao
@@ -721,32 +951,31 @@ erro:
 atualizaLabirinto ENDP
 
 substituiParede PROC
-	cmp ecx, 1
-	je mostra
     
-    mov al, [edi]
-    cmp al, 35
-    jne nMuda
-    
-    mov al, 42
-    mov [edi], al
-    
-nMuda:
-    jmp fim3
-
-mostra:
     mov al, [edi]
     cmp al, 42
-    jne nMuda2
+    jne nMuda
     
     mov al, 35
     mov [edi], al
     
-nMuda2:
-  
-fim3:
+nMuda:
+	call substituiMino
 	ret
 substituiParede ENDP
+
+substituiMino PROC
+    
+    mov al, [edi]
+    cmp al, 80
+    jne nMuda
+    
+    mov al, 77
+    mov [edi], al
+    
+nMuda:
+	ret
+substituiMino ENDP
 
 verificaBorda PROC uses esi
     mov ebx, offset matriz
@@ -777,8 +1006,6 @@ fora:
 s2:
 	ret
 verificaBorda ENDP
-
-
 
 mostraPontuacao PROC
     mov eax, 0
@@ -875,11 +1102,12 @@ semErro:
 cor1:
 	mov edx, offset msgPont5
 	add al, yellow
+	inc mapaPossivel ; aumenta o numero de labirintos possiveis
 	jmp mudacor
 cor2:
 	mov edx, offset msgPont6
 	add al, gray
-	inc mapaPossivel ; aumenta o mapa possivel
+	inc mapaPossivel ; aumenta o numero de labirintos possiveis
 	jmp mudacor
 cor3:
 	mov edx, offset msgPont7
@@ -913,7 +1141,6 @@ semMedalha:
 	call Crlf
 	call WriteString
 	call Crlf
-	call ReadInt ;esvazia buffer
 	mov ebx, 3000
 	call esperaXms
 
@@ -936,161 +1163,236 @@ fim:
 	ret
 esperaXms ENDP
 
-jogaLabirinto PROC
+LoreInicial PROC USES edx eax esi
+	call Clrscr
+	mov eax, 0
 
-    mov eax, 0
-    mov ah, blue
-	shr ax, 4
-	add al, white
-    call SetTextColor
+	;primeira frase
+	mov ebx, 50
+	mov esi, OFFSET msg1
+	mov ecx, LENGTHOF msg1
+L11:
+	mov eax, [esi]
+	call WriteChar
+	inc esi
+	call esperaXms
+	loop L11
 
-menuInicial:
-	call escreveMenu
-	call escreveOpcao
-	
-	call ReadInt
-	jc menuInicial
+	;mov ebx, 2000
+	;call esperaXms
+	;call Clrscr
 
-	cmp eax, 1
-	je dif
-
-	jmp voltar
-
-dif:
-	call escreveDificuldade
-	call escreveOpcao
-
-	call ReadInt
-	jc dif
-
-	cmp eax, 1
-	je v1
-
-	cmp eax, 2
-	je v2
-
-	cmp eax, 0
-	je menuInicial
-
-  v1:
-	mov visao, 2
-	jmp fase
-	
-  v2: 
-	mov visao, 1
-	jmp fase
-
-fase:
-
-	call escreveFase
-	call escreveOpcao
-
-	call ReadInt
-	jc fase
-
-	cmp eax, 0
-	je menuInicial
-
-	mov mapa, al
-	mov dl, mapaPossivel
-	cmp mapa, dl
-	jbe jogo
+	;primeiro cenario
+retornaErro1:
+	mov edx, OFFSET nomeArqLore1
+	call OpenInputFile
+	cmp eax, INVALID_HANDLE_VALUE
+	jne semErro1
 	call Crlf
-	mov edx, offset msgErro2
+	mov edx, offset msgErro
 	call WriteString
 	call WaitMsg
-	jmp fase
+	jmp retornaErro1
+semErro1:
+	push eax
+	mov edx, OFFSET matriz
+	mov ecx, tamanhoM
+	call ReadFromFile
+
+	mov ecx, eax ; numero de bytes lidos
+    mov esi, OFFSET matriz
+L1:
+	mov al, [esi]
+	cmp al, ';'
+	je final
+	call WriteChar
+	inc esi
+  final:
+	loop L1
+	
+	pop eax
+	call CloseFile
+	mov ebx, 4000
+	call esperaXms
+	call Clrscr
 	
 
-jogo:
-	call leLabirinto
-	mov ecx, 1
-	call atualizaLabirinto
-	mov passos, 0	
+	;segunda frase
+	mov ebx, 50
+	mov esi, OFFSET msg2
+	mov ecx, LENGTHOF msg2
+L12:
+	mov eax, [esi]
+	call WriteChar
+	inc esi
+	call esperaXms
+	loop L12
 
-continua:
-	mov eax, posicaoVelha
-	cmp eax, posicao
-	je naoConta
-    inc passos
-	mov eax, posicao
-	mov posicaoVelha, eax
-  naoConta:
-	mov dx, 0
-	call Gotoxy
-    call escreveLabirinto
- 
- volta:   
-    call ReadChar
-    
-    cmp ah, 48h
-    je mCima
-    
-	cmp ah, 50h
-    je mBaixo
-    
-    cmp ah, 4Dh
-    je mDireita
-    
-    cmp ah, 4Bh
-    je mEsquerda
-    
-    cmp al, 108
-    je mLibera
-    
-    jmp volta
-    
-  mCima: 
-    mov dl, 0
-    mov direcao, dl
-    jmp m
-    
-  mBaixo:
-    mov dl, 2
-    mov direcao, dl
-    jmp m
-    
-  mDireita:
-     mov dl, 1
-     mov direcao, dl
-     jmp m
-     
-  mEsquerda:
-	mov dl, 3
-	mov direcao, dl 
-	jmp m
-    
-  mLibera:
-	call liberaMapa
-	mov liberado, 1
-	jmp continua
+	;mov ebx, 2000
+	;call esperaXms
+	;call Clrscr
 
-  m: 
-    mov ecx, 0
-    call atualizaLabirinto
-    
-    call movimento
-    
-    mov eax, posicao
-    cmp eax, posicaoS
-    je fim
-    
-    jmp continua
-
-fim:
+	;segundo cenario
+retornaErro2:
+	mov edx, OFFSET nomeArqLore2
+	call OpenInputFile
+	cmp eax, INVALID_HANDLE_VALUE
+	jne semErro2
+	call Crlf
+	mov edx, offset msgErro
+	call WriteString
+	call WaitMsg
+	jmp retornaErro2
+semErro2:
+	push eax
+	mov edx, OFFSET matriz
+	mov ecx, tamanhoM
+	call ReadFromFile
+	
+	mov ecx, eax ; numero de bytes lidos
+	mov esi, OFFSET matriz
+L2:
+	mov al, [esi]
+	cmp al, ';'
+	je final2
+	call WriteChar
+	inc esi
+  final2:
+	loop L2
+	
+	pop eax
+	call CloseFile
+	mov ebx, 4000
+	call esperaXms
 	call Clrscr
-	call mostraPontuacao
-	;call liberaMapa
-	;call ReadKey
-    
-sair::
-	jmp fase
 
-voltar:
-	mov eax, 0
-    mov ah, black
-	shr ax, 4
-	add al, white
-    call SetTextColor
-	ret
-jogaLabirinto ENDP
+	;terceira frase
+	mov ebx, 50
+	mov esi, OFFSET msg3
+	mov ecx, LENGTHOF msg3
+L13:
+	mov eax, [esi]
+	call WriteChar
+	inc esi
+	call esperaXms
+	loop L13
+
+	mov ebx, 2000
+	call esperaXms
+	call Crlf
+	call Crlf
+
+	;quarta frase
+	mov ebx, 50
+	mov esi, OFFSET msg4
+	mov ecx, LENGTHOF msg4
+L14:
+	call esperaXms
+	mov eax, [esi]
+	call WriteChar
+	mov eax, 50
+	inc esi
+	loop L14
+
+	mov ebx, 2000
+	call esperaXms
+	call Crlf
+	call Crlf
+
+	;quinta frase
+	mov ebx, 50
+	mov esi, OFFSET msg5
+	mov ecx, LENGTHOF msg5
+L15:
+	mov eax, [esi]
+	call WriteChar
+	inc esi
+	call esperaXms
+	loop L15
+
+	mov ebx, 2000
+	call esperaXms
+	call Crlf
+	call Crlf
+
+
+	;sexta frase
+	mov ebx, 50
+	mov esi, OFFSET msg6
+	mov ecx, LENGTHOF msg6
+L16:
+	mov eax, [esi]
+	call WriteChar
+	inc esi
+	call esperaXms 
+	loop L16
+
+	mov ebx, 2000
+	call esperaXms
+	call Crlf
+	call Crlf
+
+
+	;sétima frase
+	mov ebx, 50
+	mov esi, OFFSET msg7
+	mov ecx, LENGTHOF msg7
+L17:
+	mov eax, [esi]
+	call WriteChar
+	inc esi
+	call esperaXms
+	loop L17
+
+	mov ebx, 2000
+	call esperaXms
+	call Crlf
+	call Crlf
+
+	;oitava frase
+	mov ebx, 50
+	mov esi, OFFSET msg8
+	mov ecx, LENGTHOF msg8
+L18:
+	mov eax, [esi]
+	call WriteChar
+	inc esi
+	call esperaXms
+	loop L18
+
+	mov ebx, 2000
+	call esperaXms
+	call Clrscr
+
+	;terceiro cenário
+retornaErro3:
+	mov esi, OFFSET matriz
+	mov edx, OFFSET nomeArqLore3
+	call OpenInputFile
+	cmp eax, INVALID_HANDLE_VALUE
+	jne semErro3
+	call Crlf
+	mov edx, offset msgErro
+	call WriteString
+	call WaitMsg
+	jmp retornaErro3
+semErro3:
+	push eax
+	mov edx, OFFSET matriz
+	mov ecx, tamanhoM
+	call ReadFromFile
+	mov ecx, eax
+L3:
+	mov al, [esi]
+	call WriteChar
+	inc esi
+	loop L3
+	
+	mov ebx, 5000
+	call esperaXms
+	call Clrscr
+	pop eax
+	call CloseFile
+
+ret
+LoreInicial ENDP
