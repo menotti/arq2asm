@@ -34,10 +34,10 @@ Obs: (Cor) deve ser substituída pela cor do quadrado que deseja imprimir na tel
 
    A impressão dos quadrados do jogo na tela é feita de forma análoga para os quatro quadrados:
    Ulitaza-se o proc GotoXY aponta para a vértice superior esquerda para então escrever um caracter por vez até completar uma linha (17 vezes), e ao completá-la, e assim mudar de linha e repetir até formar as 10 linhas de 17 elementos.
-   Amarelo é o quadrado acionado pela seta CIMA
-   Vermelho é o quadrado acionado pela seta BAIXO
-   Verde é o quadrado acionado pela seta DIRETA
-   Azul é o quadrado acionado pela seta ESQUERDA
+   Amarelo é o quadrado acionado pela seta CIMA.
+   Vermelho é o quadrado acionado pela seta BAIXO.
+   Verde é o quadrado acionado pela seta DIRETA.
+   Azul é o quadrado acionado pela seta ESQUERDA.
 
 ==ImprimeJogo==
 
