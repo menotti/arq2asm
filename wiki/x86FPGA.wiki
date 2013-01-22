@@ -181,4 +181,4 @@ As etapas seguidas do Decoder são:
 http://zet.aluzina.org/images/d/d8/Pres.pdf<br>
 http://www.swansontec.com/sintel.html<br>
 www.scs.stanford.edu/nyu/04fa/lab/ia32/IA32-3.pdf<br>
- http://www.cpu-world.com/CPUs/8086/index.html
+http://www.cpu-world.com/CPUs/8086/index.html
