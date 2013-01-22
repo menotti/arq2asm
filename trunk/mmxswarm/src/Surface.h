@@ -112,6 +112,10 @@ public:
 	 //Grupo 20
 	 virtual void Amarelar();
 
+	 //Grupo 2012
+	 virtual void RB3D();
+	 virtual void Median();
+
 	 // These methods compensate for m_kDelta
 	 void PointColor(int x, int y, COLORREF c);
 

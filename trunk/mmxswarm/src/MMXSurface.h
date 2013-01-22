@@ -34,6 +34,8 @@ public:
 	virtual void Rescale();      // grupo 17
 	virtual void ChannelMix();  // grupo 11
 	virtual void Amarelar();  // grupo 20
+	virtual void RB3D();  // grupo 2012
+	virtual void Median();  // grupo 2012
 protected:
 	virtual void OnCreated();
 private:

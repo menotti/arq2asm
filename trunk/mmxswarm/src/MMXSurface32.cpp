@@ -781,6 +781,7 @@ void CMMXSurface32Intrinsic::Amarelar() {
 
 	pixel = *(ULONGLONG *)pCur;	//faz um casting 64 bits dos dados do ponto atual na variável pixel
 
+	
 	//loops para percorrer toda a tela
 	do {
 		int width = m_width;
@@ -817,4 +818,64 @@ void CMMXSurface32Intrinsic::Amarelar() {
 			pCur++;							//avança o ponteiro sobre a tela
 		} while (--width > 0);
 	} while (--height > 0);
+}
+
+// Grupo 2012
+void CMMXSurface32Intrinsic::RB3D() {
+	//altura multiplicada por 2 pois são pixels de 32 bits em variáveis de 64 bits (2x maior)
+	DWORD *pCur  = (DWORD *)GetPixelAddress(0,0);	// cada pixel tem 32bits, 1byte para cada canal de cor: alfa, red, green, blue
+
+	// Variaveis do tipo unsigned long long, de 64 bits
+	ULONGLONG mascara = 0xFF;	//seleciona um byte de alguma variável (utilizada para pegar valores individuais de RGB)	
+	ULONGLONG mascara2 = 0xFFFFFF00;
+	ULONGLONG mascara3 = 0xFF0000;
+	ULONGLONG mascara4 = 0xFF00FFFF;
+	ULONGLONG pixel;	//recebe os valores referentes a um ponto da tela
+	ULONGLONG direito, esquerdo=0;		//recebe os valores do próximo ponto a partir de pixel 
+	int t=100, u=100;
+
+	pixel = *(ULONGLONG *)pCur;	//faz um casting 64 bits dos dados do ponto atual na variável pixel
+	for (int i=0; i<30; i++){
+	//loops para percorrer toda a tela
+	do {
+		do {
+
+			direito = *(ULONGLONG *)(pCur+1);	//próximo ponto recebe o ponteiro que aponta para um ponto na tela + 1
+
+			//utilização dos registradores mmx 64 bits com inline assembly 
+			__asm{
+					movq mm0, pixel		//registrador mm0 reebe o valor do pixel atual
+					pand mm0, mascara	//valor de mm0 recebe uma mascara para selecionar seu 1 byte menos significativo (B)
+					movq mm1, direito
+					pand mm1, mascara2
+					paddd mm1, mm0
+					movq direito, mm1
+										
+					movq mm0, pixel		//recarrega o valor do pixel em mm0
+					pand mm0, mascara3
+					movq mm1, esquerdo
+					pand mm1, mascara4	//utiliza mascara para isolar um byte (R)
+					paddd mm1, mm0
+					movq esquerdo, mm1
+
+				
+					
+			}
+
+
+	
+			
+			*(ULONGLONG *)pCur = pixel;		//joga o resultado no ponto apontado da tela
+			*(ULONGLONG *)(pCur+1) = direito;
+			*(ULONGLONG *)(pCur-1) = esquerdo;
+			esquerdo = pixel;
+			pixel = direito;					//recebe o próximo pixel a ser processado
+			pCur++;							//avança o ponteiro sobre a tela
+		} while (--t > 0);
+	} while (--u > 0);
+}
+}
+
+void CMMXSurface32Intrinsic::Median() {
+	
 }

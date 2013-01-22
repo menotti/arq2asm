@@ -1202,3 +1202,4 @@ void CSSE2Surface32Intrinsic::Amarelar()
 		} while (--width > 0);
 	} while (--height > 0);
 }
+
