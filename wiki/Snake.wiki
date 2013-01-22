@@ -58,3 +58,32 @@ Essa procedure lê o teclado e muda a direção da cobra de acordo com a seta pr
 
 == movimentaEdesenha ==
 Essa procedure é responsável pela lógica de movimentação dos pontos da cobra e pelo desenho dela na tela. Os pontos afetados pela procedure são apenas o primeiro e o último, de forma que o último ponto é apagado e desenhado a frente do primeiro se tornando o novo primeiro ponto, com suas coordenadas atualizadas e a variável cobraIndiceUltimo é atualizada com o índice do novo último ponto da cobra.
+
+== exibeMelhoresPontuacoes ==
+Essa procedure exibe as melhores pontuações através do acesso aos dados do arquivo de pontuação, também é a procedure que carrega nas variáveis as pontuações e o nome, para posterior comparação com as pontuações feitas e a atualização do arquivo.
+
+== exibeMensagemErroArquivo ==
+Caso o arquivo nao seja aberto corretamente, essa procedure será chamada, exibindo uma mensagem informando o erro.
+
+== offsetNomePontuacoes == 
+Procedure que, dado um parâmetro entre 1 e 5 passado em eax, retorna o OFFSET da variavel nomePontuacao correspondente.
+
+Ex: se eax for 2 o OFFSET retornado será o da variável nomePontuacao2
+
+== escreveArquivoPontuacao ==
+Escreve os dados de volta no arquivo de pontuação, pegando todos os dados das variáveis de nome e o vetor de valores e armazenando conforme o padrão inicial do arquivo.
+
+== intParaString ==
+Função que converte um valor inteiro em uma String.
+
+== atualizaMelhoresPontuacoes ==
+Procedure que atualiza as melhores pontuações comparando-as com a pontuação efetuada ao final do jogo.
+
+== atualizaPontuacao ==
+Atualiza no vetor a pontuação do jogador, seguindo a fórmula citada acima.
+
+== mostraPontuacaoAtual == 
+Atualiza na tela a pontuação do jogador.
+
+== mostraCabecalhoPontuacao ==
+Procedure que carrega os limites inferiores da tela e as mensagens de melhor pontuação realizada e pontuação atual (iniciada com 0 nesse instante)
