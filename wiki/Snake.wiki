@@ -18,6 +18,7 @@ A pontuação atual é atualizada a cada vez que o jogador come uma das comidas,
 *ValorMax* - valor maximo da razão de bônus
 
 *tempoUltimaComida* - tempo que o jogador demorou para comer a comida
+
 *numeroQuadradosCobra* - número de quadrados que a cobra tem no momento que comeu
 
 *Se (ValorMax - tempoUltimaComida) > 0*
@@ -32,9 +33,15 @@ Essa razão beneficia quem demora pouco tempo até comer a comida gerada pelo jo
 
 === Atualização das melhores pontuações ===
 
-Após o término do jogo,
+Após o término do jogo, a variável pontuacaoAtual é comparada com os 5 valores do vetor melhoresPontuacoes (que é ordenado) e é colocada como uma das melhores pontuações dependendo de qual é a colocação que ela fica, isto é, se for a quinta melhor pontuação, ficará na quinta posição do vetor.
+
+Também é pedido um nome ao jogador quando o mesmo consegue uma das 5 melhores pontuações, armazenando tudo posteriormente no arquivo.
 
 === Leitura e escrita do arquivo de melhores pontuações ===
+
+Ao iniciar o jogo as 5 melhores pontuações são exibidas com os respectivos nomes dos jogadores que as fizeram. O acesso desses dados é feito acessando o arquivo melhoresPontuacoes.txt e cortando os valores do mesmo a cada "/" encontrado e guardando nas variáveis melhoresPontuacoes as pontuações e nas strings nomePontuacao1 até nomePontuacao5 os nomes dos jogadores que fizeram essas pontuações.
+
+A escrita é feita pegando os valores das mesmas variáveis e guardando no arquivo novamente, não esquecendo de colocar o "/" entre elas, para manter o arquivo no mesmo padrão. Foi necessária a criação de uma função que convertesse valores inteiros para string, para que a gravação das pontuações pudesse ser feita corretamente no arquivo.
 
 = Procedures =
 == autoColisao ==
