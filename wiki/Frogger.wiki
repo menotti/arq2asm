@@ -96,7 +96,7 @@ cenário.
 -------------
 = Procedimentos =
 
-*[FROG_Clock]*: procedimento principal, executa um loop ate que o jogador ganhe, perca ou saia do jogo.
+*FROG_Clock*: procedimento principal, executa um loop ate que o jogador ganhe, perca ou saia do jogo.
 
 *FROG_VerificarColisao*: verifica se o sapo colidiu com um carro. Para isso, percorre a matriz inteira, verificando se existe algum elemento para qual o valor ee maior que o valor do sapo (considera-se que nenhum outro elemento tem valor maior que o sapo). Se sim, houve colisão e a variável FROG_perdeuJogo = 1. Caso contrario, nada acontece.
 
