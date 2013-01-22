@@ -26,7 +26,7 @@ Temos ainda o RFLAGS que como o próprio nome diz, guarda os flags do programa, 
 ||Direção, bit 10||A direção que as instruções operam, incremental ou decremental||
 ||Identificação, bit 21||Sua alteração denota a presença de uma instrução CPUID||
 
-A unidade de ponto flutuante(FPU) possui 8 registradores próprios FPR0 – FPR7, registradores de status e controle, e outros mais especializados, o registrador FPR7 pode guardar um dos valore mostrados na tabela abaixo:
+A unidade de ponto flutuante(FPU) possui 8 registradores próprios FPR0 – FPR7, registradores de status e controle, e outros mais especializados, o registrador FPR7 pode guardar um dos valores mostrados na tabela abaixo:
 
 ||*Tipo de dado*||*Tamanho*||*Precisão(bits)*||*Precisão em dígitos decimais*||*Capacidade decimal*||
 ||Precisão simples||32||24||7||1,18*10^-38 a 3,40*10^38||
@@ -255,6 +255,7 @@ Uma tabuada onde o calculo é feito em assembly
 
 using namespace std;
 int i;
+extern "C" int val1;
 
 extern "C"  int testeAsm();
 int main()
@@ -276,20 +277,19 @@ int main()
 
 val1 WORD ?
 
-
 .code
+PUBLIC testeAsm
 testeAsm proc
 
 mov eax,0
 mov bx,val1
 add eax,ebx
-add val1,2	
+add val1,cx
 
 
 ret
 testeAsm endp
 end
-
 }}}
 
 = Bibliografia =
