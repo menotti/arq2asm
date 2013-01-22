@@ -70,7 +70,7 @@ mapa BYTE 0
 mapaPossivel BYTE 1
 liberado BYTE 0
 visao BYTE 1
-lore BYTE 1
+lore BYTE 0
 
 msgPassos BYTE "PASSOS:", 0
 msgPassos2 BYTE "MELHOR:", 0
@@ -86,7 +86,7 @@ msgPont7 BYTE "VOCE OBTEVE UMA MEDALHA DE BRONZE :| ", 0dh, 0ah, 0
 
 passos WORD 0
 seusMelhoresPassos WORD 10 DUP (1000)
-melhoresPassos WORD 129, 141, 102, 103, 104, 100, 100, 100, 100, 100
+melhoresPassos WORD 129, 141, 115, 80, 90, 120, 100, 100, 100, 100
 
 .code
 
