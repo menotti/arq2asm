@@ -35,12 +35,17 @@ Setas :
 movimenta o usuário
 
 Caracteres:
-* # - parede do labirinto
-* O - o usuário/jogador
-* L - a sua namorada sumida/fugitiva
-* I - indica o início do labirinto. Se optar trocar de labirinto, volte até ele.
-* F - final do labirinto. 
-* M - Minotauro. NÃO ENCARE ELE!
+# - parede do labirinto
+
+O - o usuário/jogador
+
+L - a sua namorada sumida/fugitiva
+
+I - indica o início do labirinto. Se optar trocar de labirinto, volte até ele.
+
+F - final do labirinto. 
+
+M - Minotauro. NÃO ENCARE ELE!
 
 Você deve fazer um caminho de I até F de forma que seja a menor possível.
 
