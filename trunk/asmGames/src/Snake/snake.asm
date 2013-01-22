@@ -38,6 +38,7 @@ mensagemControlesJogo BYTE "P: Pausa o jogo | Setas Direcionais: Controlam a min
 mensagemErroArquivo BYTE "Erro ao abrir o arquivo de pontuações!",13, 10, 0
 mensagemPausa BYTE "PAUSADO",0
 mensagemDesPausa BYTE "       ",0
+nomeSeVazio BYTE "???",0
 mensagemRecorde BYTE "Parabens! Voce fez uma das 5 melhores pontuacoes!. Digite seu nome: ",0
 finalTelaMinhoca BYTE "-------------------------------------------------------------------------------",0
 mensagemPontuacao BYTE "Pontuacao Atual: ",0
@@ -614,6 +615,11 @@ NOVO_NOME:
 	call offsetNomePontuacao
 	mov ecx,20
 	call ReadString
+	cmp BYTE PTR [edx],0
+	jne NomeValido
+	mov esi,OFFSET nomeSeVazio
+	invoke Str_copy,esi,edx
+NomeValido:
 	ret
 atualizaMelhoresPontuacoes ENDP
 
