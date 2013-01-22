@@ -18,10 +18,10 @@ Essa procedure tem por objetivo verificar se a cobra colidiu com ela mesma setan
 Essa procedure tem por objetivo gerar coordenadas aleatórias para a posição da comida e desenhá-la com a cor amarela definida pela procedure setTextColor. Os números aleatórios são gerados pelas procedures randomize (gera semente) e randomRange (número aleatório dentro da tela). As coordenadas geradas não podem ter o mesmo valor da coordenada de qualquer ponto da cobra, por esse fato é feita uma busca em vetor, através da instrução "repne scasb", para verificar se a comida gerada tem posição diferente da cobra, caso tenha, uma nova comida é gerada.
 
 == verificaColisao ==
-Essa é uma procedure que verifica se a cobra colidiu com as paredes da extremidade da tela. Ela defini colidiu como 1 quando duas condições são atendidas: o primeiro ponto da cobra estar em uma das extremidades da tela e a cobra estar se movimentando em direção à extremidade em questão.
+Essa é uma procedure que verifica se a cobra colidiu com as paredes da extremidade da tela. Ela define colidiu como 1 quando duas condições são atendidas: o primeiro ponto da cobra estar em uma das extremidades da tela e a cobra estar se movimentando em direção à extremidade em questão.
 
 == identificaDirecao ==
-Essa procedure lê o teclado e muda a direção da cobra de acordo com a seta pressionada. Um controle de direção é feito, pois a cobra não pode mudar para a direção contrária a que está.
+Essa procedure lê o teclado e muda a direção da cobra de acordo com a seta pressionada. Um controle de direção é feito, pois a cobra não pode mudar para a direção contrária a que está; se pudesse, ela estaria colidindo consigo mesma, terminando o jogo.
 
 == movimentaEdesenha ==
 Essa procedure é responsável pela lógica de movimentação dos pontos da cobra e pelo desenho dela na tela. Os pontos afetados pela procedure são apenas o primeiro e o último, de forma que o último ponto é apagado e desenhado a frente do primeiro se tornando o novo primeiro ponto, com suas coordenadas atualizadas e a variável cobraIndiceUltimo é atualizada com o índice do novo último ponto da cobra.
