@@ -28,3 +28,34 @@
 ==MostraSequencia==
 
    O MostraSequencia tem como função mostrar os comandos respectivo da fase atual e de acordo do comando ele vai destacando o seu bloco na tela de execução.
+
+
+==Imprime(Cor)==
+Obs: (Cor) deve ser substituída pela cor do quadrado que deseja imprimir na tela (vermelhor, azul, verde ou amarelo)
+
+
+   A impressão dos quadrados do jogo na tela é feita de forma análoga para os quatro quadrados:
+   Ulitaza-se o proc GotoXY aponta para a vértice superior esquerda para então escrever um caracter por vez até completar uma linha (17 vezes), e ao completá-la, e assim mudar de linha e repetir até formar as 10 linhas de 17 elementos.
+   Amarelo é o quadrado acionado pela seta CIMA
+   Vermelho é o quadrado acionado pela seta BAIXO
+   Verde é o quadrado acionado pela seta DIRETA
+   Azul é o quadrado acionado pela seta ESQUERDA
+
+==ImprimeJogo==
+
+   Esta função chama as funções que imprimem os principais objetos da tela: imprimeAmarelo, imprimeAzul, imprimeVerde e imprimeVermelho que imprimem os blocos coloridos na tela, além de imprimir o rótulo "Genius!".
+
+==PiscaAmarelo==
+Esta função define as coordenadas (x,y) do bloco amarelo e chama a função "Pisca" que sobrescreve um bloco de cor branca sobre o bloco amarelo a partir das coordenadas.
+
+==PiscaVermelho==
+Esta função define as coordenadas (x,y) do bloco vermelho e chama a função "Pisca" que sobrescreve um bloco de cor branca sobre o bloco vermelho a partir das coordenadas.
+
+==PiscaAzul==
+Esta função define as coordenadas (x,y) do bloco azul e chama a função "Pisca" que sobrescreve um bloco de cor branca sobre o bloco azul a partir das coordenadas.
+
+==PiscaVerde==
+Esta função define as coordenadas (x,y) do bloco verde e chama a função "Pisca" que sobrescreve um bloco de cor branca sobre o bloco verde a partir das coordenadas.
+
+==Pisca==
+Esta função recebe as coordenadas no registrador "EDX" e imprime linha por linha um bloco de cor branca a partir das coordenadas. Após a impressão na tela, é utilizada a função "Delay" que preserva o bloco na tela por alguns milisegundos e depois é chamada a função "ImprimeJogo" que imprime na tela os blocos iniciais.
