@@ -55,7 +55,10 @@
 #define ID_INDICATOR_USE_MIRROR         59165 //grupo 18
 #define ID_INDICATOR_USE_AMARELAR       59166 //grupo 20
 #define ID_INDICATOR_USE_SWARM			59167
+#define ID_INDICATOR_USE_RB3D			59168 //grupo 2012
 #define ID_INDICATOR_USE_IMAGE			59169
+#define ID_INDICATOR_USE_MEDIAN			59170 //grupo 2012
+
 
 #define ID_VIEW_PAUSE_SWARM             59394
 #define ID_VIEW_PAUSE_BLUR              59395
@@ -82,6 +85,9 @@
 #define ID_VIEW_USE_ENVERMELHAR			59416
 #define ID_VIEW_USE_MIRROR				59417
 #define ID_VIEW_USE_AMARELAR		    59418
+#define ID_VIEW_USE_RB3D				59419
+#define ID_VIEW_USE_MEDIAN				59420
+
 
 // Next default values for new objects
 // 

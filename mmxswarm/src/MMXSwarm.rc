@@ -157,7 +157,8 @@ BEGIN
         MENUITEM "Use Esverdear",               ID_VIEW_USE_ESVERDEAR
         MENUITEM "Use Envermelhar",             ID_VIEW_USE_ENVERMELHAR
         MENUITEM "Use &Mirror\tU",              ID_VIEW_USE_MIRROR
-        MENUITEM "Use &Amarelar\tAlt+A",        ID_VIEW_USE_AMARELAR
+        MENUITEM "Use &RB3D\tAlt+3",			ID_VIEW_USE_RB3D
+		MENUITEM "Use &Median\tAlt+1",			ID_VIEW_USE_MEDIAN
     END
     POPUP "&Mode"
     BEGIN
@@ -212,6 +213,8 @@ BEGIN
     "W",            ID_VIEW_USE_RESCALE,    VIRTKEY, NOINVERT
     "U",            ID_VIEW_USE_MIRROR,     VIRTKEY, NOINVERT
     "A",            ID_VIEW_USE_AMARELAR,   VIRTKEY, ALT, NOINVERT
+	"3",            ID_VIEW_USE_RB3D,		VIRTKEY, ALT, NOINVERT
+	"1",            ID_VIEW_USE_MEDIAN,		VIRTKEY, ALT, NOINVERT
 END
 
 

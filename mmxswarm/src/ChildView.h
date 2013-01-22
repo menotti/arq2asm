@@ -75,7 +75,9 @@ protected:
 
 	afx_msg void OnUpdateUseRescale(CCmdUI* pCmdUI); //grupo 17
 	afx_msg void OnUpdateUseMirror(CCmdUI* pCmdUI); //grupo 18
-	afx_msg void OnUpdateUseAmarelar(CCmdUI* pCmdUI); //grupo 20
+	afx_msg void OnUpdateUseAmarelar(CCmdUI* pCmdUI);
+	afx_msg void OnUpdateUseRB3D(CCmdUI* pCmdUI);// Grupo 2012
+	afx_msg void OnUpdateUseMedian(CCmdUI* pCmdUI);// Grupo 2012
 	afx_msg void OnUpdateResolution(CCmdUI* pCmdUI);
 	afx_msg void OnUpdateImageFormats(CCmdUI* pCmdUI);
 	afx_msg void OnUpdateMode(CCmdUI* pCmdUI);
@@ -104,7 +106,9 @@ protected:
 	afx_msg void OnViewUseMirror(); //grupo 18
 	afx_msg void OnModeWebcam();	//grupo 16
 	afx_msg void OnViewUseRescale(); //grupo 17
-	afx_msg void OnViewUseAmarelar(); //grupo 20
+	afx_msg void OnViewUseAmarelar();//Grupo 20
+	afx_msg void OnViewUseRB3D();//Grupo 2012
+	afx_msg void OnViewUseMedian();//Grupo 2012
 
 
 	afx_msg void OnModeSWARM(); 
@@ -166,6 +170,8 @@ private:
     bool	m_bUseInvert; //grupo 7
 	bool	m_bUseMirror; //grupo 18
 	bool	m_bUseAmarelar; //grupo 20
+	bool	m_bUseRB3D; //grupo 2012
+	bool	m_bUseMedian; //grupo 2012
 	bool	m_bTimerPopped;
 	bool m_bUseChannelmix; //Grupo 11
 	bool	execSobel;//Grupo 5 - Verifica se executou o Sobel alguma vez quando fadeIn estEoff

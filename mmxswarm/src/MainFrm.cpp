@@ -107,8 +107,8 @@ IMPLEMENT_DYNAMIC(CMainFrame, CFrameWnd)
 		int dy;
 
 #ifdef _DEBUG
-		dx = 320 - viewRect.Width();
-		dy = 240 - viewRect.Height();
+		dx = 1280 - viewRect.Width();
+		dy = 720 - viewRect.Height();
 #else
 		dx = 640 - viewRect.Width();
 		dy = 480 - viewRect.Height();

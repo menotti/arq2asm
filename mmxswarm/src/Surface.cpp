@@ -225,9 +225,9 @@ void CSurface::Gradient()
 		for (int j = 0; j < m_wndWidth; j++) {
 			cCur = PointColor(j,i);		//pega um pixel da tela da posição [i,j]	
 			
-			r = ((BYTE)(GetRValue(cCur)) + i/2) > 255 ? 255 :(BYTE)(GetRValue(cCur)) + i/2;
-			g = ((BYTE)(GetGValue(cCur)) + i/2) > 255 ? 255 :(BYTE)(GetGValue(cCur)) + i/2;
-			b = ((BYTE)(GetBValue(cCur)) + i/2) > 255 ? 255 :(BYTE)(GetBValue(cCur)) + i/2;
+			r = ((BYTE)(GetRValue(cCur)) + (BYTE)i/2) > 255 ? 255 :((BYTE)(GetRValue(cCur)) + (BYTE)i/2);
+			g = ((BYTE)(GetGValue(cCur)) + (BYTE)i/2) > 255 ? 255 :((BYTE)(GetGValue(cCur)) + (BYTE)i/2);
+			b = ((BYTE)(GetBValue(cCur)) + (BYTE)i/2) > 255 ? 255 :((BYTE)(GetBValue(cCur)) + (BYTE)i/2);
 
 			PointColor(j,i,RGB(b,g,r));		//reescreve na tela o pixel do valores RGB modificados na posição [i,j]
 		}
@@ -776,4 +776,108 @@ void CSurface::Amarelar()
 
 	//Quando terminar, copia o resultado para a imagem corrente
 	Copy(t_image);
+}
+//Grupo 2012
+void CSurface::RB3D()
+{	
+	
+	COLORREF pEsquerdo = 0, pAtual = PointColor(0,0), pDireito;
+	BYTE r, g, b;
+    
+	for (int k=0; k<30; k++){
+		// Aplica o efeito 30 vezes
+        
+		for (int i = 0; i < m_wndHeight; i++) {
+		pEsquerdo = 0; // Para não pegar fora da imagem
+
+			for (int j = 0; j < m_wndWidth; j++) {
+				pDireito = PointColor(j+1, i);
+		        
+				r = (BYTE)(GetRValue(pEsquerdo));// Joga o valor para o pixel esquerdo
+				g = (BYTE)(GetGValue(pAtual));
+				b = (BYTE)(GetBValue(pDireito));// Joga o valor para o pixel direito
+                
+				PointColor(j, i, RGB(b,g,r)); // RGB é invertido
+
+				//Movimenta o pixel atual salvo
+				pEsquerdo = pAtual;
+				pAtual = pDireito;
+			}
+		}
+	}
+}
+//Função usada para ordenar o vetor do Median
+void Ordena (int *vetor, int tamanho) {
+int auxiliar;
+for (int i = 0; i < tamanho; i++){
+for (int j = i+1; j < tamanho; j++){
+if (vetor[i] > vetor[j]){
+auxiliar = vetor[i];
+vetor[i] = vetor[j];
+vetor[j] = auxiliar;
+}
+}
+}
+}
+//Grupo 2012
+void CSurface::Median()
+{
+COLORREF pAtual, pEsquerda, pDireita, pCima, pBaixo, pDiagEsqCima, pDiagEsqBaixo, pDiagDirCima, pDiagDirBaixo;
+int r, g, b;
+int vetorTemp[9];
+for (int i = 1; i < m_wndHeight; i++) {
+for (int j = 1; j < m_wndWidth; j++) {
+
+pAtual = PointColor(j, i);
+pEsquerda = PointColor(j-1, i);
+pDireita = PointColor(j+1, i);
+pCima = PointColor(j, i-1);
+pBaixo = PointColor(j, i+1);
+pDiagEsqCima = PointColor(j-1, i-1);
+pDiagEsqBaixo = PointColor(j-1, i+1);
+pDiagDirCima = PointColor(j+1, i-1);
+pDiagDirBaixo = PointColor(j+1, i+1);
+
+vetorTemp[0] = GetRValue(pAtual);	
+vetorTemp[1] = GetRValue(pEsquerda);
+vetorTemp[2] = GetRValue(pDireita);
+vetorTemp[3] = GetRValue(pCima);
+vetorTemp[4] = GetRValue(pBaixo);
+vetorTemp[5] = GetRValue(pDiagEsqCima);
+vetorTemp[6] = GetRValue(pDiagEsqBaixo);
+vetorTemp[7] = GetRValue(pDiagDirCima);
+vetorTemp[8] = GetRValue(pDiagDirBaixo);	
+
+Ordena(vetorTemp,sizeof(vetorTemp)/sizeof(int));
+r = vetorTemp[4];
+
+vetorTemp[0] = GetGValue(pAtual);	
+vetorTemp[1] = GetGValue(pEsquerda);
+vetorTemp[2] = GetGValue(pDireita);
+vetorTemp[3] = GetGValue(pCima);
+vetorTemp[4] = GetGValue(pBaixo);
+vetorTemp[5] = GetGValue(pDiagEsqCima);
+vetorTemp[6] = GetGValue(pDiagEsqBaixo);
+vetorTemp[7] = GetGValue(pDiagDirCima);
+vetorTemp[8] = GetGValue(pDiagDirBaixo);
+
+Ordena(vetorTemp,sizeof(vetorTemp)/sizeof(int));	
+g = vetorTemp[4];
+vetorTemp[0] = GetBValue(pAtual);
+vetorTemp[1] = GetBValue(pEsquerda);
+vetorTemp[2] = GetBValue(pDireita);
+vetorTemp[3] = GetBValue(pCima);
+vetorTemp[4] = GetBValue(pBaixo);
+vetorTemp[5] = GetBValue(pDiagEsqCima);
+vetorTemp[6] = GetBValue(pDiagEsqBaixo);
+vetorTemp[7] = GetBValue(pDiagDirCima);
+vetorTemp[8] = GetBValue(pDiagDirBaixo);
+
+Ordena(vetorTemp,sizeof(vetorTemp)/sizeof(int));	
+b = vetorTemp[4];
+
+PointColor(j, i, RGB(b,g,r)); // RGBs are physically inverted
+}
+}
+
 }
