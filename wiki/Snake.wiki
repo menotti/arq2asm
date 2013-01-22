@@ -87,3 +87,6 @@ Atualiza na tela a pontuação do jogador.
 
 == mostraCabecalhoPontuacao ==
 Procedure que carrega os limites inferiores da tela e as mensagens de melhor pontuação realizada e pontuação atual (iniciada com 0 nesse instante)
+
+== come ==
+A procedure verifica se o primeiro ponto da cobra é igual as coordenadas da comida. Se forem iguais um ponto é inserido ordenadamente à cobra na última posicão, pois a última posicão não é fixa. 
