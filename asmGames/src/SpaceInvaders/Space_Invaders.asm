@@ -958,6 +958,10 @@ carregaHighscore PROC USES EAX EDX ECX ESI EDI
 		push esi
 		push edi
 		call Str_copy
+		mov esi, OFFSET bufferArquivo
+		add esi, 6
+		mov al, '/'
+		mov [esi], al
 	HIGHSCORE_NAO_MUDA:
 	
 	mov eax, handleValue
@@ -967,7 +971,7 @@ carregaHighscore PROC USES EAX EDX ECX ESI EDI
 	call CreateOutputFile
 
 	mov edx, OFFSET bufferArquivo
-	mov ecx, 8
+	mov ecx, 7
 	call WriteToFile
 
 	mov eax, handleValue
