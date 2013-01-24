@@ -12,9 +12,11 @@ TITLE Frogger ARC2 (main.asm)
 INCLUDE Irvine32.inc
 INCLUDE macros.inc
 
-FROG_SAPO = 9 ; define numerico referente ao sapo!
+FROG_SAPO_A	   = 9			 ; define numerico referente ao sapo A!
+FROG_SAPO_B = FROG_SAPO_A *2 ; define numerico referente ao sapo B. Deve ser sempre um numero com no minimo o dobro de SAPO_A, a fim de distinguir
+							 ; com qual sapo os objetos colidiram (os objetos tem sempre um valor menor que o SAPO_A).
 FROG_CAMPO_TAM = 283
-FROG_INTRO_TAM = 1600
+FROG_INTRO_TAM = 2000
 
 ; Tamanho do campo
 FROG_LINHAS	  = 15
@@ -24,25 +26,45 @@ FROG_COLUNAS  = 15
 FROG_CAMPO_INI_X 	  = 3
 FROG_FROG_CAMPO_INI_Y = 5
 
+; =======================================================================
+; PROTOTIPOS
+
+FROG_MovimentaEsq proto, ; FROG_MovimentaEsq: movimenta o sapo "qualSapo" para a casa da esquerda, caso o outro sapo nao esteja ocupando-a
+	qualSapo: dword
+FROG_MovimentaDir proto, ; FROG_MovimentaDir: movimenta o sapo "qualSapo" para a casa da direita, caso o outro sapo nao esteja ocupando-a
+	qualSapo: dword
+FROG_MovimentaCima proto, ; FROG_MovimentaEsq: movimenta o sapo "qualSapo" para a casa de cima, caso o outro sapo nao esteja ocupando-a
+	qualSapo: dword
+FROG_MovimentaBaixo proto, ; FROG_MovimentaEsq: movimenta o sapo "qualSapo" para a casa de baixo, caso o outro sapo nao esteja ocupando-a
+	qualSapo: dword
+
+; FIM DOS PROTO
+; ========================================================================
+
 .data
-	FROG_Campo word FROG_LINHAS *FROG_COLUNAS dup(0)
+	FROG_Campo		word FROG_LINHAS *FROG_COLUNAS dup(0)
 	FROG_Campo_Temp byte FROG_CAMPO_TAM dup(0)
-	FROG_Intro byte FROG_INTRO_TAM dup(0)
+	FROG_Intro		byte FROG_INTRO_TAM dup(0)
 	
 	; posicao do sapo
-	FROG_sapoX byte 0
-	FROG_sapoY byte 0
-	
-	FROG_ganhouJogo byte 0
-	FROG_perdeuJogo byte 0
-	FROG_Vidas byte 3
+	FROG_sapoA_X byte 0
+	FROG_sapoA_Y byte 0
+	FROG_AganhouJogo byte 0
+	FROG_AperdeuJogo byte 0
+	FROG_A_Vidas byte 3
 
-	; as tres variaveis abaixo sao utilizadas para recuperar a informacao contida em arquivos
-	FROG_fCampo BYTE "campo.txt", 0
-	FROG_IntroFile BYTE "frogger.txt",0
+	FROG_sapoB_X byte 0
+	FROG_sapoB_Y byte 0
+	FROG_BganhouJogo byte 0
+	FROG_BperdeuJogo byte 0
+	FROG_B_Vidas byte 3
+
+	; as tres variaveis abaixo sao utilizadas para recuperar a informacao contida em arquivos.
+	FROG_fCampo BYTE "src/Frogger/campo.txt", 0
+	FROG_IntroFile BYTE "src/Frogger/frogger.txt",0
 	FROG_Handle DWORD ?
 
-	; variavel auxiliar para simular a respiracao do sapo
+	; variavel auxiliar para simular a respiracao do sapo e na movimentacao da agua.
 	FROG_respiracao byte 0
 	
 	; Os quatro vetores seguintes sao utilizados pelo motor de movimentacao do cenario.
@@ -51,8 +73,7 @@ FROG_FROG_CAMPO_INI_Y = 5
 	;					referenciadas por FROG_TransitoLinha andam no cenario;
 	; FROG_VelocAtual:		serve como contador para ajustar o delay de velocidade sem perder os
 	;					valores de FROG_TransitoVeloc;
-	; FROG_TransitoSentido:	armazena o sentido dos elementos contidos em FROG_TransitoLinha;
-	
+	; FROG_TransitoSentido:	armazena o sentido dos elementos contidos em FROG_TransitoLinha
 	FROG_TransitoLinha	 word 1, 2, 3, 4, 5, 6, 8, 9, 10, 11, 12, 13
 	FROG_TransitoVeloc	 word 3, 4, 4, 3, 3, 3, 4, 4,  2,  3,  1,  4					
 	FROG_VelocAtual		 word 3, 4, 4, 3, 3, 3, 4, 4,  4,  3,  3,  4						
@@ -68,13 +89,17 @@ FROG_Clock proc
 	mov edx, 0
 	mov eax, 1
 	
-	Update:
+	Atualiza:
 	
 		call  FROG_VerificarVitoria
-		movzx eax, FROG_ganhouJogo
-		cmp eax, 1
+		mov al, FROG_AganhouJogo
+		mov ah, FROG_BganhouJogo
+		
+		; Quando ambos os sapos ganham, exibe mensagem de vitoria!
+		cmp al, 1
 		jne FROG_Clock_NaoGanhou
-
+		cmp ah, 1
+		jne FROG_Clock_NaoGanhou
 			call FROG_ExibirVitoria
 			jmp  FROG_Clock_Finally
 
@@ -84,27 +109,36 @@ FROG_Clock proc
 		mov  eax, 100
 		call Delay
 
-		call FROG_AtualizarTransito
 		call FROG_ControleMovimento
+		call FROG_AtualizarTransito
 		call FROG_VerificarColisao
 		call FROG_ExibirVidas
 		
-		cmp   FROG_perdeuJogo, 1
-		jne   ContinuaJogo
-			dec FROG_Vidas
-			cmp FROG_VIdas, 0
+		cmp FROG_AperdeuJogo, 1
+		jne VerificaSeBPerdeu
+			dec FROG_A_Vidas
+			cmp FROG_A_Vidas, 0
 			je FimJogo
 			call FROG_NovoJogo
 			jmp  FROG_Clock_Finally
 
-	FimJogo:
-		call FROG_ExibirDerrota
-		jmp  FROG_Clock_Finally
+		VerificaSeBPerdeu:
+		cmp FROG_BperdeuJogo, 1
+		jne ContinuaJogo
+			dec FROG_B_Vidas
+			cmp FROG_B_Vidas, 0
+			je FimJogo
+			call FROG_NovoJogo
+			jmp  FROG_Clock_Finally
+		
+		FimJogo:
+			call FROG_ExibirDerrota
+			jmp  FROG_Clock_Finally
 
-	ContinuaJogo:
-		cmp eax, 283
-		je FROG_Clock_Finally
-	jne Update
+		ContinuaJogo:
+			cmp eax, 283
+			je FROG_Clock_Finally
+	jne Atualiza
 	
 	FROG_Clock_Finally:
 	ret
@@ -112,51 +146,56 @@ FROG_Clock endp
 
 ; Verifica se o sapo colidiu com um carro. Para isso, percorre a matriz inteira, verificando se existe
 ; algum elemento para qual o valor ee maior que o valor do sapo (considera-se que nenhum outro elemento tem
-; valor maior que o sapo). Se sim, houve colisao e a variavel FROG_perdeuJogo = 1. Caso contrario, nada acontece.
+; valor maior que o sapo). Se sim, houve colisao e a variavel FROG_AperdeuJogo = 1. Caso contrario, nada acontece.
 FROG_VerificarColisao proc uses eax ebx ecx edx
 	mov ecx, FROG_LINHAS *FROG_COLUNAS
 	mov esi, 0
 
 	PercorreCampo:
 		movzx eax, FROG_Campo[esi]
-		cmp eax, FROG_SAPO
-		jbe CampoNormal
-			
-		; um valor maior que o valor definido para o sapo foi encontrado. 
-		; Dessa forma, ele colidiu com alguma coisa. Jogador perde o jogo.
-		mov FROG_perdeuJogo, 1
-			
-		CampoNormal:
+		cmp eax, FROG_SAPO_A
+		jbe L_VerfCol_Finally
+
+		cmp eax, FROG_SAPO_B
+		je L_VerfCol_Finally
+
+		; um valor maior que o valor definido para o sapo A foi encontrado, e ele ee diferente do SAPO_B.
+		; Dessa forma, um dos dois (ou ambos) colidiu com alguma coisa. Jogador A ou B (ou A E B) perde o jogo.
+		ja ColidiuSapoB
+
+		ColidiuSapoA:
+			mov FROG_AperdeuJogo, 1
+		jmp L_VerfCol_Finally
+		
+		ColidiuSapoB:
+			mov FROG_BperdeuJogo, 1
+		
+		L_VerfCol_Finally:
 		add esi, type FROG_Campo
 	loop PercorreCampo
 
-
-	cmp FROG_sapox, 1
-	jb Borda
-	cmp FROG_sapox, 13
-	jna skip
-	Borda:
-		mov FROG_perdeuJogo, 1
-	skip:
-
-	
 	ret
 FROG_VerificarColisao endp
 
 ; Verifica se a posicao vertical do sapo ee 1.
 ; Se sim, ele esta na primeira linha, o que mostra que este atravessou todo o campo.
-; A variavel FROG_ganhouJogo = 1. Caso contrario, nada acontece
+; A variavel FROG_AganhouJogo = 1. Caso contrario, nada acontece
 FROG_VerificarVitoria proc
 	mov ecx, FROG_COLUNAS
 	mov esi, 0
 	PercorrePrimeiraLin:
 		movzx eax, FROG_Campo[esi]
-		cmp eax, FROG_SAPO
 		
+		cmp eax, FROG_SAPO_A
 		jne Perc_Finally
-			mov FROG_ganhouJogo, 1
-			jmp VerificarVitoria_Finally
+			mov FROG_AganhouJogo, 1
 		Perc_Finally:
+
+		cmp eax, FROG_SAPO_B
+		jne Perc_Finally2
+			mov FROG_BganhouJogo, 1
+			jmp VerificarVitoria_Finally
+		Perc_Finally2:
 
 		add esi, type FROG_Campo
 	loop PercorrePrimeiraLin
@@ -177,128 +216,297 @@ FROG_ControleMovimento proc
 	call ReadKey
 
 	cmp eax, 19200
-	jne OutLeft
-		call FROG_MovimentaEsq
-	OutLeft:
+	jne OutLeft_A
+		cmp FROG_AganhouJogo, 1 ; nao movimenta quem ja venceu.
+		je Finally
+
+		invoke FROG_MovimentaEsq, FROG_SAPO_A
+	OutLeft_A:
 	
 	cmp eax, 19712
-	jne OutRight
-		call FROG_MovimentaDir
-	OutRight:
+	jne OutRight_A
+		cmp FROG_AganhouJogo, 1 ; nao movimenta quem ja venceu.
+		je Finally
+
+		invoke FROG_MovimentaDir, FROG_SAPO_A
+	OutRight_A:
 	
 	cmp eax, 18432
-	jne OutUp
-		call FROG_MovimentaCima
-	OutUp:
+	jne OutUp_A
+		cmp FROG_AganhouJogo, 1 ; nao movimenta quem ja venceu.
+		je Finally
+
+		invoke FROG_MovimentaCima, FROG_SAPO_A
+	OutUp_A:
 	
 	cmp eax, 20480
-	jne OutDown
-		call FROG_MovimentaBaixo
-	OutDown:
+	jne OutDown_A
+		cmp FROG_AganhouJogo, 1 ; nao movimenta quem ja venceu.
+		je Finally
 
+		invoke FROG_MovimentaBaixo, FROG_SAPO_A
+	OutDown_A:
+
+	cmp eax, 7777
+	jne OutLeft_B
+		cmp FROG_BganhouJogo, 1 ; nao movimenta quem ja venceu.
+		je Finally
+
+		invoke FROG_MovimentaEsq, FROG_SAPO_B
+	OutLeft_B:
+	
+	cmp eax, 8292
+	jne OutRight_B
+		cmp FROG_BganhouJogo, 1 ; nao movimenta quem ja venceu.
+		je Finally
+
+		invoke FROG_MovimentaDir, FROG_SAPO_B
+	OutRight_B:
+	
+	cmp eax, 4471
+	jne OutUp_B
+		cmp FROG_BganhouJogo, 1 ; nao movimenta quem ja venceu.
+		je Finally
+
+		invoke FROG_MovimentaCima, FROG_SAPO_B
+	OutUp_B:
+	
+	cmp eax, 8051
+	jne OutDown_B
+		cmp FROG_BganhouJogo, 1 ; nao movimenta quem ja venceu.
+		je Finally
+
+		invoke FROG_MovimentaBaixo, FROG_SAPO_B
+	OutDown_B:
+
+	Finally:
 	ret
 FROG_ControleMovimento endp
 
 ; Os procedimentos abaixo movimentam efetivamente o sapo do campo.
 ; Elas sao chamadas pelo procedimento FROG_ControleMovimento.
-FROG_MovimentaEsq proc
-	movzx ecx, FROG_sapoX
-	cmp ecx, 1
-	je OFFSET_ESQ
+FROG_MovimentaEsq proc,
+	qualSapo: dword
 
-	movzx eax, FROG_sapoX
-	movzx ecx, FROG_sapoY
-	mov esi, eax
+	mov eax, qualSapo
+	cmp eax, FROG_SAPO_A
+	jne MovB_1
+
+	MovA_1:
+		movzx eax, FROG_sapoA_X
+		movzx ecx, FROG_sapoA_Y
+		jmp Finally_1
+	MovB_1:
+		movzx eax, FROG_sapoB_X
+		movzx ecx, FROG_sapoB_Y
 	
-	l:
-		add esi, FROG_LINHAS
-	loop l
+	Finally_1:
+	cmp eax, 1
+	je OFFSET_CAMPO
+
+	mov esi, 0
+	cmp ecx, 0
+	je fim_loop
+		mov esi, eax
+		l:
+			add esi, FROG_LINHAS
+		loop l
+		shl esi, 1
+	fim_loop:
+
+	movzx ecx, FROG_Campo[esi -type FROG_Campo] ; olho para o vizinho, para onde o sapo esta tentando ir
+
+	mov eax, qualSapo
+	cmp eax, FROG_SAPO_A ; se sapo A, verifica se o sapo B esta na casa vizinha. Caso contrario, verifica se sapo A esta na casa vizinha.
+	jne MovB_2
+
+	MovA_2:
+		cmp ecx, FROG_SAPO_B ; impede movimentacao, nao deixa que dois sapos se sobreponham!
+		je OFFSET_CAMPO
+		dec FROG_sapoA_X
+	jmp Finally_2
+	MovB_2:
+		cmp ecx, FROG_SAPO_A ; impede movimentacao, nao deixa que dois sapos se sobreponham!
+		je OFFSET_CAMPO
+		dec FROG_sapoB_X
 	
-	shl esi, 1
-	
+	Finally_2:
 	mov FROG_Campo[esi], 0
-	add FROG_Campo[esi -type FROG_Campo], FROG_SAPO
+	movzx eax, FROG_Campo[esi -type FROG_Campo]
+	add	  eax, qualSapo
+	mov byte ptr FROG_Campo[esi -type FROG_Campo], al
 
-	dec FROG_sapoX
-
-	OFFSET_ESQ:
-	
+	OFFSET_CAMPO:
 	ret
 FROG_MovimentaEsq endp
 
-FROG_MovimentaDir proc
-	movzx ecx, FROG_sapoX
-	cmp ecx, FROG_COLUNAS - 2
-	je OFFSET_DIR
+FROG_MovimentaDir proc,
+	qualSapo: dword
 
-	movzx eax, FROG_sapoX
-	movzx ecx, FROG_sapoY
-	mov esi, eax
+	mov eax, qualSapo
+	cmp eax, FROG_SAPO_A
+	jne MovB_1
+
+	MovA_1:
+		movzx eax, FROG_sapoA_X
+		movzx ecx, FROG_sapoA_Y
+		jmp Finally_1
+	MovB_1:
+		movzx eax, FROG_sapoB_X
+		movzx ecx, FROG_sapoB_Y
 	
-	l:
-		add esi, FROG_LINHAS
-	loop l
+	Finally_1:
+	cmp eax, FROG_COLUNAS -2
+	je OFFSET_CAMPO
+
+	mov esi, 0
+	cmp ecx, 0
+	je fim_loop
+		mov esi, eax
+		l:
+			add esi, FROG_LINHAS
+		loop l
+		shl esi, 1
+	fim_loop:
+
+	movzx ecx, FROG_Campo[esi +type FROG_Campo] ; olho para o vizinho, para onde o sapo esta tentando ir
+
+	mov eax, qualSapo
+	cmp eax, FROG_SAPO_A ; se sapo A, verifica se o sapo B esta na casa vizinha. Caso contrario, verifica se sapo A esta na casa vizinha.
+	jne MovB_2
+
+	MovA_2:
+		cmp ecx, FROG_SAPO_B ; impede movimentacao, nao deixa que dois sapos se sobreponham!
+		je OFFSET_CAMPO
+		inc FROG_sapoA_X
+
+	jmp Finally_2
+	MovB_2:
+		cmp ecx, FROG_SAPO_A ; impede movimentacao, nao deixa que dois sapos se sobreponham!
+		je OFFSET_CAMPO
+		inc FROG_sapoB_X
 	
-	shl esi, 1
-	
+	Finally_2:
 	mov FROG_Campo[esi], 0
-	add FROG_Campo[esi + type FROG_Campo], FROG_SAPO
-	inc FROG_sapoX
-	
-	OFFSET_DIR:
-		
+	movzx eax, FROG_Campo[esi +type FROG_Campo]
+	add eax, qualSapo
+	mov byte ptr FROG_Campo[esi +type FROG_Campo], al
+
+	OFFSET_CAMPO:	
 	ret
 FROG_MovimentaDir endp
 
-FROG_MovimentaCima proc
-	movzx ecx, FROG_sapoY
+FROG_MovimentaCima proc,
+	qualSapo: dword
+
+	mov eax, qualSapo
+	cmp eax, FROG_SAPO_A
+	jne MovB_1
+
+	MovA_1:
+		movzx eax, FROG_sapoA_X
+		movzx ecx, FROG_sapoA_Y
+		jmp Finally_1
+	MovB_1:
+		movzx eax, FROG_sapoB_X
+		movzx ecx, FROG_sapoB_Y
+	
+	Finally_1:
 	cmp ecx, 0
-	je OFFSET_CIM
+	je OFFSET_CAMPO
 
-	movzx eax, FROG_sapoX
-	movzx ecx, FROG_sapoY
-	mov esi, eax
-	
-	l:
-		add esi, FROG_LINHAS
-	loop l
+	mov esi, 0
+	cmp ecx, 0
+	je fim_loop
+		mov esi, eax
+		l:
+			add esi, FROG_LINHAS
+		loop l
+		shl esi, 1
+	fim_loop:
 
-	shl esi, 1
+	movzx ecx, FROG_Campo[esi - (type FROG_Campo)*FROG_COLUNAS] ; olho para o vizinho, para onde o sapo esta tentando ir
+
+	mov eax, qualSapo
+	cmp eax, FROG_SAPO_A ; se sapo A, verifica se o sapo B esta na casa vizinha. Caso contrario, verifica se sapo A esta na casa vizinha.
+	jne MovB_2
+
+	MovA_2:
+		cmp ecx, FROG_SAPO_B ; impede movimentacao, nao deixa que dois sapos se sobreponham!
+		je OFFSET_CAMPO
+		dec FROG_sapoA_Y
+
+	jmp Finally_2
+	MovB_2:
+		cmp ecx, FROG_SAPO_A ; impede movimentacao, nao deixa que dois sapos se sobreponham!
+		je OFFSET_CAMPO
+		dec FROG_sapoB_Y
 	
+	Finally_2:
 	mov FROG_Campo[esi], 0
-	add FROG_Campo[esi - (type FROG_Campo)*FROG_COLUNAS], FROG_SAPO
-	dec FROG_sapoY
-	
-	OFFSET_CIM:
-		
+	movzx eax, FROG_Campo[esi - (type FROG_Campo)*FROG_COLUNAS]
+	add	  eax, qualSapo
+	mov byte ptr FROG_Campo[esi - (type FROG_Campo)*FROG_COLUNAS], al
+
+	OFFSET_CAMPO:
 	ret
 FROG_MovimentaCima endp
 
-FROG_MovimentaBaixo proc
-	movzx ecx, FROG_sapoY
-	cmp ecx, FROG_LINHAS - 1
-	je OFFSET_BAI
+FROG_MovimentaBaixo proc,
+	qualSapo: dword
 
-	movzx eax, FROG_sapoX
-	movzx ecx, FROG_sapoY
-	mov esi, eax
+	mov eax, qualSapo
+	cmp eax, FROG_SAPO_A
+	jne MovB_1
+
+	MovA_1:
+		movzx eax, FROG_sapoA_X
+		movzx ecx, FROG_sapoA_Y
+		jmp Finally_1
+	MovB_1:
+		movzx eax, FROG_sapoB_X
+		movzx ecx, FROG_sapoB_Y
 	
-	l:
-		add esi, FROG_LINHAS
-	loop l
+	Finally_1:
+	cmp ecx, FROG_LINHAS -1
+	je OFFSET_CAMPO
+
+	mov esi, 0
+	cmp ecx, 0
+	je fim_loop
+		mov esi, eax
+		l:
+			add esi, FROG_LINHAS
+		loop l
+		shl esi, 1
+	fim_loop:
+
+	movzx ecx, FROG_Campo[esi +(type FROG_Campo)*FROG_COLUNAS] ; olho para o vizinho, para onde o sapo esta tentando ir
+
+	mov eax, qualSapo
+	cmp eax, FROG_SAPO_A ; se sapo A, verifica se o sapo B esta na casa vizinha. Caso contrario, verifica se sapo A esta na casa vizinha.
+	jne MovB_2
+
+	MovA_2:
+		cmp ecx, FROG_SAPO_B ; impede movimentacao, nao deixa que dois sapos se sobreponham!
+		je OFFSET_CAMPO
+		inc FROG_sapoA_Y
+
+	jmp Finally_2
+	MovB_2:
+		cmp ecx, FROG_SAPO_A ; impede movimentacao, nao deixa que dois sapos se sobreponham!
+		je OFFSET_CAMPO
+		inc FROG_sapoB_Y
 	
-	shl esi, 1
-	
+	Finally_2:
 	mov FROG_Campo[esi], 0
-	add FROG_Campo[esi + (type FROG_Campo) *FROG_COLUNAS], FROG_SAPO
-		
-	inc FROG_sapoY
-	
-	OFFSET_BAI:
-		
+	movzx eax,	 FROG_Campo[esi +(type FROG_Campo)*FROG_COLUNAS]
+	add eax, qualSapo
+	mov byte ptr FROG_Campo[esi +(type FROG_Campo)*FROG_COLUNAS], al
+
+	OFFSET_CAMPO:
 	ret
 FROG_MovimentaBaixo endp
-
 ; FIM DAS FUNCOES DE MOVIMENTACAO
 ; ===============================
 
@@ -339,66 +547,83 @@ FROG_RotacionarTransito proc
 	movzx ecx, bx
 	mov esi, 0
 	
-	l0:
-		add esi, FROG_COLUNAS
-	loop l0
+	cmp ecx, 0
+	je l0_finally
+		l0:
+			add esi, FROG_COLUNAS
+		loop l0
+	l0_finally:
 	shl esi, 1
 
-	mov ecx, FROG_COLUNAS -1
+	mov ecx, FROG_COLUNAS - 1
 	
 	cmp ax, 1
 	jne dir
-		add esi, type FROG_Campo
 		mov eax, esi
-		add eax, (FROG_COLUNAS -2) *type FROG_Campo 
+		add eax, (FROG_COLUNAS -1) *type FROG_Campo 
 
 		; Envia o primeiro elemento da linha 
 		; para o ultima posicao desta mesma.
-		mov dx, FROG_Campo[esi]
-		cmp dx, FROG_SAPO
-		je AchouSapo_2
+
+		mov bx, FROG_Campo[esi]
+		cmp bx, FROG_SAPO_A
+		je AchouSapo_1
+		cmp bx, FROG_SAPO_B
+		je AchouSapo_1
 			mov FROG_Campo[esi], 0
-			add FROG_Campo[eax], dx
-		AchouSapo_2:
-		
+			jmp Sair1
+		AchouSapo_1:
+			mov bx, 0
+		Sair1:
+	
 		add esi, type FROG_Campo
 
 		LP_RotEsquerda:
 			mov dx, FROG_Campo[esi]
-			cmp dx, FROG_SAPO
-			je AchouSapo_1
+			cmp dx, FROG_SAPO_A
+			je AchouSapo_2
+			cmp dx, FROG_SAPO_B
+			je AchouSapo_2
 
-			mov FROG_Campo[esi], 0
-			add FROG_Campo[esi -type FROG_Campo], dx
-			
-			AchouSapo_1:
-			add esi, type FROG_Campo
+				mov FROG_Campo[esi], 0
+				add FROG_Campo[esi - type FROG_Campo], dx
+			AchouSapo_2:
+				add esi, type FROG_Campo
 		loop LP_RotEsquerda
+			
+		add FROG_Campo[eax], bx
 		
 
 	jmp ROT_Finally
+
 	dir:
 		mov eax, esi
-		add eax, (FROG_COLUNAS -2) *type FROG_Campo
+		add eax, (FROG_COLUNAS -1) *type FROG_Campo
 		
-		mov dx, FROG_Campo[eax]
-		cmp dx, FROG_SAPO
+		mov bx, FROG_Campo[eax]
+		cmp bx, FROG_SAPO_A
+		je AchouSapo_3
+		cmp bx, FROG_SAPO_B
 		je AchouSapo_3
 			mov FROG_Campo[eax], 0
-			add FROG_Campo[esi], dx
+			jmp Sair2
 		AchouSapo_3:
+			mov bx, 0
+		Sair2:
 		
-		add esi, (FROG_COLUNAS -2) *type FROG_Campo
+		add esi, (FROG_COLUNAS -1) *type FROG_Campo
 		
 		LP_RotDireita:
 			mov dx, FROG_Campo[esi -type FROG_Campo]
-			cmp dx, FROG_SAPO
+			cmp dx, FROG_SAPO_A ; rotaciona tanto sapo A quanto B
 			jae AchouSapo_4
 				mov FROG_Campo[esi -type FROG_Campo], 0
 				add FROG_Campo[esi], dx
 			AchouSapo_4:
 			sub esi, type FROG_Campo
 		loop LP_RotDireita
+
+		add FROG_Campo[esi], bx
 	
 	ROT_Finally:
 	popad
@@ -410,42 +635,48 @@ FROG_RotacionarAgua proc
 	movzx ecx, bx
 	mov esi, 0
 	
-	l0:
-		add esi, FROG_COLUNAS
-	loop l0
+	cmp ecx, 0
+	je l0_finally
+		l0:
+			add esi, FROG_COLUNAS
+		loop l0
+	l0_finally:
 	shl esi, 1
 
 	mov ecx, FROG_COLUNAS -1
 	
 	cmp ax, 1
 	jne dir
-		add esi, type FROG_Campo
 		mov eax, esi
-		add eax, (FROG_COLUNAS -2) *type FROG_Campo 
+		add eax, (FROG_COLUNAS -1) *type FROG_Campo 
 
-		; Envia o primeiro elemento da linha 
-		; para o ultima posicao desta mesma.
-		mov dx, FROG_Campo[esi]
-		cmp dx, FROG_SAPO
-		jne NAchouSapo2
+		; Envia o primeiro elemento da linha para o ultima posicao desta mesma. Se o sapo estiver nessa posicao, ele morre.
+		mov bx, FROG_Campo[esi]
+		cmp bx, FROG_SAPO_A
+		jne VerificaSeBPerdeu
+			mov FROG_AperdeuJogo, 1
 
-		dec FROG_sapox
+		VerificaSeBPerdeu:
+		cmp bx, FROG_SAPO_B
+		jne NaoAchouSapo
+			mov FROG_BperdeuJogo, 1
 
-		NAchouSapo2:
-
-			mov FROG_Campo[esi], 0
-			add FROG_Campo[eax], dx
-		
+		NaoAchouSapo:
+		mov FROG_Campo[esi], 0
 		add esi, type FROG_Campo
 
 		LP_RotEsquerda:
 			mov dx, FROG_Campo[esi]
-			cmp dx, FROG_SAPO
-
+			
+			cmp dx, FROG_SAPO_A
 			jne NAchouSapo1
-			dec FROG_sapox
-
+				dec FROG_sapoA_x
 			NAchouSapo1:
+
+			cmp dx, FROG_SAPO_B
+			jne NAchouSapo2
+				dec FROG_sapoB_x
+			NAchouSapo2:
 
 			mov FROG_Campo[esi], 0
 			add FROG_Campo[esi -type FROG_Campo], dx
@@ -453,39 +684,48 @@ FROG_RotacionarAgua proc
 			add esi, type FROG_Campo
 		loop LP_RotEsquerda
 		
+		add FROG_Campo[eax], bx		
 
 	jmp ROT_Finally
 	dir:
 		mov eax, esi
-		add eax, (FROG_COLUNAS -2) *type FROG_Campo
+		add eax, (FROG_COLUNAS -1) *type FROG_Campo
 		
-		mov dx, FROG_Campo[eax]
-		cmp dx, FROG_SAPO
+		mov bx, FROG_Campo[eax]
+		
+		cmp bx, FROG_SAPO_A
+		jne VerificaSeBPerdeu2
+			mov FROG_AperdeuJogo, 1
 
-			jne NAchouSapo3
-			inc FROG_sapox
+		VerificaSeBPerdeu2:
+		cmp bx, FROG_SAPO_B
+		jne NaoAchouSapo
+			mov FROG_BperdeuJogo, 1
 
-			NAchouSapo3:
-
-			mov FROG_Campo[eax], 0
-			add FROG_Campo[esi], dx
-		add esi, (FROG_COLUNAS -2) *type FROG_Campo
+		mov FROG_Campo[eax], 0
+		add esi, (FROG_COLUNAS -1) *type FROG_Campo
 		
 		LP_RotDireita:
 			mov dx, FROG_Campo[esi -type FROG_Campo]
-			cmp dx, FROG_SAPO
+			
+			cmp dx, FROG_SAPO_A
+			jne NAchouSapo5
+				inc FROG_sapoA_x
+			NAchouSapo5:
 
-				jne NAchouSapo4
-				inc FROG_sapox
-
-				NAchouSapo4:
+			cmp dx, FROG_SAPO_B
+			jne NAchouSapo6
+				inc FROG_sapoB_x
+			NAchouSapo6:
 				
-				mov FROG_Campo[esi -type FROG_Campo], 0
-				add FROG_Campo[esi], dx
+			mov FROG_Campo[esi -type FROG_Campo], 0
+			add FROG_Campo[esi], dx
 
 			sub esi, type FROG_Campo
 		loop LP_RotDireita
-	
+
+		add FROG_Campo[esi], bx
+
 	ROT_Finally:
 	popad
 	ret
@@ -535,7 +775,7 @@ FROG_DesenharCampo proc
 		call Gotoxy
 	loop DesenharFROG_LINHAS
 	
-	mov	al, white + (black * 16)
+	mov	al, black + (white * 16)
 	call SetTextColor
 	
 	popad		
@@ -546,8 +786,10 @@ FROG_DesenharCaracteres proc
 	cmp bx, 1
 
 	je SegundaLinha
-	cmp ax, FROG_SAPO
-	je DesenharSapoA
+	cmp ax, FROG_SAPO_A
+	je DesenharSapoA_1
+	cmp ax, FROG_SAPO_B
+	je DesenharSapoB_1
 	cmp ax, 0
 	je DesenharChao0A
 	cmp ax, 1
@@ -564,13 +806,23 @@ FROG_DesenharCaracteres proc
 	je DesenharCarro5A
 	cmp ax, 7
 	je DesenharAgua0A
-	cmp ax, FROG_SAPO
-	ja DesenharMortoA
+
+	cmp ax, FROG_SAPO_A
+	jbe SegundaLinha
+
+	; SapoA < ax < SapoB: houve uma colisao com o sapo A! A desenha no campo.
+	cmp ax, FROG_SAPO_B
+	jb DesenharMortoA_1
+
+	; ax > SapoB: houve uma colisao com o sapo B! A desenha no campo
+	ja DesenharMortoB_1
 	
 	SegundaLinha:
 		
-	cmp ax, FROG_SAPO
-	je DesenharSapoB
+	cmp ax, FROG_SAPO_A
+	je DesenharSapoA_2
+	cmp ax, FROG_SAPO_B
+	je DesenharSapoB_2
 	cmp ax, 0
 	je DesenharChao0B
 	cmp ax, 1
@@ -587,30 +839,61 @@ FROG_DesenharCaracteres proc
 	je DesenharCarro5B
 	cmp ax, 7
 	je DesenharAgua0B
-	cmp ax, FROG_SAPO
-	ja DesenharMortoB
 
-;------- Sapo --------
-	DesenharSapoA:
+	cmp ax, FROG_SAPO_A
+	jbe D_Finally
+
+	; SapoA < ax < SapoB: houve uma colisao com o sapo A! A desenha no campo.
+	cmp ax, FROG_SAPO_B
+	jb DesenharMortoA_2
+	; ax > SapoB: houve uma colisao com o sapo B! A desenha no campo
+	ja DesenharMortoB_2
+
+	jmp D_Finally ; impede o desenho dos caracteres seguintes...
+
+;------- Sapo A --------
+	DesenharSapoA_1:
 		mov	al, blue + (lightgreen * 16)
 		call SetTextColor
 		mWrite "• ¢"
 		jmp D_Finally
-	DesenharSapoB:
+	DesenharSapoA_2:
 		mov	al, blue + (lightgreen * 16)
 		call SetTextColor
 		cmp FROG_respiracao, 3
-		ja SapoFROG_respiracao
+		ja FROG_respiracao_A
 			mWrite ")”("
 			inc FROG_respiracao
 			jmp D_Finally
-		SapoFROG_respiracao:
+		FROG_respiracao_A:
 			mWrite ")™("
 			inc FROG_respiracao
 			cmp FROG_respiracao, 6
 			jne D_Finally
 			mov FROG_respiracao, 0
 			jmp D_Finally
+
+;------- Sapo B --------
+	DesenharSapoB_1:
+		mov	al, white + (magenta *16)
+		call SetTextColor
+		mWrite "• ¢"
+		jmp D_Finally
+	DesenharSapoB_2:
+		mov	al, white + (magenta *16)
+		call SetTextColor
+		cmp FROG_respiracao, 3
+		ja FROG_respiracao_B
+			mWrite ")”("
+			inc FROG_respiracao
+			jmp D_Finally
+		FROG_respiracao_B:
+			mWrite ")™("
+			inc FROG_respiracao
+			cmp FROG_respiracao, 6
+			jne D_Finally
+			mov FROG_respiracao, 0
+		jmp D_Finally
 ;------- Chao --------
 	DesenharChao0A:
 		cmp esi, 28*15 - 2
@@ -763,18 +1046,30 @@ FROG_DesenharCaracteres proc
 	Agua0BChange:
 		mWrite "°±°"
 	jmp D_Finally
-
-	;------- Sapo Morti --------
-	DesenharMortoA:
-		mov	al, white + (magenta * 16)
+	
+	;------- Sapo Morto --------
+	DesenharMortoA_1:
+		mov	al, white + (red * 16)
 		call SetTextColor
 		mWrite "X X"
 		jmp D_Finally
-	DesenharMortoB:
-		mov	al, white + (magenta * 16)
+	
+	DesenharMortoA_2:
+		mov	al, white + (red * 16)
 		call SetTextColor
 		mWrite ")™("
-
+		jmp D_Finally
+	
+	DesenharMortoB_1:
+		mov	al, white + (red * 16)
+		call SetTextColor
+		mWrite "X X"
+		jmp D_Finally
+	
+	DesenharMortoB_2:
+		mov	al, white + (red * 16)
+		call SetTextColor
+		mWrite ")™("
 
 	D_Finally:
 			
@@ -824,9 +1119,12 @@ FROG_ExibirVidas proc
 	mov dl, 3
 	call Gotoxy
 	
-	mWrite "Vidas: "
-	mov eax, 0
-	mov al, FROG_Vidas
+	mWrite "Vidas do sapo A: "
+	movzx eax, FROG_A_Vidas
+	call WriteDec
+
+	mWrite " ... Vidas do sapo B: "
+	movzx eax, FROG_B_Vidas
 	call WriteDec
 	
 	popad
@@ -874,6 +1172,7 @@ FROG_ExibirDerrota proc
 	
 	mWrite " Pressione qualquer tecla para tentar este incrivel desafio novamente. "
 	call ReadChar
+	call FROG_InitJogo
 	
 	ret
 FROG_ExibirDerrota endp
@@ -912,14 +1211,18 @@ FROG_ExibirIntro PROC
 FROG_ExibirIntro ENDP
 
 FROG_InitJogo proc
+	call Clrscr
 	call FROG_ExibirIntro
-	mov FROG_Vidas, 3
+
+	mov FROG_A_Vidas, 3
+	mov FROG_B_Vidas, 3
+
 	call FROG_NovoJogo
 	ret
 FROG_InitJogo endp
 
 FROG_NovoJogo proc
-	mov al, white + 16*black
+	mov al, black + 16*white
 	call SetTextColor
 	call Clrscr
 
@@ -929,22 +1232,38 @@ FROG_NovoJogo proc
 	   
 	call FROG_DefinirCampo
 
-    mov FROG_ganhouJogo, 0
-    mov FROG_perdeuJogo, 0
+    mov FROG_AganhouJogo, 0
+    mov FROG_AperdeuJogo, 0
+	mov FROG_BganhouJogo, 0
+    mov FROG_BperdeuJogo, 0
 
-	; posiciona o sapo na ultima linha
-	mov FROG_sapoX, (FROG_COLUNAS -1) /2
-    mov FROG_sapoY,	FROG_LINHAS -1
+	; posiciona o sapo A no meio da ultima linha
+	mov FROG_sapoA_X, (FROG_COLUNAS -1) /2 -1
+    mov FROG_sapoA_Y,	FROG_LINHAS -1
+	; posiciona o sapo B ao lado do sapo A
+	mov FROG_sapoB_X, (FROG_COLUNAS -1) /2 +1
+    mov FROG_sapoB_Y, FROG_LINHAS -1
 
+	; Posiciona os valores correspondentes na matriz.
+	; NAO MEIXA NISSO! Apesar de parecer confuso e facilmente otimizavel,
+	; essa parte permite que as a colocacao dos sapos na matriz seja 
+	; definido unicamente pelas linhas acima.
 	mov edx, 0
-	movzx eax, FROG_sapoY
+	movzx eax, FROG_sapoA_Y
 	mov ebx, FROG_COLUNAS
 	mul ebx
-	movzx ebx, FROG_sapoX
+	movzx ebx, FROG_sapoA_X
 	add eax, ebx
-
-    mov FROG_Campo[eax *type FROG_Campo], FROG_SAPO
+	mov FROG_Campo[eax *type FROG_Campo], FROG_SAPO_A
 	
+	mov edx, 0
+	movzx eax, FROG_sapoB_Y
+	mov ebx, FROG_COLUNAS
+	mul ebx
+	movzx ebx, FROG_sapoB_X
+	add eax, ebx
+	mov FROG_Campo[eax *type FROG_Campo], FROG_SAPO_B
+
     call FROG_Clock
     
 	FROG_InitJogo_Finally:
