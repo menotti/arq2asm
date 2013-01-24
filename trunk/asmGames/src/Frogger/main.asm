@@ -63,6 +63,8 @@ FROG_MovimentaBaixo proto, ; FROG_MovimentaEsq: movimenta o sapo "qualSapo" para
 	FROG_BperdeuJogo byte 0
 	FROG_B_Vidas	 byte 3
 
+	FROG_Movimentos byte 0 ; contador de movimentos realizados
+
 	; as tres variaveis abaixo sao utilizadas para recuperar a informacao contida em arquivos.
 	FROG_fCampo		BYTE "src/Frogger/campo.txt", 0
 	FROG_IntroFile	BYTE "src/Frogger/frogger.txt",0
@@ -345,6 +347,7 @@ FROG_MovimentaEsq proc,
 	add	  eax, qualSapo
 	mov byte ptr FROG_Campo[esi -type FROG_Campo], al
 
+	inc FROG_Movimentos
 	OFFSET_CAMPO:
 	ret
 FROG_MovimentaEsq endp
@@ -401,6 +404,7 @@ FROG_MovimentaDir proc,
 	add eax, qualSapo
 	mov byte ptr FROG_Campo[esi +type FROG_Campo], al
 
+	inc FROG_Movimentos
 	OFFSET_CAMPO:	
 	ret
 FROG_MovimentaDir endp
@@ -457,6 +461,7 @@ FROG_MovimentaCima proc,
 	add	  eax, qualSapo
 	mov byte ptr FROG_Campo[esi - (type FROG_Campo)*FROG_COLUNAS], al
 
+	inc FROG_Movimentos
 	OFFSET_CAMPO:
 	ret
 FROG_MovimentaCima endp
@@ -513,6 +518,7 @@ FROG_MovimentaBaixo proc,
 	add eax, qualSapo
 	mov byte ptr FROG_Campo[esi +(type FROG_Campo)*FROG_COLUNAS], al
 
+	inc FROG_Movimentos
 	OFFSET_CAMPO:
 	ret
 FROG_MovimentaBaixo endp
@@ -1087,31 +1093,30 @@ FROG_ExibirHUD proc
 	mov dl, 3
 	call Gotoxy
 	
-	mov ah, FROG_AganhouJogo
-	mov al, FROG_BganhouJogo
-
-	cmp ah, 1
-	je MostraA_Finally
 	MostraA:
 		mWrite "Vidas do sapo A: "
 		movzx eax, FROG_A_Vidas
 		call WriteDec
-	MostraA_Finally:
-
+	
 	cmp FROG_coop, 1
 	jne ExibirCoop
-	cmp al, 1
-	je Finally
-
-	MostraB:
 		mWrite " Vidas do sapo B: "
 		movzx eax, FROG_B_Vidas
 		call WriteDec
-		jmp Finally
+		jmp ExibirMovimentos
 
 	ExibirCoop:
 		mWrite " . F2: um segundo sapo aparecara magicamente!"
-	Finally:
+	
+	ExibirMovimentos:
+		mov dh, 2
+		mov dl, 3
+		call Gotoxy
+		
+		mWrite "Movimentos: "
+		movzx eax, FROG_Movimentos
+		call WriteDec
+
 	ret
 FROG_ExibirHUD endp
 
@@ -1231,6 +1236,7 @@ FROG_InitJogo proc
 	call FROG_ExibirIntro
 
 	mov FROG_coop, 0
+	mov FROG_Movimentos, 0
 	mov FROG_A_Vidas, 3
 	mov FROG_B_Vidas, 3
 
