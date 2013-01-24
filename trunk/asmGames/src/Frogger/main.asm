@@ -42,27 +42,31 @@ FROG_MovimentaBaixo proto, ; FROG_MovimentaEsq: movimenta o sapo "qualSapo" para
 ; ========================================================================
 
 .data
-	FROG_Campo		word FROG_LINHAS *FROG_COLUNAS dup(0)
-	FROG_Campo_Temp byte FROG_CAMPO_TAM dup(0)
-	FROG_Intro		byte FROG_INTRO_TAM dup(0)
+	FROG_Campo		word FROG_LINHAS *FROG_COLUNAS dup(0) ; matriz do jogo
+	FROG_Campo_Temp byte FROG_CAMPO_TAM dup(0) ; campo auxiliar na recuperacao do arquivo
+	FROG_Intro		byte FROG_INTRO_TAM dup(0) ; imagem de introducao
 	
-	; posicao do sapo
-	FROG_sapoA_X byte 0
-	FROG_sapoA_Y byte 0
+	; o jogo ee cooperativo?
+	FROG_coop byte 0
+
+	; variaveis referentes ao sapo A
+	FROG_sapoA_X	 byte 0
+	FROG_sapoA_Y	 byte 0
 	FROG_AganhouJogo byte 0
 	FROG_AperdeuJogo byte 0
-	FROG_A_Vidas byte 3
+	FROG_A_Vidas	 byte 3
 
-	FROG_sapoB_X byte 0
-	FROG_sapoB_Y byte 0
+	; variaveis referentes ao sapo B
+	FROG_sapoB_X	 byte 0
+	FROG_sapoB_Y	 byte 0
 	FROG_BganhouJogo byte 0
 	FROG_BperdeuJogo byte 0
-	FROG_B_Vidas byte 3
+	FROG_B_Vidas	 byte 3
 
 	; as tres variaveis abaixo sao utilizadas para recuperar a informacao contida em arquivos.
-	FROG_fCampo BYTE "src/Frogger/campo.txt", 0
-	FROG_IntroFile BYTE "src/Frogger/frogger.txt",0
-	FROG_Handle DWORD ?
+	FROG_fCampo		BYTE "src/Frogger/campo.txt", 0
+	FROG_IntroFile	BYTE "src/Frogger/frogger.txt",0
+	FROG_Handle		DWORD ?
 
 	; variavel auxiliar para simular a respiracao do sapo e na movimentacao da agua.
 	FROG_respiracao byte 0
@@ -80,7 +84,6 @@ FROG_MovimentaBaixo proto, ; FROG_MovimentaEsq: movimenta o sapo "qualSapo" para
 	FROG_TransitoSentido word 1, 0, 1, 1, 0, 1, 1, 0,  1,  0,  1,  0
 	
 .code
-
 
 ; ================================================
 ; PROCEDIMENTO PRINCIPAL.
@@ -112,7 +115,7 @@ FROG_Clock proc
 		call FROG_ControleMovimento
 		call FROG_AtualizarTransito
 		call FROG_VerificarColisao
-		call FROG_ExibirVidas
+		call FROG_ExibirHUD
 		
 		cmp FROG_AperdeuJogo, 1
 		jne VerificaSeBPerdeu
@@ -215,6 +218,12 @@ FROG_ControleMovimento proc
 	mov eax, 0
 	call ReadKey
 
+	cmp eax, 15360
+	jne Left_A
+		call FROG_EntrarOnlineB
+		je Finally
+
+	Left_A:
 	cmp eax, 19200
 	jne OutLeft_A
 		cmp FROG_AganhouJogo, 1 ; nao movimenta quem ja venceu.
@@ -635,12 +644,9 @@ FROG_RotacionarAgua proc
 	movzx ecx, bx
 	mov esi, 0
 	
-	cmp ecx, 0
-	je l0_finally
-		l0:
-			add esi, FROG_COLUNAS
-		loop l0
-	l0_finally:
+	l0:
+		add esi, FROG_COLUNAS
+	loop l0
 	shl esi, 1
 
 	mov ecx, FROG_COLUNAS -1
@@ -699,8 +705,9 @@ FROG_RotacionarAgua proc
 
 		VerificaSeBPerdeu2:
 		cmp bx, FROG_SAPO_B
-		jne NaoAchouSapo
+		jne NaoAchouSapo2
 			mov FROG_BperdeuJogo, 1
+		NaoAchouSapo2:
 
 		mov FROG_Campo[eax], 0
 		add esi, (FROG_COLUNAS -1) *type FROG_Campo
@@ -730,7 +737,6 @@ FROG_RotacionarAgua proc
 	popad
 	ret
 FROG_RotacionarAgua endp
-
 
 FROG_DesenharCampo proc
 	pushad
@@ -1076,8 +1082,114 @@ FROG_DesenharCaracteres proc
 	ret
 FROG_DesenharCaracteres endp
 
-FROG_DefinirCampo PROC
+FROG_ExibirHUD proc
+	mov dh, 0
+	mov dl, 3
+	call Gotoxy
+	
+	mov ah, FROG_AganhouJogo
+	mov al, FROG_BganhouJogo
 
+	cmp ah, 1
+	je MostraA_Finally
+	MostraA:
+		mWrite "Vidas do sapo A: "
+		movzx eax, FROG_A_Vidas
+		call WriteDec
+	MostraA_Finally:
+
+	cmp FROG_coop, 1
+	jne ExibirCoop
+	cmp al, 1
+	je Finally
+
+	MostraB:
+		mWrite " Vidas do sapo B: "
+		movzx eax, FROG_B_Vidas
+		call WriteDec
+		jmp Finally
+
+	ExibirCoop:
+		mWrite " . F2: um segundo sapo aparecara magicamente!"
+	Finally:
+	ret
+FROG_ExibirHUD endp
+
+FROG_ExibirVitoria proc
+	call FROG_DesenharCampo
+	mov	ax, red + (white * 16)
+	call SetTextColor
+
+	mov dl, 7
+	mov dh, 8
+	call Gotoxy
+	
+	mWrite " V O C E    G A N H O U ! ! ! ! ! ! ! ! ! ! ! ! ! "	
+	add dh, 2
+	call Gotoxy
+	mWrite " Parabens! O sapo conseguiu sobreviver aos terriveis humanos! "
+	inc dh
+	call Gotoxy
+	mWrite " Pressione qualquer tecla para voltar ao menu inicial. "
+	call ReadChar
+	
+	ret
+FROG_ExibirVitoria endp
+
+FROG_ExibirDerrota proc
+	call FROG_DesenharCampo
+	mov	ax, red + (white * 16)
+	call SetTextColor
+	
+	mov dl, 7
+	mov dh, 8
+	call Gotoxy
+	
+	mWrite " V O C E   P E R D E U ! ! ! ! ! ! ! ! ! ! ! ! ! "	
+	add dh, 2
+	call Gotoxy
+	mWrite " Que pena! O sapo agora se encontra no plano espiritual. "
+	inc dh
+	call Gotoxy
+	
+	mWrite " Pressione qualquer tecla para tentar este incrivel desafio novamente. "
+	call ReadChar
+	call FROG_InitJogo
+	
+	ret
+FROG_ExibirDerrota endp
+
+FROG_ExibirIntro PROC
+	mov edx, OFFSET FROG_IntroFile
+	call OpenInputFile
+	cmp eax, INVALID_HANDLE_VALUE
+	jne Intro_Cont
+		ret
+	Intro_Cont:
+		mov FROG_Handle, eax
+		mov edx, OFFSET FROG_Intro
+		mov ecx, FROG_INTRO_TAM
+		call ReadFromFile
+		mov eax, FROG_Handle
+		call CloseFile
+	
+		mov al, black + 16*white
+		call SetTextColor
+
+		mov ecx, FROG_INTRO_TAM
+		mov esi, 0
+		Intro_L:
+			mov al, FROG_Intro[esi]
+			call WriteChar
+			inc esi
+		loop Intro_L
+
+		mov eax, 0
+		call ReadChar
+	ret
+FROG_ExibirIntro ENDP
+
+FROG_DefinirCampo PROC
 	mov edx, OFFSET FROG_fCampo
 	call OpenInputFile
 	mov FROG_Handle, eax
@@ -1112,108 +1224,13 @@ FROG_DefinirCampo PROC
 	ret
 FROG_DefinirCampo ENDP
 
-FROG_ExibirVidas proc
-	pushad
-
-	mov dh, 0
-	mov dl, 3
-	call Gotoxy
-	
-	mWrite "Vidas do sapo A: "
-	movzx eax, FROG_A_Vidas
-	call WriteDec
-
-	mWrite " ... Vidas do sapo B: "
-	movzx eax, FROG_B_Vidas
-	call WriteDec
-	
-	popad
-	ret
-FROG_ExibirVidas endp
-
-FROG_ExibirVitoria proc
-	call FROG_DesenharCampo
-	mov	ax, red + (white * 16)
-	call SetTextColor
-
-	mov dl, 7
-	mov dh, 8
-	call Gotoxy
-	
-	mWrite " V O C E    G A N H O U ! ! ! ! ! ! ! ! ! ! ! ! ! "	
-	add dh, 2
-	call Gotoxy
-	mWrite " Parabens! O sapo conseguiu sobreviver aos terriveis humanos! "
-	inc dh
-	call Gotoxy
-	mWrite " Pressione qualquer tecla para voltar ao menu inicial. "
-
-	call ReadChar
-	
-	ret
-FROG_ExibirVitoria endp
-
-FROG_ExibirDerrota proc
-	call FROG_DesenharCampo
-	mov	ax, red + (white * 16)
-	call SetTextColor
-	
-
-	mov dl, 7
-	mov dh, 8
-	call Gotoxy
-	
-	mWrite " V O C E   P E R D E U ! ! ! ! ! ! ! ! ! ! ! ! ! "	
-	add dh, 2
-	call Gotoxy
-	mWrite " Que pena! O sapo agora se encontra no plano espiritual. "
-	inc dh
-	call Gotoxy
-	
-	mWrite " Pressione qualquer tecla para tentar este incrivel desafio novamente. "
-	call ReadChar
-	call FROG_InitJogo
-	
-	ret
-FROG_ExibirDerrota endp
-
-FROG_ExibirIntro PROC
-
-	mov edx, OFFSET FROG_IntroFile
-	call OpenInputFile
-	cmp eax, INVALID_HANDLE_VALUE
-	jne Intro_Cont
-	ret
-	Intro_Cont:
-	mov FROG_Handle, eax
-	mov edx, OFFSET FROG_Intro
-	mov ecx, FROG_INTRO_TAM
-	call ReadFromFile
-	mov eax, FROG_Handle
-	call CloseFile
-	;mov al, FROG_Intro
-
+FROG_InitJogo proc
 	mov al, black + 16*white
 	call SetTextColor
-
-	mov ecx, FROG_INTRO_TAM
-	mov esi, 0
-	Intro_L:
-	mov al, FROG_Intro[esi]
-	call WriteChar
-	inc esi
-	loop Intro_L
-
-	mov eax, 0
-	call ReadChar
-	
-	ret
-FROG_ExibirIntro ENDP
-
-FROG_InitJogo proc
 	call Clrscr
 	call FROG_ExibirIntro
 
+	mov FROG_coop, 0
 	mov FROG_A_Vidas, 3
 	mov FROG_B_Vidas, 3
 
@@ -1222,8 +1239,6 @@ FROG_InitJogo proc
 FROG_InitJogo endp
 
 FROG_NovoJogo proc
-	mov al, black + 16*white
-	call SetTextColor
 	call Clrscr
 
 	; o jogador quer sair do jogo, pois pressionou a tecla ESC na tela de intro.
@@ -1240,14 +1255,7 @@ FROG_NovoJogo proc
 	; posiciona o sapo A no meio da ultima linha
 	mov FROG_sapoA_X, (FROG_COLUNAS -1) /2 -1
     mov FROG_sapoA_Y,	FROG_LINHAS -1
-	; posiciona o sapo B ao lado do sapo A
-	mov FROG_sapoB_X, (FROG_COLUNAS -1) /2 +1
-    mov FROG_sapoB_Y, FROG_LINHAS -1
-
-	; Posiciona os valores correspondentes na matriz.
-	; NAO MEIXA NISSO! Apesar de parecer confuso e facilmente otimizavel,
-	; essa parte permite que as a colocacao dos sapos na matriz seja 
-	; definido unicamente pelas linhas acima.
+	; Posiciona o sapo A na matriz.
 	mov edx, 0
 	movzx eax, FROG_sapoA_Y
 	mov ebx, FROG_COLUNAS
@@ -1256,19 +1264,42 @@ FROG_NovoJogo proc
 	add eax, ebx
 	mov FROG_Campo[eax *type FROG_Campo], FROG_SAPO_A
 	
-	mov edx, 0
-	movzx eax, FROG_sapoB_Y
-	mov ebx, FROG_COLUNAS
-	mul ebx
-	movzx ebx, FROG_sapoB_X
-	add eax, ebx
-	mov FROG_Campo[eax *type FROG_Campo], FROG_SAPO_B
+	cmp FROG_coop, 0 ; se o jogo nao ee cooperativo, o sapo B nao existe.
+	jne FROG_coop_else
+		mov FROG_BganhouJogo, 1
+		jmp ChamarClock
+	FROG_coop_else:
+		; posiciona o sapo B ao lado do sapo A
+		mov FROG_sapoB_X, (FROG_COLUNAS -1) /2 +1
+		mov FROG_sapoB_Y, FROG_LINHAS -1
+		; Posiciona o sapo B na matriz.
+		mov edx, 0
+		movzx eax, FROG_sapoB_Y
+		mov ebx, FROG_COLUNAS
+		mul ebx
+		movzx ebx, FROG_sapoB_X
+		add eax, ebx
+		mov FROG_Campo[eax *type FROG_Campo], FROG_SAPO_B
 
+		mov FROG_BganhouJogo, 0
+		
+	ChamarClock:
     call FROG_Clock
     
 	FROG_InitJogo_Finally:
 	ret
 FROG_NovoJogo endp
+
+FROG_EntrarOnlineB proc
+	; o sapo B ja esta jogando, nao faz nada.
+	cmp FROG_coop, 1
+	je Finally
+		mov FROG_coop, 1
+		call FROG_NovoJogo
+
+	Finally:
+	ret
+FROG_EntrarOnlineB endp
 
 main PROC
     call FROG_InitJogo
