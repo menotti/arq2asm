@@ -7,19 +7,18 @@ Documentação do jogo Frogger, desenvolvido pela disciplina de Laboratório de 
 O objetivo do jogo consiste em, controlando um sapo, conseguir caminhar até o gramado do outro lado do cenário. O cenário oferece dois tipos de obstáculos: a rodovia e o rio. Para atravessar a rodovia, basta impedir que o sapo colida com qualquer um dos veículos. Para atravessar o rio, por outro lado, é necessário caminha pelos troncos flutuantes, sem deixar o sapo cair na água.
 
 
-*Data de criação*: 18/12/2012
-
-*Última modificação*: 21/01/2013
+ * *Data de criação*: 18/12/2012
+ * *Última modificação*: 24/01/2013
 
 -------------
 = Grupo de alunos =
 
- * Antonio Pedro Avanzi Nunes - 407852
- * Lucas Oliveira David - 407917
- * Pedro Padoveze Barbosa - 407895
+ * *Antonio Pedro Avanzi Nunes* - 407852
+ * *Lucas Oliveira David* - 407917
+ * *Pedro Padoveze Barbosa* - 407895
 
 -------------
-= Detalhes =
+= Detalhes da implementação (versão 1.0) =
 
 O jogo foi dividido em duas partes. Uma lógica e uma gráfica. Ambas as partes funcionam de forma independente.
 Para a implementação da parte lógica, foi utilizado uma estrutura de dados do tipo tabela, de tamanho 15x15, representada a partir do vetor FROG_Campo. O vetor armazena valores inteiros de 16 bits.
@@ -29,6 +28,8 @@ Cada inteiro representa um determinado objeto, e é associado a diferentes desen
  * 1 - 6: diferentes veículos que estão na rodovia.
  * 7: água.
  * 9: o sapo.
+
+_Importante: todos os elementos do campo possuem o valor menor que o sapo! Isso é essencial para que a lógica funcione corretamente._
 
 Quando as teclas são pressionadas, verificamos se o sapo está na fronteira da matriz através das variáveis FROG_sapoX e FROG_sapoY. Se sim, não fazemos nada. Caso contrário, subtraímos o valor do sapo na posição atual e adicionamos seu valor à nova posição, além de atualizar os indexadores FROG_sapoX e FROG_sapoY.
 
@@ -41,97 +42,93 @@ A cada interação, de movimentação do sapo, dos veículos ou da água, um pro
 A cada interação também é verificado se o valor do sapo é encontrado na primeira linha da matriz. Se sim, significa que o sapo atingiu a última faixa da rodovia. O jogo é finalizado e a tela de vitória, exibida.
 
 -------------
-= Descrição das informações necessárias para o funcionamento do jogo = 
+= Descrição das informações armazenadas = 
 
 === Constantes ===
 
-*FROG_SAPO*: define numérico referente ao sapo!
-
-*FROG_CAMPO_TAM*: tamanho de entrada do campo extraído de um arquivo.
-
-*FROG_INTRO_TAM*: tamanho da introdução extraída do arquivo.
-
-*FROG_LINHAS*: n. de linhas da matriz que representa o campo.
-
-*FROG_COLUNAS*: n. de colunas da matriz que representa o campo.
-
-*FROG_CAMPO_INI_X* e *FROG_FROG_CAMPO_INI_Y*: define a coordenadas (X,Y), onde o campo começará a ser desenhado.
+ * *FROG_SAPO*: define numérico referente ao sapo!
+ * *FROG_CAMPO_TAM*: tamanho de entrada do campo extraído de um arquivo.
+ * *FROG_INTRO_TAM*: tamanho da introdução extraída do arquivo.
+ * *FROG_LINHAS*: n. de linhas da matriz que representa o campo.
+ * *FROG_COLUNAS*: n. de colunas da matriz que representa o campo.
+ * *FROG_CAMPO_INI_X* e *FROG_FROG_CAMPO_INI_Y*: define a coordenadas (X,Y), onde o campo começará a ser desenhado.
 
 === Variáveis ===
 
-*FROG_Campo*: o campo por onde toda a lógica do jogo está estruturada.
-
-*FROG_Campo_Temp*: matriz temporária no processo de leitura do arquivo.
-
-*FROG_Intro*: matriz que armazena imagem da tela de introdução.
-
-*FROG_sapoX*: armazena a posição horizontal do sapo no campo.
-
-*FROG_sapoY*: armazena a posição vertical do sapo no campo.
-
-*FROG_ganhouJogo*: 0 (default). Muda para o valor 1 quando o jogador 
+ * *FROG_Campo*: o campo por onde toda a lógica do jogo está estruturada.
+ * *FROG_Campo_Temp*: matriz temporária no processo de leitura do arquivo.
+ * *FROG_Intro*: matriz que armazena imagem da tela de introdução.
+ * *FROG_sapoX*: armazena a posição horizontal do sapo no campo.
+ * *FROG_sapoY*: armazena a posição vertical do sapo no campo.
+ * *FROG_ganhouJogo*: 0 (default). Muda para o valor 1 quando o jogador 
 chega a primeira linha (mais à cima) da matriz.
+ * *FROG_perdeuJogo*: 0 (default). Muda para o valor 1 quando o jogador colide com algum veículo ou cai na água.
+ * *FROG_fCampo*: arquivo de inicialização do campo. Default: (src/Frogger/campo.txt)
+ * *FROG_IntroFile*: arquivo do desenho inicial do sapo. Default: (src/Frogger/frogger.txt)
+ * *FROG_Handle*: manipulador geral dos arquivos.
+ * *FROG_respiracao*: variável auxiliar para a criação do efeito de respiração do sapo.
 
-*FROG_perdeuJogo*: 0 (default). Muda para o valor 1 quando o jogador colide com algum veículo ou cai na água.
-
-*FROG_fCampo*: arquivo de inicialização do campo. Default: (src/Frogger/campo.txt)
-
-*FROG_IntroFile*: arquivo do desenho inicial do sapo. Default: (src/Frogger/frogger.txt)
-
-*FROG_Handle*: manipulador geral dos arquivos.
-
-*FROG_respiracao*: variável auxiliar para a criação do efeito de respiração do sapo.
-	
 Os quatro vetores seguintes são utilizados pelo motor de movimentação do cenário.
 
-*FROG_TransitoLinha*: armazena quais das FROG_LINHAS da matriz contem elementos nocivos ao sapo.
-
-*FROG_TransitoVeloc*: armazena a velocidade com que os elementos contidos nas FROG_LINHAS referenciadas por FROG_TransitoLinha andam no 
+ * *FROG_TransitoLinha*: armazena quais das FROG_LINHAS da matriz contem elementos nocivos ao sapo.
+ * *FROG_TransitoVeloc*: armazena a velocidade com que os elementos contidos nas FROG_LINHAS referenciadas por FROG_TransitoLinha andam no 
 cenário.
-
-*FROG_VelocAtual*: serve como contador para ajustar o delay de velocidade sem perder os valores de FROG_TransitoVeloc
-
-*FROG_TransitoSentido*: armazena o sentido dos elementos contidos em FROG_TransitoLinha.
+ * *FROG_VelocAtual*: serve como contador para ajustar o delay de velocidade sem perder os valores de FROG_TransitoVeloc
+ * *FROG_TransitoSentido*: armazena o sentido dos elementos contidos em FROG_TransitoLinha.
 
 -------------
+
 = Procedimentos =
 
-*FROG_Clock*: procedimento principal, executa um loop ate que o jogador ganhe, perca ou saia do jogo.
+ * *FROG_Clock*: procedimento principal, executa um loop ate que o jogador ganhe, perca ou saia do jogo.
+ * *FROG_VerificarColisao*: verifica se o sapo colidiu com um carro. Para isso, percorre a matriz inteira, verificando se existe algum elemento para qual o valor ee maior que o valor do sapo (considera-se que nenhum outro elemento tem valor maior que o sapo). Se sim, houve colisão e a variável FROG_perdeuJogo = 1. Caso contrario, nada acontece.
+ * *FROG_VerificarVitoria*: verifica se a posição vertical do sapo é 1. Se sim, ele esta na primeira linha, o que mostra que este atravessou todo o campo. A variável FROG_ganhouJogo recebe 1. Caso contrario, nada acontece.
+ * *FROG_ControleMovimento*: lê uma tecla pressionada pelo jogador e, caso essa seja uma seta direcional, chama um dos seguintes procedimentos, a fim de movimentar o sapo pelo campo.
 
-*FROG_VerificarColisao*: verifica se o sapo colidiu com um carro. Para isso, percorre a matriz inteira, verificando se existe algum elemento para qual o valor ee maior que o valor do sapo (considera-se que nenhum outro elemento tem valor maior que o sapo). Se sim, houve colisão e a variável FROG_perdeuJogo = 1. Caso contrario, nada acontece.
+  * FROG_MovimentaEsq proc
+  * FROG_MovimentaDir proc
+  * FROG_MovimentaCima proc
+  * FROG_MovimentaBaixo proc
 
-*FROG_VerificarVitoria*: verifica se a posição vertical do sapo é 1. Se sim, ele esta na primeira linha, o que mostra que este atravessou todo o campo. A variável FROG_ganhouJogo recebe 1. Caso contrario, nada acontece.
-
-*FROG_ControleMovimento*: lê uma tecla pressionada pelo jogador e, caso essa seja uma seta direcional, chama um dos seguintes procedimentos, a fim de movimentar o sapo pelo campo.
-
- * FROG_MovimentaEsq proc
- * FROG_MovimentaDir proc
- * FROG_MovimentaCima proc
- * FROG_MovimentaBaixo proc
-
-*FROG_AtualizarTransito*: interpreta os vetores responsáveis por definir quais linhas, em qual sentido e com que velocidade devem se movimentar
+ * *FROG_AtualizarTransito*: interpreta os vetores responsáveis por definir quais linhas, em qual sentido e com que velocidade devem se movimentar
 ; e invoca o procedimento pra realizar tal operação.
-
-*FROG_RotacionarTransito*: dados a linha (dx) e o sentido (ax), rotaciona os elementos da linha.
-
-*FROG_RotacionarAgua*: executa a mesma operação que o procedimento acima, mas para os elementos superiores da matriz.
-
-*FROG_DesenharCampo*: atualiza o campo no console.
-
-*FROG_DesenharCaracteres*: chamado pelo procedimento acima, esse tem como objetivo interpretar os elementos na matriz e desenhá-los no console de um jeito melhor.
-
-*FROG_DefinirCampo*: busca, do arquivo "campo.txt", os valores que devem ser inseridos na matriz.
-
-*FROG_ExibirVitoria*: exibe janela de vitória.
-
-*FROG_ExibirDerrota*: exibe janela de derrota.
-
-*FROG_ExibirIntro*: exibe janela de introdução.
-
-*FROG_InitJogo*: chama o procedimento acima, estabelece o número de vidas, e chama o procedimento abaixo.
-
-*FROG_NovoJogo*: restaura os valores inicias das variáveis e do campo.
+ * *FROG_RotacionarTransito*: dados a linha (dx) e o sentido (ax), rotaciona os elementos da linha.
+ * *FROG_RotacionarAgua*: executa a mesma operação que o procedimento acima, mas para os elementos superiores da matriz. Esse procedimento também rotaciona o sapo (visualmente, ele estaria sobre uma plataforma de madeira).
+ * *FROG_DesenharCampo*: atualiza o campo no console.
+ * *FROG_DesenharCaracteres*: chamado pelo procedimento acima, esse tem como objetivo interpretar os elementos na matriz e desenhá-los no console de um jeito melhor.
+ * *FROG_DefinirCampo*: busca, do arquivo "campo.txt", os valores que devem ser inseridos na matriz.
+ * *FROG_ExibirVitoria*: exibe janela de vitória.
+ * *FROG_ExibirDerrota*: exibe janela de derrota.
+ * *FROG_ExibirIntro*: exibe janela de introdução.
+ * *FROG_InitJogo*: chama o procedimento acima, estabelece o número de vidas, e chama o procedimento abaixo.
+ * *FROG_NovoJogo*: restaura os valores inicias das variáveis e do campo.
 
 -------------
 
+= Modo cooperativo (versão 1.2) =
+
+*Ideia inicial...*
+A fim de cumprir com as novas regras do jogo - a vitória agora ocorre quando os dois sapos atravessam o campo, enquanto a derrota ocorre quando um dos sapos perde suas três vidas - a implementação do modo cooperativo ocorreu através da duplicação de várias variáveis que eram relaciondas ao sapo A. As novas variáveis então fariam referência ao sapo B. Os procedimentos RotacionaAgua, RotacionaTransito, VerificaDerrota, VerificaVitoria, ControleMovimento, Init e Clock também foram modificados para que o jogo aceitasse os dois jogadores.
+
+*Diferenciando colisões com os diferentes sapos...*
+O sapo B assume o valor do sapo A multiplicado por 2. Temos, por uma definição acima que todos os elementos possuem um valor inferior que o sapo A. Logo, para sabermos qual sapo colidiu com algum objeto, verificamos se
+ * Existe um valor maior que o sapo A e menor que o sapo B: o sapo A colidiu!
+ * Existe um valor maior que o sapo B: o sapo B colidiu!
+
+_Nota: na teoria, seria possível modificar facilmente o algoritmo a fim de incluir mais sapos no jogo._
+
+*Como jogar com um único sapo?*
+No início do jogo, é verificado se ele esta no modo cooperativo. Se não, o sapo B não é posicionado na matriz e sua variável FROG_BganhouJogo assume o valor verdadeiro. Desta forma, assim que o sapo A chegar ao outro lado, ele vencerá sozinho o jogo.
+
+*Como o sapo B pode jogar?*
+No decorrer do jogo, se a tecla F2 for pressionada, o sapo B será inserido no campo de forma "online" (e a posição do sapo A será restaurada para a inicial).
+
+*Contando seus passos...*
+Um contador de passos é utilizado. A cada movimentação de um dos sapos, este é incrementado. Tal elemento tem como objetivo incentivar os jogadores a realizarem um número mínimo de passos (14, considerando o tamanho padrão da matriz).
+
+*Novo jeito de exibir informações:*
+Com um crescimento na quantidade de informação que necessitava ser mostrada, um procedimento chamado FROG_ExibirHUD foi criado. Dentro deste procedimento, o cursor é deslocado para uma posição pré-definida e
+exibe informações relativas às vidas restantes dos sapos (ou a tecla necessária para a entrada de um novo sapo), além do número de passos realizados.
+
+--------------
 #FIM DO DOCUMENTO
