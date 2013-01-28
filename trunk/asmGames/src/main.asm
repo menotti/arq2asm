@@ -7,6 +7,7 @@ INCLUDE macros.inc
 
 ; Inclua um arquivo para implementacao do seu jogo aqui
 INCLUDE forca/forca.asm
+INCLUDE SlidingPuzzle/PuzzleMain.asm
 INCLUDE GeeckoGames/GeeckoGamesSokoban.asm
 INCLUDE SpaceInvaders/Space_Invaders.asm
 INCLUDE Labirinto/labirinto.asm
@@ -26,6 +27,7 @@ myMenu	BYTE	80 dup ('='),
 				'4 - Labirinto da Morte', 13, 10,
 				'5 - Frogger', 13, 10,
 				'6 - Snake', 13, 10,
+        '7 - Sliding Puzzle', 13, 10,
 				'0 - Sair!', 13, 10, 13, 10,
 				'Opcao: ', 0
 .code
@@ -68,8 +70,13 @@ Frogger:
 
 SnakeGame:
 	cmp eax, 6
-	jne menu
+	jne SPuzzle
 	call snake
+   
+SPuzzle:
+  cmp eax, 7
+  jne menu
+  call SlidingPuzzle
 
 jmp menu			;Para retornar ao menu depois q acabar algum jogo
 
