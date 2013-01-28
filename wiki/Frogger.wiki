@@ -1,6 +1,7 @@
 #Descricao do projeto Frogger.
 
 [http://i37.photobucket.com/albums/e81/0810119020/F_zps1fd15249.png]
+
 _Descrição: tela de introdução do jogo Frogger. Imagem carregada dinamicamente do arquivo Frogger.txt_
 
 = Introdução =
@@ -148,6 +149,7 @@ Quando o(os) sapo(os) vence(em) uma fase, o leitor buscará a próxima fase na p
 As propriedades das fases estão mais livres. Agora, é possível definir não só a ordem dos objetos pelos arquivos, mas também suas velocidades e suas texturas.
 
 [http://i37.photobucket.com/albums/e81/0810119020/A_zps47583438.png]
+
 No exemplo acima, é possível notar que cada arquivo segue a seguinte estrutura:
 
  * "Título"# (máximo de 20 caracteres e, caso menor, preenchidos com #s)
@@ -159,7 +161,7 @@ No exemplo acima, é possível notar que cada arquivo segue a seguinte estrutura
 
 Esta é a versão final do jogo. A junção das duas versões anteriores (1.2a e 1.2b) foi realizada, o que se mostrou uma tarefa extremamente difícil. Pequenos ajustes também foram realizados, como a necessidade de limpar as variáveis que definiam os campos (o jogo não assumia os valores corretos quando o jogo reiniciava).
 O resultado pode ser visto na imagem abaixo:
-
+[http://i37.photobucket.com/albums/e81/0810119020/B_zpsdb2b66f1.png]
 
 --------------
 #FIM DO DOCUMENTO
