@@ -1,11 +1,13 @@
 #Descricao do projeto Frogger.
 
+[http://i37.photobucket.com/albums/e81/0810119020/F_zps1fd15249.png]
+_Descrição: tela de introdução do jogo Frogger. Imagem carregada dinamicamente do arquivo Frogger.txt_
+
 = Introdução =
 
 Documentação do jogo Frogger, desenvolvido pela disciplina de Laboratório de Arquitetura e Organização de Computadores II.
 
 O objetivo do jogo consiste em, controlando um sapo, conseguir caminhar até o gramado do outro lado do cenário. O cenário oferece dois tipos de obstáculos: a rodovia e o rio. Para atravessar a rodovia, basta impedir que o sapo colida com qualquer um dos veículos. Para atravessar o rio, por outro lado, é necessário caminha pelos troncos flutuantes, sem deixar o sapo cair na água.
-
 
  * *Data de criação*: 18/12/2012
  * *Última modificação*: 24/01/2013
@@ -20,22 +22,25 @@ O objetivo do jogo consiste em, controlando um sapo, conseguir caminhar até o g
 -------------
 = Detalhes da implementação (versão 1.0) =
 
-O jogo foi dividido em duas partes. Uma lógica e uma gráfica. Ambas as partes funcionam de forma independente.
+O jogo foi dividido em duas partes. Uma lógica e uma gráfica. Ambas as partes funcionam de forma independente, a fim de garantir uma melhor integração entre diferentes trabalhos dos integrantes do grupo no código em si.
+
 Para a implementação da parte lógica, foi utilizado uma estrutura de dados do tipo tabela, de tamanho 15x15, representada a partir do vetor FROG_Campo. O vetor armazena valores inteiros de 16 bits.
-Cada inteiro representa um determinado objeto, e é associado a diferentes desenhos:
+Cada inteiro representa um determinado objeto, e a parte gráfica do jogo será responsável por obter tais inteiros e associá-los a diferentes caracteres:
 
  * 0: chão ou tronco.
  * 1 - 6: diferentes veículos que estão na rodovia.
  * 7: água.
  * 9: o sapo.
 
-_Importante: todos os elementos do campo possuem o valor menor que o sapo! Isso é essencial para que a lógica funcione corretamente._
+_Importante: todos os elementos do campo possuem o valor menor que o sapo! Isso é essencial para que a lógica funcione corretamente. Entretanto, tais valores podem variar. Em outras palavras, é possível criar novos objetos._
 
-Quando as teclas são pressionadas, verificamos se o sapo está na fronteira da matriz através das variáveis FROG_sapoX e FROG_sapoY. Se sim, não fazemos nada. Caso contrário, subtraímos o valor do sapo na posição atual e adicionamos seu valor à nova posição, além de atualizar os indexadores FROG_sapoX e FROG_sapoY.
+A matriz do jogo é obtida de forma dinâmica de um arquivo texto "campo.txt".
+
+Quando as teclas são pressionadas, verificamos se o sapo está na fronteira da matriz através das variáveis *FROG_sapoX* e *FROG_sapoY*. Se sim, não fazemos nada. Caso contrário, subtraímos o valor do sapo na posição atual e adicionamos seu valor à nova posição, além de atualizar os indexadores FROG_sapoX e FROG_sapoY.
 
 A movimentação dos veículos acontece de forma similar: vetores armazenam quais linhas na matriz possuem veículos, seus sentidos e suas velocidades. A cada interação, o carro é movimentado para a esquerda ou direita através da subtração e da soma.
 
-No caso do rio, quem se move de fato é a água. Porém, tal efeito faz parece que de fato quem está se movendo são os troncos. Nota-se que se o sapo estiver encima de um tronco, ele "se move" junto com o tronco.
+No caso do rio, quem se move de fato é a água. Porém, tal efeito faz parece que quem está se movendo são os troncos. Nota-se que se o sapo estiver sobre um tronco qualquer, ele "se move" juntamente com esse, um fato que não ocorre durante a rotação do transito.
 
 A cada interação, de movimentação do sapo, dos veículos ou da água, um procedimento (FROG_VerificarColisao) é chamado. Esse procedimento varre toda a tabela e verificamos se existe algum elemento que seja maior que o valor do sapo. Se sim, sabemos que o sapo está ocupando a mesma posição que um carro, e o jogo é finalizado, exibindo a tela de derrota.
 
@@ -104,10 +109,13 @@ cenário.
  * *FROG_NovoJogo*: restaura os valores inicias das variáveis e do campo.
 
 -------------
+= Correção de bugs (versão 1.1) =
 
-= Modo cooperativo (versão 1.2) =
+Os _bugs_ presentes na versão 1.0, que implicavam na duplicação do sapo quando este se movimentava rapidamente ou que impediam que os carros se movimentassem no limite da matriz foi corrigido, estando estes correlacionados. Outro bug que também foi corrigido nessa versão: o clock exigia uma grande quantidade de tempo para processar as informações, quando o sapo se encontrava na primeira linha (mais à cima). A partir daqui, as versões 1.2a e 1.2b puderam finalmente se iniciar.
 
-*Ideia inicial...*
+= Modo cooperativo (versão 1.2a) =
+
+*Ideia inicial: co-op!*
 A fim de cumprir com as novas regras do jogo - a vitória agora ocorre quando os dois sapos atravessam o campo, enquanto a derrota ocorre quando um dos sapos perde suas três vidas - a implementação do modo cooperativo ocorreu através da duplicação de várias variáveis que eram relaciondas ao sapo A. As novas variáveis então fariam referência ao sapo B. Os procedimentos RotacionaAgua, RotacionaTransito, VerificaDerrota, VerificaVitoria, ControleMovimento, Init e Clock também foram modificados para que o jogo aceitasse os dois jogadores.
 
 *Diferenciando colisões com os diferentes sapos...*
@@ -129,6 +137,29 @@ Um contador de passos é utilizado. A cada movimentação de um dos sapos, este 
 *Novo jeito de exibir informações:*
 Com um crescimento na quantidade de informação que necessitava ser mostrada, um procedimento chamado FROG_ExibirHUD foi criado. Dentro deste procedimento, o cursor é deslocado para uma posição pré-definida e
 exibe informações relativas às vidas restantes dos sapos (ou a tecla necessária para a entrada de um novo sapo), além do número de passos realizados.
+
+-------------
+= Progressão de multiplas fases e leitura dinâmica de texturas (versão 1.2b) =
+
+Nesta versão, foi implementado um leitor que pudesse carregar dinamicamente de arquivos nomeados de forma sequencial "campo00.txt" e, a partir desses, carregar fases no jogo.
+
+Quando o(os) sapo(os) vence(em) uma fase, o leitor buscará a próxima fase na pasta src/Frogger/. Caso exista, essa fase será carregada. Caso contrário, o jogo acaba e o jogador finalmente venceu o jogo.
+
+As propriedades das fases estão mais livres. Agora, é possível definir não só a ordem dos objetos pelos arquivos, mas também suas velocidades e suas texturas.
+
+[http://i37.photobucket.com/albums/e81/0810119020/A_zps47583438.png]
+No exemplo acima, é possível notar que cada arquivo segue a seguinte estrutura:
+
+ * "Título"# (máximo de 20 caracteres e, caso menor, preenchidos com #s)
+ * S S 000...000 OO (Sentido, veloc., linha da matriz e objetos)
+ * OO FF (lista de texturas dos objetos definidos acima)
+
+-------------
+= Junção das versões 1.2a e 1.2b (versão 1.3) =
+
+Esta é a versão final do jogo. A junção das duas versões anteriores (1.2a e 1.2b) foi realizada, o que se mostrou uma tarefa extremamente difícil. Pequenos ajustes também foram realizados, como a necessidade de limpar as variáveis que definiam os campos (o jogo não assumia os valores corretos quando o jogo reiniciava).
+O resultado pode ser visto na imagem abaixo:
+
 
 --------------
 #FIM DO DOCUMENTO
