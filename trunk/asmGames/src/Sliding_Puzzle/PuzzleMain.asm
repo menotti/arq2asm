@@ -79,10 +79,12 @@ EpicWinAux BYTE 0
 
 CursorInfoA DWORD 1 
 CursorInfoB DWORD 0
-
 .code
 
 SlidingPuzzle PROC
+
+Call Clrscr
+Call Randomize
 
 INVOKE GetStdHandle, STD_OUTPUT_HANDLE
 INVOKE SetConsoleCursorInfo, EAX, ADDR CursorInfoA
@@ -648,6 +650,9 @@ tiogaedes_dim WORD 0606h
 tiogaedes BYTE " / X\  \ V/, /|J\3O ||   //\\ //  ||"
 
 .code
+
+
+
 ;desenha as letras na tela, uma a uma, enquanto TIOGAEDES sofre alteracoes periodicamente.
 INVOKE draw_matrix, OFFSET t_letter, t_letter_dim, 0202h, LIGHTRED
 mov eax, 200
