@@ -29,11 +29,14 @@ msgFase10 BYTE "10-Labirinto do Dragao 3", 0dh, 0ah, 0
 msg1 BYTE "- O tempo parou quando te conheci...", 0
 msg2 BYTE "- E o meu coracao parou quando voce foi embora...", 0
 msg3 BYTE "- Ela sumiu... me abandonou...", 0
-msg4 BYTE "- Serah mesmo que ela me abandonou?", 0
-msg5 BYTE "- O que eh isso no chao?", 0
+msg4 BYTE "- Sera mesmo que ela me abandonou?", 0
+msg5 BYTE "- O que e isso no chao?", 0
 msg6 BYTE "- Pegadas?",	 0
 msg7 BYTE "- Para onde elas estao me levando?", 0
 msg8 BYTE "- Uma caverna...", 0
+
+msg9 BYTE "VOCE MORREU!", 0
+msg10 BYTE "Continua...",0
 
 nomeArq01 BYTE "src/Labirinto/Fases/labirinto01.txt", 0
 nomeArq02 BYTE "src/Labirinto/Fases/labirinto02.txt", 0
@@ -50,16 +53,24 @@ nomeArq11 BYTE "src/Labirinto/MISC/medalha.txt", 0
 nomeArqLore1 BYTE "src/Labirinto/Historia/lore1.txt", 0
 nomeArqLore2 BYTE "src/Labirinto/Historia/lore2.txt", 0
 nomeArqLore3 BYTE "src/Labirinto/Historia/lore3t.txt", 0
+nomeArqLore4 BYTE "src/Labirinto/Historia/Fase10.txt", 0
+nomeArqLore5 BYTE "src/Labirinto/Historia/Dragon1.txt", 0
+nomeArqLore6 BYTE "src/Labirinto/Historia/dialogofinal.txt", 0
+nomeArqLore7 BYTE "src/Labirinto/Historia/enigmas.txt",0
+nomeArqLore8 BYTE "src/Labirinto/Historia/morte.txt",0
+nomeArqLore9 BYTE "src/Labirinto/Historia/dialogofinal2.txt",0
+nomeArqLore10 BYTE "src/Labirinto/Historia/Dragon2.txt",0
+nomeArqLore11 BYTE "src/Labirinto/Historia/creditos.txt", 0
 
 nomeArqMino1 BYTE "src/Labirinto/MISC/morteMino.txt", 0
 
-msgErro BYTE "Não foi possivel carregar o arquivo desejado.", 0dh, 0ah, 0
+msgErro BYTE "Nao foi possivel carregar o arquivo desejado.", 0dh, 0ah, 0
 msgErro2 BYTE "Por favor, selecione um labirinto valido.", 0dh, 0ah, 0
 
 tamanhoX DWORD 64
 tamanhoY DWORD 24
-tamanhoM DWORD 1650 
-matriz BYTE 1650 DUP (0) ; 1650 = 25 linhas * 66 colunas
+tamanhoM DWORD 1584
+matriz BYTE 1584 DUP (0) ; 1584 = 24 linhas * 66 colunas
 
 posicao DWORD ?
 posicaoS DWORD ?
@@ -86,22 +97,17 @@ msgPont7 BYTE "VOCE OBTEVE UMA MEDALHA DE BRONZE :| ", 0dh, 0ah, 0
 
 passos WORD 0
 seusMelhoresPassos WORD 10 DUP (1000)
-melhoresPassos WORD 129, 141, 115, 80, 90, 120, 100, 100, 100, 100
+melhoresPassos WORD 132, 142, 114, 128, 82, 103, 131, 132, 134, 99
 
 .code
 
 jogaLabirinto PROC
 ; funcao MAIN onde a parte logica do jogo acontece
 
-    mov eax, 0
-    mov ah, blue
-	shr ax, 4
-	add al, white
-    call SetTextColor
+    mov al, 1
+	call mudaCores
 
 	call Clrscr
-
-	
 
 menuInicial:
 	call escreveMenu
@@ -258,11 +264,9 @@ sair::
 	jmp fase
 
 voltar:
-	mov eax, 0
-    mov ah, black
-	shr ax, 4
-	add al, white
-    call SetTextColor
+	mov al, 2
+	call mudaCores
+
 	ret
 jogaLabirinto ENDP
 
@@ -507,10 +511,8 @@ passa:
 	push edx
 	mov eax, 0
 
-	mov ah, blue
-	shr ax, 4
-	add al, yellow
-    call SetTextColor
+	mov al, 3
+	call mudaCores
 
 	movzx esi, mapa
 	dec esi
@@ -537,18 +539,15 @@ passa:
 	mov ax, melhoresPassos[esi * TYPE WORD]
 	call WriteDec
     
-	mov eax, 0
-    mov ah, blue
-	shr ax, 4
-	add al, white
-    call SetTextColor
+	mov al, 1
+	call mudaCores
 
 	pop edx
 
 	ret
 escreveLabirinto ENDP
 
-escreveChar PROC
+escreveChar PROC USES ebx
 ; Escreve o caractere especifico. Para paredes ou saída, o caractere é mudado
 
 	mov al,[esi]
@@ -556,8 +555,11 @@ escreveChar PROC
 	cmp al, 79
 	je p
 
-	cmp al, 77
+	cmp al, 88
 	je p
+
+	cmp al, 77
+	je mino
 
 	cmp al, 0dh
 	je p
@@ -568,11 +570,11 @@ escreveChar PROC
 	cmp al, 35
 	je parede
 
-	cmp passos, 1 ;mostra o inicio e fim por 3 passos
-	ja nParede
-
 	cmp al, 73
 	je p
+
+	cmp passos, 1 ;mostra o inicio e fim por 3 passos
+	ja nParede
 
 	cmp al, 70
 	je p
@@ -581,6 +583,15 @@ escreveChar PROC
 
 p:
 	call WriteChar
+	jmp escreveu
+
+mino:
+	mov al, 4
+	call mudaCores
+	mov al, 77
+	call WriteChar
+	mov al, 1
+	call mudaCores
 	jmp escreveu
 
 parede:
@@ -684,12 +695,22 @@ verificaMovimento PROC uses EAX
 
 	cmp al, 78
     je morreMino
-    
-    jmp nMove
+
+	cmp al, 'X'
+	je morreArmadilha
+
+	cmp al, 90
+	jne nMove
+	call DialogoFinal
+	jmp sair
+
+morreArmadilha:
+	call Morte
+	jmp sair
 
 morreMino:
 
-	call Clrscr
+	call TelaPreta
 retornaErro:
 	mov esi, OFFSET matriz
 	mov edx, OFFSET nomeArqMino1
@@ -713,9 +734,12 @@ L3:
 	inc esi
 	loop L3
 	
-	mov ebx, 5000
+	mov ebx, 3000
 	call esperaXms
+
 	call Clrscr
+	mov al, 1
+	call MudaCores
 	pop eax
 	call CloseFile
 	jmp sair
@@ -961,6 +985,7 @@ substituiParede PROC
     
 nMuda:
 	call substituiMino
+	call substituiArmadilha
 	ret
 substituiParede ENDP
 
@@ -969,13 +994,24 @@ substituiMino PROC
     mov al, [edi]
     cmp al, 80
     jne nMuda
-    
     mov al, 77
     mov [edi], al
-    
 nMuda:
+
 	ret
 substituiMino ENDP
+
+substituiArmadilha PROC
+
+mov al, [edi]
+    cmp al, 65
+    jne nMuda
+    
+    mov al, 88
+    mov [edi], al
+nMuda:
+	ret
+substituiArmadilha ENDP
 
 verificaBorda PROC uses esi
     mov ebx, offset matriz
@@ -1009,7 +1045,7 @@ verificaBorda ENDP
 
 mostraPontuacao PROC
     mov eax, 0
-	mov ebx, 50 ; tempo para esperar
+	mov ebx, 30 ; tempo para esperar
     mov esi, offset msgPont
 	mov ecx, SIZEOF msgPont
 mostra:
@@ -1126,16 +1162,9 @@ mostra4:
 	call WriteChar
 	inc esi
 	loop mostra4
-    
-    pop eax
-	push edx
-    call CloseFile
-	pop edx
 
-	mov ah, blue
-	shr ax, 4
-	add al, white
-    call SetTextColor
+	mov al, 1
+	call mudaCores
 
 semMedalha:
 	call Crlf
@@ -1143,6 +1172,11 @@ semMedalha:
 	call Crlf
 	mov ebx, 3000
 	call esperaXms
+	
+	pop eax
+	push edx
+    call CloseFile
+	pop edx
 
     ret
 mostraPontuacao ENDP
@@ -1162,6 +1196,57 @@ espera:
 fim:
 	ret
 esperaXms ENDP
+
+mudaCores PROC
+
+	and ax, 0Fh
+
+	cmp al, 1
+	jne cor2
+    mov al, blue
+	shl al, 4
+	add al, white
+    call SetTextColor
+	jmp fim
+
+cor2:
+	cmp al, 2
+	jne cor3
+    mov al, black
+	shl al, 4
+	add al, white
+    call SetTextColor
+	jmp fim
+
+cor3:
+	cmp al, 3
+	jne cor4
+    mov al, blue
+	shl al, 4
+	add al, yellow
+    call SetTextColor
+	jmp fim
+
+cor4:
+	cmp al, 4
+	jne cor5
+    mov al, red
+	shl al, 4
+	add al, yellow
+    call SetTextColor
+	jmp fim
+
+cor5: 
+	cmp al, 5
+	jne fim
+	mov al, black
+	shl al, 4
+	add al, lightgreen
+	call SetTextColor
+	
+fim:
+	ret
+mudaCores ENDP
 
 LoreInicial PROC USES edx eax esi
 	call Clrscr
@@ -1183,17 +1268,8 @@ L11:
 	;call Clrscr
 
 	;primeiro cenario
-retornaErro1:
 	mov edx, OFFSET nomeArqLore1
 	call OpenInputFile
-	cmp eax, INVALID_HANDLE_VALUE
-	jne semErro1
-	call Crlf
-	mov edx, offset msgErro
-	call WriteString
-	call WaitMsg
-	jmp retornaErro1
-semErro1:
 	push eax
 	mov edx, OFFSET matriz
 	mov ecx, tamanhoM
@@ -1233,17 +1309,9 @@ L12:
 	;call Clrscr
 
 	;segundo cenario
-retornaErro2:
 	mov edx, OFFSET nomeArqLore2
 	call OpenInputFile
 	cmp eax, INVALID_HANDLE_VALUE
-	jne semErro2
-	call Crlf
-	mov edx, offset msgErro
-	call WriteString
-	call WaitMsg
-	jmp retornaErro2
-semErro2:
 	push eax
 	mov edx, OFFSET matriz
 	mov ecx, tamanhoM
@@ -1364,35 +1432,405 @@ L18:
 	call esperaXms
 	call Clrscr
 
-	;terceiro cenário
+	;Minotauro imagem
 retornaErro3:
 	mov esi, OFFSET matriz
 	mov edx, OFFSET nomeArqLore3
 	call OpenInputFile
-	cmp eax, INVALID_HANDLE_VALUE
-	jne semErro3
-	call Crlf
-	mov edx, offset msgErro
-	call WriteString
-	call WaitMsg
-	jmp retornaErro3
-semErro3:
 	push eax
 	mov edx, OFFSET matriz
 	mov ecx, tamanhoM
 	call ReadFromFile
 	mov ecx, eax
-L3:
+
+	call TelaPreta
+	L3:
 	mov al, [esi]
+	mov dl, al
+	cmp al, ';'
+jne redc
+	mov al, red
+	call SetTextColor
+jmp x
+redc:
+	cmp al, ','
+jne yellowc
+	mov al, yellow
+	call SetTextColor
+jmp y
+yellowc:
+	cmp al, '´'
+jne whitec
+	mov al, white
+	call SetTextColor
+whitec:
+y:
+x:
+	mov al, dl
 	call WriteChar
 	inc esi
 	loop L3
-	
-	mov ebx, 5000
+
+	mov ebx, 4000
 	call esperaXms
 	call Clrscr
+	mov al, 1
+	call mudaCores
 	pop eax
 	call CloseFile
 
 ret
 LoreInicial ENDP
+
+DialogoFinal PROC
+
+;revelação Dragão
+    call Clrscr
+	mov edx, OFFSET nomeArqLore4
+	call OpenInputFile
+	push eax
+	mov edx, OFFSET matriz
+	mov ecx, tamanhoM
+	call ReadFromFile
+	mov ecx, eax
+	mov esi, OFFSET matriz
+L3:
+	mov al, [esi]
+	call WriteChar
+	inc esi
+	loop L3
+
+	pop eax
+	call CloseFIle
+
+	mov ebx, 2000
+	call esperaXms
+	call Clrscr
+
+	mov edx, OFFSET nomeArqLore5
+	call OpenInputFile
+	push eax
+	mov edx, OFFSET matriz
+	mov ecx, tamanhoM
+	call ReadFromFile
+	mov ecx, eax
+	mov esi, OFFSET matriz
+	call TelaPreta
+L33:
+	;colorindo separadamente o dragao e a moça
+L4:
+	mov al, [esi]
+	mov dl, al
+	cmp al, '.'
+jne greenc
+	mov al, lightgreen
+	call SetTextColor
+jmp x
+greenc:
+	cmp al, ','
+jne whitec
+	mov al, white
+	call SetTextColor
+jmp y
+whitec:
+	cmp al, '('
+jne yellowc
+	mov al, yellow
+	call SetTextColor
+yellowc:
+y:
+x:
+	mov al, dl
+	call WriteChar
+	inc esi
+	loop L4
+	call esperaXms
+	pop eax
+	call CloseFIle
+
+	mov ebx, 3000
+	call esperaXms
+	call Crlf
+
+	mov al, white
+	call SetTextColor
+;Dialogo Final 1
+	mov edx, OFFSET nomeArqLore6
+	call OpenInputFile
+	push eax
+	mov edx, OFFSET matriz
+	mov ecx, tamanhoM
+	call ReadFromFile
+	mov ecx, eax
+
+	mov ebx, 70
+	mov esi, OFFSET matriz
+L31:
+	mov al, [esi]
+	cmp al, ';'
+	je pulalinha
+	cmp al, '@'
+	je pulaleitura
+	call WriteChar
+	inc esi
+	call esperaXms
+	Loop L31
+  pulalinha:
+	call Crlf
+	inc esi
+	inc esi
+	jmp L31
+  pulaleitura:
+	call WaitMsg
+	call Clrscr
+	pop eax
+	call CloseFile
+
+;Enigmas
+	mov al, 4
+	call mudaCores
+	call Clrscr
+	mov ebx, 45
+
+;primeiro enigma
+	
+	mov edx, OFFSET nomeArqLore7
+	call OpenInputFile
+	push eax
+	mov edx, OFFSET matriz
+	mov ecx, tamanhoM
+	call ReadFromFile
+	mov ecx, eax
+	pop eax
+	call CloseFIle
+
+	mov esi, OFFSET matriz
+L32:
+	mov al, [esi]
+	cmp al, ';'
+	je pulalinha1
+	cmp al, '@'
+	je pulaleitura1
+	cmp al, '#'
+	je pulaleitura2
+	cmp al, '$'
+	je pulaleitura3
+	call WriteChar
+	inc esi
+	call esperaXms
+	Loop L32
+pulalinha1:
+	call Crlf
+	inc esi
+	jmp L32
+pulaleitura1:
+	call ReadInt
+	cmp eax, 1
+	je respcerta1
+	call Morte
+	jmp finalmorte
+pulaleitura2:
+	call ReadInt
+	cmp eax, 3
+	je respcerta1
+	call Morte
+	jmp finalmorte
+pulaleitura3:
+	call ReadInt
+	cmp eax, 1
+	je saiEnigmas
+	call Morte
+	jmp finalmorte
+respcerta1:
+	call Clrscr
+	add esi, 3
+	jmp L32
+
+saiEnigmas:
+
+;Dialogo Final 2
+	call Clrscr
+	mov ebx, 30
+	
+	mov edx, OFFSET nomeArqLore9
+	call OpenInputFile
+	push eax
+	mov edx, OFFSET matriz
+	mov ecx, tamanhoM
+	call ReadFromFile
+	mov ecx, eax
+
+	mov esi, OFFSET matriz
+L35:
+	mov al, [esi]
+	cmp al, ';'
+	je pulalinha4
+	cmp al, '@'
+	je pulaleitura4
+	call WriteChar
+	inc esi
+	call esperaXms
+	loop L35
+  pulalinha4:
+	call Crlf
+	inc esi
+	inc esi
+	jmp L35
+  pulaleitura4:
+
+	pop eax
+	call CloseFIle
+	mov ebx, 2000
+	call esperaXms
+
+;revelação Final
+	mov edx, OFFSET nomeArqLore10
+	call OpenInputFile
+	push eax
+	mov edx, OFFSET matriz
+	mov ecx, tamanhoM
+	call ReadFromFile
+	mov ecx, eax
+	mov esi, OFFSET matriz
+	mov al, 5
+	call mudacores
+	call Clrscr
+
+L36:
+	mov al, [esi]
+	call WriteChar
+	inc esi	
+	loop L36
+
+	call Crlf
+	mov al, 2
+	call mudacores
+	mov ebx, 50
+	mov esi, OFFSET msg10
+	mov ecx, LENGTHOF msg10
+L2:
+	mov eax, [esi]
+	call WriteChar
+	inc esi
+	call esperaXms
+	loop L2
+
+finalmorte:
+	call Crlf
+	call Crlf
+	pop eax
+	call CloseFIle
+	mov ebx, 4000
+	call esperaXms
+
+;creditos
+	mov edx, OFFSET nomeArqLore11
+	call OpenInputFile
+	push eax
+	mov edx, OFFSET matriz
+	mov ecx, tamanhoM
+	call ReadFromFile
+	mov ecx, eax
+	mov esi, OFFSET matriz
+
+L1:
+	mov al, [esi]
+	call WriteChar
+	inc esi
+	loop L1
+
+	pop eax
+	call CloseFIle
+	call Crlf
+	call WaitMsg
+
+	mov al, 1
+	call mudacores
+	ret
+DialogoFinal ENDP
+
+Morte PROC
+	call Clrscr
+	mov edx, OFFSET nomeArqLore8
+	call OpenInputFile
+	push eax
+	mov edx, OFFSET matriz
+	mov ecx, tamanhoM
+	call ReadFromFile
+	mov ecx, eax
+	mov esi, OFFSET matriz
+	call TelaPreta
+
+L5:
+	mov al, [esi]
+	mov dl, al
+	cmp al, 'o'
+jne redeyes
+	mov al, lightred
+	call SetTextColor
+	jmp r
+redeyes:
+	cmp al, 'O'
+	jne grayscythe
+	mov al, lightgray
+	call SetTextColor
+	jmp r
+grayscythe:
+	cmp al, 'D'
+    jne grayscythe2
+	mov al, lightgray
+	call SetTextColor
+	jmp r
+grayscythe2:
+	cmp al, '#'
+	jne magentarobe
+	mov al, lightmagenta
+	call SetTextColor
+	jmp r
+magentarobe:
+	mov al, white
+	call SetTextColor
+
+r:
+	mov al, dl
+	call WriteChar
+	inc esi
+	loop L5
+
+	call escreveVoceMorreu
+
+	pop eax
+	call CloseFile
+
+ret
+Morte ENDP
+
+TelaPreta PROC
+	mov al, 2
+	call mudaCores
+	call Clrscr
+ret
+TelaPreta ENDP
+
+escreveVoceMorreu PROC
+
+	mov ebx, 50
+	mov esi, OFFSET msg9
+	mov ecx, LENGTHOF msg9
+L1:
+	mov eax, [esi]
+	call WriteChar
+	inc esi
+	call esperaXms
+	loop L1
+
+	mov ebx, 4000
+	call esperaXms
+
+	;retornando para as cores originais do jogo (fundo azul e caracteres brancos)
+	mov al, 1
+	call mudaCores
+	
+	call Clrscr
+ret
+escreveVoceMorreu ENDP

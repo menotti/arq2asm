@@ -1,21 +1,43 @@
-- ...
-- Luana...?
-(Luana) - ...
-(Dragao) - O que um mero mortal estah fazendo aqui?
-- Minha esposa...
-(Dragao) - A minha esposa voce quer dizer?
-(Dragao) - Voce veio para as profundezas deste labirinto só para morrer mortal?
-(Luana) - Por favor, não o mate...
-- ...
-- Luana, voce foi sequestrada ou veio por vontade propria...?
-(Luana) - ...
-(Dragao) - CALADOS MORTAIS. Sua vida estah em minhas maos.
-(Dragao) - Eu irei poupar a sua vida se voce provar ser mais inteligente do que eu.
-- ...
-(Dragao) - MWAHAHAHAHAHAHA. 
-(Dragao) - Prefere morrer em silencio enquanto eu arranco as suas entranhas com a minha unha?
-- Não morrerei em silencio!
+- ...;
+- Luana...?;
+(Luana) - ...;
+(Dragao) - O que um mero mortal estah fazendo aqui?;
+- Minha esposa...;
+(Dragao) - A minha esposa voce quer dizer?;
+(Dragao) - Voce veio para as profundezas deste labirinto soh para morrer, Mortal?;
+(Luana) - Por favor, nao o mate...;
+- ...;
+- Luana, voce foi sequestrada ou fugiu por vontade propria...?;
+(Luana) - ...;
+(Dragao) - CALADOS MORTAIS. Suas vidas estao em minhas maos.;
+(Dragao) - Eu irei poupar a sua vida se voce provar ser mais sabio do que eu.;
+- ...;
+(Dragao) - MWAHAHAHAHAHAHA.;
+(Dragao) - Prefere morrer em silencio enquanto eu arranco as suas entranhas com a minha unha?;
+- Vamos fazer um trato.;
+(Dragao) - Estou ouvindo.;
+- Se eu vencer levarei ela comigo, se voce vencer minha vida serah sua.;
+(Luana) - ...;
+(Dragao) - Mas a sua vida jah eh minha, Mortal. MWAHAHAHAHAHA.;
+- Não sabia que dragoes tinham medo...;
+(Dragao) - ...;
+(Dragao) - Nao importa, voce irah perder de qualquer jeito, Verme Insignificante.;
+(Dragao) - Trato aceito.;
+(Dragao) - Vamos comecar...;
+- ...;
+@
 
-(Dragao) - 
+
+
+
+
+
+
+
+
+
+
+
+
 
 
