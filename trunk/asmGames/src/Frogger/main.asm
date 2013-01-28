@@ -49,23 +49,25 @@ FROG_MovimentaBaixo proto, ; FROG_MovimentaEsq: movimenta o sapo "qualSapo" para
 	; variaveis referentes ao sapo A
 	FROG_sapoA_X	 byte 0
 	FROG_sapoA_Y	 byte 0
-	FROG_AganhouJogo byte 0
+	FROG_ApassouFase byte 0
 	FROG_AperdeuJogo byte 0
 	FROG_A_Vidas	 byte 3
 	
 	; variaveis referentes ao sapo B
 	FROG_sapoB_X	 byte 0
 	FROG_sapoB_Y	 byte 0
-	FROG_BganhouJogo byte 0
+	FROG_BpassouFase byte 0
 	FROG_BperdeuJogo byte 0
 	FROG_B_Vidas	 byte 3
 	
+	FROG_ganharamJogo byte 0
+
 	FROG_resetJogo byte 0 ; quando ativo, simplesmente reseta o jogo
 	FROG_coop byte 0		; o jogo ee cooperativo?
 	FROG_Movimentos byte 0	; contador de movimentos realizados (por ambos os sapos, quando no modo cooperativo)
 
 	; as tres variaveis abaixo sao utilizadas para recuperar a informacao contida em arquivos
-	FROG_fCampo	 byte "src/Frogger/campo.txt", 0
+	FROG_fCampo	 byte "src/Frogger/campo00.txt", 0
 	FROG_fIntro  byte "src/Frogger/frogger.txt",0
 	FROG_fHandle dword ?
 
@@ -93,17 +95,23 @@ FROG_Clock proc
 	
 	Atualiza:	
 		call  FROG_VerificarVitoria
-		mov al, FROG_AganhouJogo
-		and al, FROG_BganhouJogo
+		mov al, FROG_ApassouFase
+		and al, FROG_BpassouFase
 		
 		cmp al, 1 ; Quando ambos os sapos ganham, exibe mensagem de vitoria!
 		jne Clock_NaoGanhou
+			call FROG_NovoCampo
+			cmp FROG_ganharamJogo, 1
+			jne NovaFase
 			call FROG_ExibirVitoria
+			jmp  FROG_Clock_Finally
+			NovaFase:
+			call FROG_NovoJogo
 			jmp  FROG_Clock_Finally
 		Clock_NaoGanhou:
 
 		call FROG_DesenharCampo
-		mov  eax, 100
+		mov  eax, 20
 		call Delay
 
 		call FROG_ControleMovimento
@@ -179,7 +187,7 @@ FROG_VerificarColisao endp
 
 ; Verifica se a posicao vertical do sapo ee 1.
 ; Se sim, ele esta na primeira linha, o que mostra que este atravessou todo o campo.
-; A variavel FROG_AganhouJogo = 1. Caso contrario, nada acontece.
+; A variavel FROG_ApassouFase = 1. Caso contrario, nada acontece.
 FROG_VerificarVitoria proc
 	mov ecx, FROG_COLUNAS
 	mov esi, 0
@@ -188,12 +196,12 @@ FROG_VerificarVitoria proc
 		
 		cmp eax, FROG_SAPO_A
 		jne Perc_Finally
-			mov FROG_AganhouJogo, 1
+			mov FROG_ApassouFase, 1
 		Perc_Finally:
 
 		cmp eax, FROG_SAPO_B
 		jne Perc_Finally2
-			mov FROG_BganhouJogo, 1
+			mov FROG_BpassouFase, 1
 			jmp VerificarVitoria_Finally
 		Perc_Finally2:
 
@@ -221,7 +229,7 @@ FROG_ControleMovimento proc
 	Left_A:
 	cmp eax, 19200
 	jne OutLeft_A
-		cmp FROG_AganhouJogo, 1 ; nao movimenta quem ja venceu.
+		cmp FROG_ApassouFase, 1 ; nao movimenta quem ja venceu.
 		je Finally
 
 		invoke FROG_MovimentaEsq, FROG_SAPO_A
@@ -229,7 +237,7 @@ FROG_ControleMovimento proc
 	
 	cmp eax, 19712
 	jne OutRight_A
-		cmp FROG_AganhouJogo, 1 ; nao movimenta quem ja venceu.
+		cmp FROG_ApassouFase, 1 ; nao movimenta quem ja venceu.
 		je Finally
 
 		invoke FROG_MovimentaDir, FROG_SAPO_A
@@ -237,7 +245,7 @@ FROG_ControleMovimento proc
 	
 	cmp eax, 18432
 	jne OutUp_A
-		cmp FROG_AganhouJogo, 1 ; nao movimenta quem ja venceu.
+		cmp FROG_ApassouFase, 1 ; nao movimenta quem ja venceu.
 		je Finally
 
 		invoke FROG_MovimentaCima, FROG_SAPO_A
@@ -245,7 +253,7 @@ FROG_ControleMovimento proc
 	
 	cmp eax, 20480
 	jne OutDown_A
-		cmp FROG_AganhouJogo, 1 ; nao movimenta quem ja venceu.
+		cmp FROG_ApassouFase, 1 ; nao movimenta quem ja venceu.
 		je Finally
 
 		invoke FROG_MovimentaBaixo, FROG_SAPO_A
@@ -253,7 +261,7 @@ FROG_ControleMovimento proc
 
 	cmp eax, 7777
 	jne OutLeft_B
-		cmp FROG_BganhouJogo, 1 ; nao movimenta quem ja venceu.
+		cmp FROG_BpassouFase, 1 ; nao movimenta quem ja venceu.
 		je Finally
 
 		invoke FROG_MovimentaEsq, FROG_SAPO_B
@@ -261,7 +269,7 @@ FROG_ControleMovimento proc
 	
 	cmp eax, 8292
 	jne OutRight_B
-		cmp FROG_BganhouJogo, 1 ; nao movimenta quem ja venceu.
+		cmp FROG_BpassouFase, 1 ; nao movimenta quem ja venceu.
 		je Finally
 
 		invoke FROG_MovimentaDir, FROG_SAPO_B
@@ -269,7 +277,7 @@ FROG_ControleMovimento proc
 	
 	cmp eax, 4471
 	jne OutUp_B
-		cmp FROG_BganhouJogo, 1 ; nao movimenta quem ja venceu.
+		cmp FROG_BpassouFase, 1 ; nao movimenta quem ja venceu.
 		je Finally
 
 		invoke FROG_MovimentaCima, FROG_SAPO_B
@@ -277,7 +285,7 @@ FROG_ControleMovimento proc
 	
 	cmp eax, 8051
 	jne OutDown_B
-		cmp FROG_BganhouJogo, 1 ; nao movimenta quem ja venceu.
+		cmp FROG_BpassouFase, 1 ; nao movimenta quem ja venceu.
 		je Finally
 
 		invoke FROG_MovimentaBaixo, FROG_SAPO_B
@@ -530,9 +538,12 @@ FROG_AtualizarTransito proc
 		
 		jne skip
 			mov bx, FROG_TransitoLinha[esi]		;#?determina qual linha do trânsito sofrerá rotação
-			mov ax, FROG_TransitoSentido	  [esi]		;#?determina qual sentido o trânsito está orientado [1 <- / 0 ->]
-			cmp bx, 6
-			jna Agua
+			mov ax, FROG_TransitoSentido	  [esi]		;#?determina qual sentido o trânsito está orientado [ímpar <- / par ->]
+			shr ax, 1
+			shl ax, 15
+			shr ax, 15
+			cmp ax, 1
+			je Agua 
 			call FROG_RotacionarTransito
 			jmp QualLinha
 		Agua:
@@ -552,6 +563,11 @@ FROG_AtualizarTransito endp
 
 FROG_RotacionarTransito proc
 	pushad
+
+	mov ax, FROG_TransitoSentido	  [esi]		;#?determina qual sentido o trânsito está orientado [ímpar <- / par ->]
+	shl ax, 15
+	shr ax, 15
+
 	movzx ecx, bx
 	mov esi, 0
 	
@@ -637,6 +653,11 @@ FROG_RotacionarTransito endp
 
 FROG_RotacionarAgua proc
 	pushad
+
+	mov ax, FROG_TransitoSentido	  [esi]		;#?determina qual sentido o trânsito está orientado [ímpar <- / par ->]
+	shl ax, 15
+	shr ax, 15
+
 	movzx ecx, bx
 	mov esi, 0
 	
@@ -789,10 +810,44 @@ FROG_DesenharCampo endp
 ; Procedimento: FROG_DesenharCaracteres
 ; Descricao: parte grafica do jogo. Aplica as texturas dos objetos no campo.
 FROG_DesenharCaracteres PROC USES EDX ECX
-	cmp ax, 8
-	jne CU
+
+	cmp ax, 0
+	jne NaoEhChao
+
 	mov edx, 0
-	CU:
+	mov ecx, esi
+ProcurarLinha:
+	cmp ecx, 30
+	jb AchouLinha
+	inc edx
+	sub ecx, 30
+	jmp ProcurarLinha
+AchouLinha:
+
+	shl edx, 5
+	add edx, 48
+
+		mov al, FROG_Campo_Temp[edx]
+		shl al, 4
+		inc edx
+		add al, FROG_Campo_Temp[edx]
+		call SetTextColor
+		sub edx, 5
+		cmp bx, 1
+		jne Chao_SegundaLinha
+		add edx, 7
+	Chao_SegundaLinha:
+		mov al, FROG_Campo_Temp[edx]
+		call writeChar
+		inc edx
+		mov al, FROG_Campo_Temp[edx]
+		call writeChar
+		inc edx
+		mov al, FROG_Campo_Temp[edx]
+		call writeChar
+		jmp D_Finally
+
+	NaoEhChao:
 
 	cmp bx, 1
 	je SegundaLinha
@@ -801,10 +856,6 @@ FROG_DesenharCaracteres PROC USES EDX ECX
 	je DesenharSapoA_1
 	cmp ax, FROG_SAPO_B
 	je DesenharSapoB_1
-
-	cmp ax, 0
-	je DesenharChao0A
-	cmp ax, 1
 
 	cmp ax, FROG_SAPO_A
 	jbe SegundaLinha
@@ -822,9 +873,6 @@ FROG_DesenharCaracteres PROC USES EDX ECX
 	je DesenharSapoA_2
 	cmp ax, FROG_SAPO_B
 	je DesenharSapoB_2
-
-	cmp ax, 0
-	je DesenharChao0B
 
 	cmp ax, FROG_SAPO_A
 	jbe Continue
@@ -921,114 +969,6 @@ FROG_DesenharCaracteres PROC USES EDX ECX
 			jne D_Finally
 			mov FROG_respiracao, 0
 		jmp D_Finally
-;------- Chao --------
-	DesenharChao0A:
-		cmp esi, 28*15 - 2
-		jna DesenharRuaA
-		mov	al, lightgray + (white * 16)
-		call SetTextColor
-		mWrite "±° "
-		jmp D_Finally
-
-	DesenharRuaA:
-		cmp esi, 16*15 - 2
-		jna DesenharChao1A
-		mov	al, lightgray + (gray * 16)
-		call SetTextColor
-		mWrite "±°²"
-		jmp D_Finally
-
-	DesenharChao1A:
-		cmp esi, 14*15 - 2
-		jna DesenharMadeira
-		mov	al, lightgray + (white * 16)
-		call SetTextColor
-		mWrite "±° "
-		jmp D_Finally
-
-	DesenharMadeira:
-		cmp esi, 2*15 - 2
-		jna DesenharGrama
-		mov	al, black + (brown * 16)
-		call SetTextColor
-		mWrite "ÍÍÍ"
-		jmp D_Finally
-
-	DesenharGrama:
-		mov	al, Green + (brown * 16)
-		call SetTextColor
-		mWrite "±²±"
-		jmp D_Finally
-
-	DesenharChao0B:
-		cmp esi, 28*15 - 2
-		jna DesenharRuaB
-		mov	al, lightgray + (white * 16)
-		call SetTextColor
-		mWrite "° °"
-		jmp D_Finally
-
-	DesenharRuaB:
-		cmp esi, 16*15 - 2
-		jna DesenharChao1B
-		mov	al, lightgray + (gray * 16)
-		call SetTextColor
-		mWrite "²±°"
-		jmp D_Finally
-
-	DesenharChao1B:
-		cmp esi, 14*15 - 2
-		jna DesenharMadeira
-		mov	al, lightgray + (white * 16)
-		call SetTextColor
-		mWrite "° °"
-		jmp D_Finally
-
-	DesenharAgua0A:
-		mov al, FROG_Campo_Temp[606]
-		shl al, 4
-		add al, FROG_Campo_Temp[607]
-		call SetTextColor
-	cmp FROG_respiracao, 3
-	ja Agua0AChange
-		mov al, FROG_Campo_Temp[602]
-		call writeChar
-		mov al, FROG_Campo_Temp[603]
-		call writeChar
-		mov al, FROG_Campo_Temp[604]
-		call writeChar
-	jmp D_Finally
-	Agua0AChange:
-		mov al, FROG_Campo_Temp[609]
-		call writeChar
-		mov al, FROG_Campo_Temp[610]
-		call writeChar
-		mov al, FROG_Campo_Temp[611]
-		call writeChar
-	jmp D_Finally
-
-	DesenharAgua0B:
-		mov al, FROG_Campo_Temp[618]
-		shl al, 4
-		add al, FROG_Campo_Temp[619]
-		call SetTextColor
-	cmp FROG_respiracao, 3
-	ja Agua0BChange
-		mov al, FROG_Campo_Temp[614]
-		call writeChar
-		mov al, FROG_Campo_Temp[615]
-		call writeChar
-		mov al, FROG_Campo_Temp[616]
-		call writeChar
-	jmp D_Finally
-	Agua0BChange:
-		mov al, FROG_Campo_Temp[621]
-		call writeChar
-		mov al, FROG_Campo_Temp[622]
-		call writeChar
-		mov al, FROG_Campo_Temp[623]
-		call writeChar
-	jmp D_Finally
 	
 	;------- Sapo Morto --------
 	DesenharMortoA_1:
@@ -1058,23 +998,30 @@ FROG_DesenharCaracteres PROC USES EDX ECX
 	ret
 FROG_DesenharCaracteres endp
 
+; MUDAR DE FASE
+; ===============================
+
+FROG_NovoCampo PROC
+	
+	inc FROG_fCampo[18]
+	cmp FROG_fCampo[18], 58
+	jb NAO_CARRYOU
+	mov FROG_fCampo[18], 48
+	inc FROG_fCampo[17]
+	NAO_CARRYOU:
+	call FROG_LerCampo
+	cmp FROG_ganharamJogo, 1
+	je ProximaFase
+	call FROG_DefinirCampo
+	ProximaFase:
+
+	ret
+FROG_NovoCampo ENDP
+
 ; =================================================
 ; Procedimento: FROG_DefinirCampo
-; Descricao: busca no arquivo campo.txt informacoes referentes ao campo da fase atual.
+; Descricao: extrai as informações necessárias previamente armazenadas no vetor de FROG_Campo_Temp.
 FROG_DefinirCampo PROC
-	mov edx, OFFSET FROG_fCampo
-	call OpenInputFile
-	mov FROG_fHandle, eax
-	cmp eax, INVALID_HANDLE_VALUE
-	jne Definir_Cont
-	ret
-
-	Definir_Cont:
-	mov edx, OFFSET FROG_Campo_Temp
-	mov ecx, FROG_CAMPO_TAM
-	call ReadFromFile
-	mov eax, FROG_fHandle
-	call CloseFile
 
 	mov ecx, 15
 	mov esi, 24
@@ -1131,7 +1078,30 @@ FROG_DefinirCampo PROC
 	ret
 FROG_DefinirCampo ENDP
 
+; =================================================
+; Procedimento: FROG_LerCampo
+; Descricao: busca no arquivo campo.txt informacoes referentes ao campo da fase atual.
+FROG_LerCampo PROC
+	mov edx, OFFSET FROG_fCampo
+	call OpenInputFile
+	mov FROG_fHandle, eax
+	cmp eax, INVALID_HANDLE_VALUE
+	jne Definir_Cont
+	mov FROG_ganharamJogo, 1
+	ret
+
+	Definir_Cont:
+	mov edx, OFFSET FROG_Campo_Temp
+	mov ecx, FROG_CAMPO_TAM
+	call ReadFromFile
+	mov eax, FROG_fHandle
+	call CloseFile
+
+	ret
+FROG_LerCampo ENDP
+
 FROG_DefinirMovimentos PROC
+
 	sub FROG_Campo_Temp[esi], 48
 	movzx bx, FROG_Campo_Temp[esi]
 	mov FROG_TransitoSentido[edx], bx
@@ -1312,7 +1282,8 @@ FROG_InitJogo proc
 		call SetTextColor
 		call Clrscr
 		call FROG_ExibirIntro
-	
+		mov FROG_ganharamJogo, 0
+
 		; o jogador quer sair do jogo, pois pressionou a tecla ESC na tela de intro.
 		cmp eax, 283
 		je FROG_InitJogo_Finally
@@ -1334,14 +1305,15 @@ FROG_NovoJogo proc
 	NovoJogo:
 	call Clrscr
 
+	call FROG_LerCampo
 	call FROG_DefinirCampo
 	
 	mov FROG_resetJogo, 0
 	mov FROG_Movimentos, 0
 	
-	mov FROG_AganhouJogo, 0
+	mov FROG_ApassouFase, 0
     mov FROG_AperdeuJogo, 0
-	mov FROG_BganhouJogo, 0
+	mov FROG_BpassouFase, 0
     mov FROG_BperdeuJogo, 0
 
 	; posiciona o sapo A no meio da ultima linha
@@ -1358,7 +1330,7 @@ FROG_NovoJogo proc
 	
 	cmp FROG_coop, 0 ; se o jogo nao ee cooperativo, o sapo B nao existe.
 	jne FROG_coop_else
-		mov FROG_BganhouJogo, 1
+		mov FROG_BpassouFase, 1
 		jmp ChamarClock
 	FROG_coop_else:
 		; posiciona o sapo B ao lado do sapo A
@@ -1373,7 +1345,7 @@ FROG_NovoJogo proc
 		add eax, ebx
 		mov FROG_Campo[eax *type FROG_Campo], FROG_SAPO_B
 
-		mov FROG_BganhouJogo, 0
+		mov FROG_BpassouFase, 0
 		
 	ChamarClock:
     call FROG_Clock
