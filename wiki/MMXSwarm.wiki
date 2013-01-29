@@ -3579,3 +3579,185 @@ O filtro Ciano redefine as cores da imagem em tons de ciano(Azul+verde). Calcula
 
 
 }}}
+
+<b>Magenta</b>
+
+O filtro Magenta redefine as cores da imagem em tons de Magenta(Azul+Vermelho). Calcula a media dos valores RGB de um pixel e copia o valor para R e B, zerando o G.
+
+===Naive===
+
+{{{
+   void CSurface::Magenta()
+{  
+	COLORREF cCur;
+	
+
+	//Percorre toda imagem
+    for (int y = 0; y < m_wndHeight; y++) {
+        for (int x = 0; x < m_wndWidth; x++) {
+			cCur = PointColorD(x,y);
+			int R = GetRValue(cCur);
+			int G = GetGValue(cCur);
+			int B = GetBValue(cCur);
+			int NC = (R+G+B)/3;
+			COLORREF newPixCol =  RGB(NC,0,NC);
+			PointColorT(x,y,newPixCol);
+		}
+     
+    }
+
+	//Quando terminar, copia o resultado para a imagem corrente
+	Copy(t_image);
+	
+}
+}}}
+
+===MMX===
+
+{{{
+   void CMMXSurface32Intrinsic::Magenta() {
+	int height = GetVisibleHeight()*2;	//altura multiplicada por 2 pois são pixels de 32 bits em variáveis de 64 bits (2x maior)
+	DWORD *pCur  = (DWORD *)GetPixelAddress(0,0);	// cada pixel tem 32bits, 1byte para cada canal de cor: alfa, red, green, blue
+
+	// Variaveis do tipo unsigned long long, de 64 bits
+	ULONGLONG mascara = 0xFF;	//seleciona um byte de alguma variável (utilizada para pegar valores individuais de RGB)	
+	ULONGLONG pixel;	//recebe os valores referentes a um ponto da tela
+	ULONGLONG next;		//recebe os valores do próximo ponto a partir de pixel 
+
+	pixel = *(ULONGLONG *)pCur;	//faz um casting 64 bits dos dados do ponto atual na variável pixel
+
+	//loops para percorrer toda a tela
+	do {
+		int width = m_width;
+		do {
+
+			next = *(ULONGLONG *)(pCur+1);	//próximo ponto recebe o ponteiro que aponta para um ponto na tela + 1
+
+			//utilização dos registradores mmx 64 bits com inline assembly 
+			__asm{
+				movq mm0, pixel		//registrador mm0 reebe o valor do pixel atual
+					pand mm0, mascara	//valor de mm0 recebe uma mascara para selecionar seu 1 byte menos significativo (B)
+					movq mm1, mm0		//guarda o valor calculado acima em mm1
+					movq mm0, pixel		//recarrega o valor do pixel em mm0
+					psrlq mm0, 8		//realiza um shift lógico para a direita para pegar o próximo byte
+					pand mm0, mascara	//utilizar mascara para isolar um byte (G)
+					paddd mm1, mm0		//soma o valor calculado anteriormente em mm1 (B+G)
+					movq mm0, pixel		//recarrega o valor do pixel em mm0
+					psrlq mm0, 16		//realiza um shift lógico para direita para pegar o 3 byte
+					pand mm0, mascara	//utiliza mascara para isolar um byte (R)
+					paddd mm1,mm0		//soma o valor calculado acima em mm1 (B+G+R)
+					movq pixel, mm1		//move para a variável pixel a soma dos valores RGB calculados nos registradores mmx
+			}
+
+			pixel /= 3;				//realiza media dos valores RGB ((R+G+B)/3)
+
+			__asm{
+					movq mm0, pixel		//mm0 recebe a media dos valores RGB
+					movq mm1, pixel
+					psllq mm1, 16
+					por mm1,mm0
+
+					movq pixel, mm1	//mm0 agora possui os valores médios RGB (GrayScale), então salva isso em pixel
+			}
+
+			*(ULONGLONG *)pCur = pixel;		//joga o resultado no ponto apontado da tela
+			pixel = next;					//recebe o próximo pixel a ser processado
+			pCur++;							//avança o ponteiro sobre a tela
+		} while (--width > 0);
+	} while (--height > 0);
+}
+}}}
+
+===SSE2===
+
+{{{
+   void CSSE2Surface32Intrinsic::Magenta()
+{
+	int height = GetVisibleHeight()*2;				//aumenta a altura em 2 pois são processados 2 pixels de 32-bits de uma só vez em variáveis de 128 bits	
+	DWORD *pCur  = (DWORD *)GetPixelAddress(0,0);	//ponteiro para posição atual da tela
+
+	ULONGLONG mascara = 0xFF;						//máscara para selecionar um byte por vez
+	ULONGLONG pixel1, pixel2;						//variaveis de 64 bits que receberão valores de dois pixels consecutivos
+	ULONGLONG next1, next2;							//variéveis que guardam a próximas posições de pixel1 e pixel2
+	ULONGLONG media1, media2;						//medias RGB de pixel1 e pixel2 respectivamente
+
+	pixel1 = *(ULONGLONG *) pCur;					//pixel1 recebe pixel que está sendo apontado no inicio (0,0) 
+	pixel2 = *(ULONGLONG *) (pCur+1);				//pixel2 recebe pixel consecutivo (0,1)
+
+	//loops para percorrer toda a tela
+	do {
+		int width = m_width;
+		do {
+
+			next1 = *(ULONGLONG *) (pCur+2);		//guarda próximo valor para pixel1	
+			next2 = *(ULONGLONG *) (pCur+3);		//guarda próximo valor para pixel2	
+
+			__asm{
+				movq xmm0, pixel1					//move pixel1 para os 64 bits menos significativos de xmm0 (128 bits)
+					movhpd xmm0, pixel2					//move pixel2 para os 64 bits mais significativos de xmm0
+					movq xmm1, mascara					//xmm1 fará o papel de seletor de bytes especificos de xmm0
+					pand xmm1,xmm0						//seleciona primeiro byte de xmm0 e guarda em xmm1
+					movq xmm2,xmm1						//xmm2 receberá a soma dos bytes selecionados
+					movq xmm1,mascara					
+					psrldq xmm0,1						//desloca em 1 para direita xmm0 (como são registradores 128 bits, na verdade ocorre um deslocamento de 2 unidades)
+					pand xmm1,xmm0
+					paddq xmm2,xmm1
+					movq xmm1,mascara
+					psrldq xmm0,1
+					pand xmm1,xmm0
+					paddq xmm2,xmm1
+					movq media1,xmm2					//recebe a soma dos valores RGB de pixel1 (parte menos significativa de xmm0)
+					movq xmm1,mascara
+					psrldq xmm0,2						//desloca em 2 para direita xmm0, para selecionar agora sua metade mais significativa (pixel2)
+					pand xmm1,xmm0
+					movq xmm2,xmm1
+					movq xmm1,mascara
+					psrldq xmm0,1
+					pand xmm1,xmm0
+					paddq xmm2,xmm1
+					movq xmm1,mascara
+					psrldq xmm0,1
+					pand xmm1,xmm0
+					paddq xmm2,xmm1
+					movq media2,xmm2					//salva a soma dos valores RGB de pixel2 em media2
+			}
+
+			media1 /= 3;							//realiza média efetiva dos pixels
+			media2 /= 3;
+
+			__asm{
+					pxor xmm2,xmm2
+
+					movq xmm0, media1	
+					movq xmm1, media1
+					pslldq xmm1, 2
+					por xmm1,xmm0
+					movq pixel1, xmm1					//atualiza o valor de pixel1, com xmm1 que contém a média nos seus valores RGB 
+
+					movq xmm0, media2	
+					movq xmm1, media2
+					pslldq xmm1, 2
+					por xmm1,xmm0
+					movq pixel2, xmm1					//atualiza o valor de pixel2, com xmm1 que contém a média nos seus valores RGB
+			
+					
+					
+			
+			
+			}
+
+			*(ULONGLONG *)pCur = pixel1;			//joga o valor calculado de pixel1 de volta na tela
+			*(ULONGLONG *)(pCur+1) = pixel2;		//joga o valor calculado de pixel2 de volta na tela
+			pixel1 = next1;							//pixel1 recebe o próximo pixel 
+			pixel2 = next2;							//pixel2 recebe o próximo pixel
+			pCur += 2;								//aumenta o ponteiro da tela em 2 (calcula 2 pixels por vez)
+		} while (--width > 0);
+	} while (--height > 0);
+}
+}}}
+
+===Grafico Desempenho==
+
+Abaixo a esquerda esta o grafico do filtro Ciano. A direito do filtro magenta.Podemos observar as diferencas de desempenho em termo de FPS
+
+http://img109.imageshack.us/img109/1521/graficoarq2.png
