@@ -61,29 +61,29 @@ A cada interação também é verificado se o valor do sapo é encontrado na pri
 
 === Variáveis ===
 
- * *FROG_Campo*: o campo por onde toda a lógica do jogo está estruturada.
- * *FROG_Campo_Temp*: matriz temporária no processo de leitura do arquivo.
- * *FROG_Intro*: matriz que armazena imagem da tela de introdução.
- * *FROG_ganhouJogo*: 0 (default). Muda para o valor 1 quando o jogador 
-chega a primeira linha (mais à cima) da matriz.
- * *FROG_perdeuJogo*: 0 (default). Muda para o valor 1 quando o jogador colide com algum veículo ou cai na água.
- * *FROG_fCampo*: arquivo de inicialização do campo. Default: (src/Frogger/campo.txt)
- * *FROG_IntroFile*: arquivo do desenho inicial do sapo. Default: (src/Frogger/frogger.txt)
- * *FROG_Handle*: manipulador geral dos arquivos.
- * *FROG_respiracao*: variável auxiliar para a criação do efeito de respiração do sapo.
+ * *FROG_respiracao*: variável auxiliar para a criação do efeito de respiração do sapo. Também utilizada para as animações dos obstáculos 7 e 8.
+ * *FROG_ganharamJogo*: mostra que os sapos ganharam o jogo.
+ * *FROG_Movimentos*: contabiliza os movimentos dos sapos.
+ * *FROG_Movimento_Total*: contabiliza os movimentos dos sapos das fases que já passaram.
 
-Os quatro vetores seguintes são utilizados pelo motor de movimentação do cenário.
+=== Variáveis de Movimentos ===
 
  * *FROG_TransitoLinha*: armazena quais das FROG_LINHAS da matriz contem elementos nocivos ao sapo.
  * *FROG_TransitoVeloc*: armazena a velocidade com que os elementos contidos nas FROG_LINHAS referenciadas por FROG_TransitoLinha andam no 
 cenário.
  * *FROG_VelocAtual*: serve como contador para ajustar o delay de velocidade sem perder os valores de FROG_TransitoVeloc
  * *FROG_TransitoSentido*: armazena o sentido dos elementos contidos em FROG_TransitoLinha.
- * *FROG_ganharamJogo*: mostra que os sapos ganharam o jogo.
- * *FROG_Movimentos*: contabiliza os movimentos dos sapos.
- * *FROG_Movimento_Total*: contabiliza os movimentos dos sapos das fases que já passaram.
 
-== Variáveis do Sapo A ==
+=== Variáveis Relativas a Arquivo ===
+
+ * *FROG_Intro*: matriz que armazena imagem da tela de introdução.
+ * *FROG_Campo*: o campo por onde toda a lógica do jogo está estruturada.
+ * *FROG_Campo_Temp*: matriz temporária no processo de leitura do arquivo.
+ * *FROG_fCampo*: arquivo de inicialização do campo. Default: (src/Frogger/campo.txt)
+ * *FROG_fIntro*: arquivo do desenho inicial do sapo. Default: (src/Frogger/frogger.txt)
+ * *FROG_fHandle*: manipulador geral dos arquivos.
+
+=== Variáveis do Sapo A ===
 
  * * FROG_sapoA_X*: armazena a posição horizontal do sapo A no campo.
  * * FROG_sapoA_Y*: armazena a posição vertical do sapo A no campo.
@@ -91,7 +91,7 @@ cenário.
  * * FROG_AperdeuJogo*: verifica se o sapo A perdeu.
  * * FROG_A_Vidas*: contabiliza o número de vidas do sapo A.
 
-== Variáveis do Sapo B ==
+=== Variáveis do Sapo B ===
 
  * * FROG_sapoB_X*: armazena a posição horizontal do sapo B no campo.
  * * FROG_sapoB_Y*: armazena a posição vertical do sapo B no campo.
