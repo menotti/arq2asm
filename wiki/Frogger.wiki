@@ -64,8 +64,6 @@ A cada interação também é verificado se o valor do sapo é encontrado na pri
  * *FROG_Campo*: o campo por onde toda a lógica do jogo está estruturada.
  * *FROG_Campo_Temp*: matriz temporária no processo de leitura do arquivo.
  * *FROG_Intro*: matriz que armazena imagem da tela de introdução.
- * *FROG_sapoX*: armazena a posição horizontal do sapo no campo.
- * *FROG_sapoY*: armazena a posição vertical do sapo no campo.
  * *FROG_ganhouJogo*: 0 (default). Muda para o valor 1 quando o jogador 
 chega a primeira linha (mais à cima) da matriz.
  * *FROG_perdeuJogo*: 0 (default). Muda para o valor 1 quando o jogador colide com algum veículo ou cai na água.
@@ -81,6 +79,25 @@ Os quatro vetores seguintes são utilizados pelo motor de movimentação do cen�
 cenário.
  * *FROG_VelocAtual*: serve como contador para ajustar o delay de velocidade sem perder os valores de FROG_TransitoVeloc
  * *FROG_TransitoSentido*: armazena o sentido dos elementos contidos em FROG_TransitoLinha.
+ * *FROG_ganharamJogo*: mostra que os sapos ganharam o jogo.
+ * *FROG_Movimentos*: contabiliza os movimentos dos sapos.
+ * *FROG_Movimento_Total*: contabiliza os movimentos dos sapos das fases que já passaram.
+
+== Variáveis do Sapo A
+
+ * * FROG_sapoA_X*: armazena a posição horizontal do sapo A no campo.
+ * * FROG_sapoA_Y*: armazena a posição vertical do sapo A no campo.
+ * * FROG_ApassouFase*: verifica se o sapo A passou de fase.
+ * * FROG_AperdeuJogo*: verifica se o sapo A perdeu.
+ * * FROG_A_Vidas*: contabiliza o número de vidas do sapo A.
+
+== Variáveis do Sapo B
+
+ * * FROG_sapoB_X*: armazena a posição horizontal do sapo B no campo.
+ * * FROG_sapoB_Y*: armazena a posição vertical do sapo B no campo.
+ * * FROG_BpassouFase*: verifica se o sapo B passou de fase.
+ * * FROG_BperdeuJogo*: verifica se o sapo B perdeu.
+ * * FROG_B_Vidas*: contabiliza o número de vidas do sapo B.
 
 -------------
 
