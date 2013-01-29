@@ -1,6 +1,6 @@
 #Descricao do projeto Frogger.
 
-[http://i37.photobucket.com/albums/e81/0810119020/F_zps1fd15249.png]
+[http://sphotos-a.ak.fbcdn.net/hphotos-ak-ash3/528879_331991300240669_283131540_n.jpg]
 
 _Descrição: tela de introdução do jogo Frogger. Imagem carregada dinamicamente do arquivo Frogger.txt_
 
