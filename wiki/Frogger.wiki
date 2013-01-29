@@ -52,12 +52,14 @@ A cada interação também é verificado se o valor do sapo é encontrado na pri
 
 == Constantes ==
 
- * *FROG_SAPO*: define numérico referente ao sapo!
+ * *FROG_SAPO_A*: define numérico referente ao sapo A!
+ * *FROG_SAPO_B*: define numérico referente ao sapo B!
  * *FROG_CAMPO_TAM*: tamanho de entrada do campo extraído de um arquivo.
  * *FROG_INTRO_TAM*: tamanho da introdução extraída do arquivo.
  * *FROG_LINHAS*: n. de linhas da matriz que representa o campo.
  * *FROG_COLUNAS*: n. de colunas da matriz que representa o campo.
- * *FROG_CAMPO_INI_X* e *FROG_FROG_CAMPO_INI_Y*: define a coordenadas (X,Y), onde o campo começará a ser desenhado.
+ * *FROG_CAMPO_INI_X*: define a coordenada X onde o mapa começará a ser desenhado.
+ * *FROG_CAMPO_INI_Y*: define a coordenada Y onde o mapa começará a ser desenhado.
 
 == Variáveis ==
 
