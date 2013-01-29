@@ -50,7 +50,7 @@ A cada interação também é verificado se o valor do sapo é encontrado na pri
 -------------
 = Descrição das informações armazenadas = 
 
-=== Constantes ===
+== Constantes ==
 
  * *FROG_SAPO*: define numérico referente ao sapo!
  * *FROG_CAMPO_TAM*: tamanho de entrada do campo extraído de um arquivo.
@@ -59,7 +59,7 @@ A cada interação também é verificado se o valor do sapo é encontrado na pri
  * *FROG_COLUNAS*: n. de colunas da matriz que representa o campo.
  * *FROG_CAMPO_INI_X* e *FROG_FROG_CAMPO_INI_Y*: define a coordenadas (X,Y), onde o campo começará a ser desenhado.
 
-=== Variáveis ===
+== Variáveis ==
 
  * *FROG_respiracao*: variável auxiliar para a criação do efeito de respiração do sapo. Também utilizada para as animações dos obstáculos 7 e 8.
  * *FROG_ganharamJogo*: mostra que os sapos ganharam o jogo.
