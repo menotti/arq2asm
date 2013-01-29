@@ -1,7 +1,7 @@
 //{{NO_DEPENDENCIES}}
 // Microsoft Visual C++ generated include file.
 // Used by MMXSwarm.rc
-
+//
 #define IDD_ABOUTBOX                    100
 #define IDR_MAINFRAME                   128
 #define IDR_MMXSwaTYPE                  129
@@ -24,30 +24,42 @@
 #define IDS_WARNING_DEBUG               174
 #define IDS_ERROR_SAVE                  175
 #define IDS_ALL_IMAGES                  176
-#define ID_STATIC_MODE					177  //STATIC MODE grupo 7
+#define ID_STATIC_MODE                  177
 #define ID_MODE_WEBCAM                  178
-#define ID_MODE_IMAGE                   179		
-#define ID_MODE_FADE                    180		
+#define ID_MODE_IMAGE                   179
+#define ID_MODE_FADE                    180
 #define ID_MODE_SWARM                   181
 #define ID_INDICATOR_FPS                59142
 #define ID_INDICATOR_RESOLUTION         59143
 #define ID_INDICATOR_PAUSE_SWARM        59144
 #define ID_INDICATOR_PAUSE_BLUR         59145
 #define ID_INDICATOR_PAUSE_BLIT         59146
-#define ID_INDICATOR_USE_FADE         	59147
-#define ID_INDICATOR_USE_GRAY			59148 //Grupo 4
-#define ID_INDICATOR_USE_SOBEL			59149 //Grupo 5
-#define ID_INDICATOR_USE_POSTERIZE		59150 //Grupo 9
-#define ID_INDICATOR_USE_GRAYF			59151 //Grupo 12
-#define ID_INDICATOR_USE_RGBADJUST		59152 //Grupo 14
-#define ID_INDICATOR_USE_MASK			59153 //Grupo 15
-#define ID_INDICATOR_USE_MANDEL			59154 //Grupo 6
-#define ID_INDICATOR_USE_SOLARIZE       59155 //Grupo 18
-#define ID_INDICATOR_USE_THRESHOLD      59156 //grupo 13
-#define ID_INDICATOR_USE_INVERT         59157 //grupo 7
+#define ID_INDICATOR_USE_FADE           59147
+#define ID_INDICATOR_USE_GRAY           59148
+#define ID_INDICATOR_USE_SOBEL          59149
+#define ID_INDICATOR_USE_POSTERIZE      59150
+#define ID_INDICATOR_USE_GRAYF          59151
+#define ID_INDICATOR_USE_RGBADJUST      59152
+#define ID_INDICATOR_USE_MASK           59153
+#define ID_INDICATOR_USE_MANDEL         59154
+#define ID_INDICATOR_USE_SOLARIZE       59155
+#define ID_INDICATOR_USE_THRESHOLD      59156
+#define ID_INDICATOR_USE_INVERT         59157
 #define ID_INDICATOR_USE_WEBCAM         59158
-#define ID_INDICATOR_USE_GRADIENT       59159
+#define ID_INDICATOR_USE_CIANO			59171
+
 #define ID_INDICATOR_USE_CHANNELMIX     59160
+//<<<<<<< .mine
+#define ID_INDICATOR_USE_RESCALE        59161
+#define ID_INDICATOR_USE_AZULAR         59162
+#define ID_INDICATOR_USE_ESVERDEAR      59163
+#define ID_INDICATOR_USE_ENVERMELHAR    59164
+#define ID_INDICATOR_USE_MIRROR         59165
+#define ID_INDICATOR_USE_AMARELAR       59166
+#define ID_INDICATOR_USE_SWARM          59167
+#define ID_INDICATOR_USE_MAGENTA        59172
+#define ID_INDICATOR_USE_IMAGE          59169
+//=======
 #define ID_INDICATOR_USE_RESCALE		59161
 #define ID_INDICATOR_USE_AZULAR			59162
 #define ID_INDICATOR_USE_ESVERDEAR		59163
@@ -59,32 +71,32 @@
 #define ID_INDICATOR_USE_IMAGE			59169
 #define ID_INDICATOR_USE_MEDIAN			59170 //grupo 2012
 
+//>>>>>>> .r523
 
 #define ID_VIEW_PAUSE_SWARM             59394
 #define ID_VIEW_PAUSE_BLUR              59395
 #define ID_VIEW_PAUSE_BLIT              59396
-#define ID_VIEW_USE_FADE				59397
-#define ID_VIEW_USE_GRAY				59398 //Grupo 4
-#define ID_VIEW_USE_SOBEL				59399 //Grupo 5
-#define ID_VIEW_USE_POSTERIZE			59400 //Grupo 9
-#define ID_VIEW_USE_GRAYF				59401 //Grupo 12
-#define ID_VIEW_USE_RGBADJUST			59402 //Grupo 14
-#define ID_VIEW_USE_MASK				59403 //Grupo 15
-#define ID_VIEW_USE_MANDEL				59404 //Grupo 6
-#define ID_VIEW_USE_SOLARIZE	        59405 //Grupo 18
-#define ID_VIEW_USE_THRESHOLD            59406 //grupo 13
-#define ID_VIEW_USE_INVERT				59407 //grupo 7
-#define ID_VIEW_USE_GRADIENT            59408
+#define ID_VIEW_USE_FADE                59397
+#define ID_VIEW_USE_GRAY                59398
+#define ID_VIEW_USE_SOBEL               59399
+#define ID_VIEW_USE_POSTERIZE           59400
+#define ID_VIEW_USE_GRAYF               59401
+#define ID_VIEW_USE_RGBADJUST           59402
+#define ID_VIEW_USE_MASK                59403
+#define ID_VIEW_USE_MANDEL              59404
+#define ID_VIEW_USE_SOLARIZE            59405
+#define ID_VIEW_USE_THRESHOLD           59406
+#define ID_VIEW_USE_INVERT              59407
+
 #define ID_VIEW_USE_CHANNELMIX          59409
-//#define ID_MODE_IMAGE                   59410
-//#define ID_MODE_FADE                    59411
-//#define ID_MODE_SWARM                   59412
-#define ID_VIEW_USE_RESCALE				59413
-#define ID_VIEW_USE_AZULAR				59414
-#define ID_VIEW_USE_ESVERDEAR			59415
-#define ID_VIEW_USE_ENVERMELHAR			59416
-#define ID_VIEW_USE_MIRROR				59417
-#define ID_VIEW_USE_AMARELAR		    59418
+#define ID_VIEW_USE_CIANO				59410
+#define ID_VIEW_USE_MAGENTA				59411
+#define ID_VIEW_USE_RESCALE             59413
+#define ID_VIEW_USE_AZULAR              59414
+#define ID_VIEW_USE_ESVERDEAR           59415
+#define ID_VIEW_USE_ENVERMELHAR         59416
+#define ID_VIEW_USE_MIRROR              59417
+#define ID_VIEW_USE_AMARELAR            59418
 #define ID_VIEW_USE_RB3D				59419
 #define ID_VIEW_USE_MEDIAN				59420
 
