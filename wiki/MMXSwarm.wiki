@@ -3056,9 +3056,109 @@ Há uma versão iniciada não-funcional em comentário no repositório, mas não
 O Median Filter é um filtro de remoção de ruídos. O objetivo desse filtro é diminuir o efeito salt e pepper (sal e pimenta), que consistem nos pontos brancos e pretos e também nos ruídos coloridos presentes em uma imagem. Esse filtro percorre a imagem comparando o RGB do pixel atual com os de seus oito vizinhos, como uma matriz 3x3 onde o pixel atual é o central. Após obter o RGB de cada pixel, ordenamos os nove valores de forma separada em Red, Blue e Green e pegamos o valor mediano de cada. Dessa forma o novo pixel será formado pela mediana do RGB de seus vizinhos.
 
 == Naive == 
+{{{
+
+//Grupo 2012
+void CSurface::Median()
+{
+	COLORREF pAtual, pEsquerda, pDireita, pCima, pBaixo, pDiagEsqCima, pDiagEsqBaixo, pDiagDirCima, pDiagDirBaixo;
+	int r, g, b;
+	int vetorTemp[9]; // 
+	
+	//Dois laços de repetição que percorrem a imagem, pixel por pixel
+	for (int i = 1; i < m_wndHeight; i++) {
+		for (int j = 1; j < m_wndWidth; j++) {
+
+			//Atribui as posições dos pixels em função do pixel atual no formato de uma matriz 3x3
+			pAtual = PointColor(j, i);
+			pEsquerda = PointColor(j-1, i);
+			pDireita = PointColor(j+1, i);
+			pCima = PointColor(j, i-1);
+			pBaixo = PointColor(j, i+1);
+			pDiagEsqCima = PointColor(j-1, i-1);
+			pDiagEsqBaixo = PointColor(j-1, i+1);
+			pDiagDirCima = PointColor(j+1, i-1);
+			pDiagDirBaixo = PointColor(j+1, i+1);
+
+			//Os valores de RED dos 9 pixels são colocados na matriz temporária
+			vetorTemp[0] = GetRValue(pAtual);	
+			vetorTemp[1] = GetRValue(pEsquerda);
+			vetorTemp[2] = GetRValue(pDireita);
+			vetorTemp[3] = GetRValue(pCima);
+			vetorTemp[4] = GetRValue(pBaixo);
+			vetorTemp[5] = GetRValue(pDiagEsqCima);
+			vetorTemp[6] = GetRValue(pDiagEsqBaixo);
+			vetorTemp[7] = GetRValue(pDiagDirCima);
+			vetorTemp[8] = GetRValue(pDiagDirBaixo);	
+
+			// Chama função para ordenar o vetor temporário
+			Ordena(vetorTemp);
+
+			// r recebe o valor intermediário de RED dos pixels da matrix 3x3
+			r = vetorTemp[4];
+
+			//Os valores de GREEN dos 9 pixels são colocados na matriz temporária
+			vetorTemp[0] = GetGValue(pAtual);	
+			vetorTemp[1] = GetGValue(pEsquerda);
+			vetorTemp[2] = GetGValue(pDireita);
+			vetorTemp[3] = GetGValue(pCima);
+			vetorTemp[4] = GetGValue(pBaixo);
+			vetorTemp[5] = GetGValue(pDiagEsqCima);
+			vetorTemp[6] = GetGValue(pDiagEsqBaixo);
+			vetorTemp[7] = GetGValue(pDiagDirCima);
+			vetorTemp[8] = GetGValue(pDiagDirBaixo);
+
+			// Chama função para ordenar o vetor temporário
+			Ordena(vetorTemp);	
+			
+			// g recebe o valor intermediário de GREEN dos pixels da matrix 3x3
+			g = vetorTemp[4];
+
+			//Os valores de BLUE dos 9 pixels são colocados na matriz temporária
+			vetorTemp[0] = GetBValue(pAtual);
+			vetorTemp[1] = GetBValue(pEsquerda);
+			vetorTemp[2] = GetBValue(pDireita);
+			vetorTemp[3] = GetBValue(pCima);
+			vetorTemp[4] = GetBValue(pBaixo);
+			vetorTemp[5] = GetBValue(pDiagEsqCima);
+			vetorTemp[6] = GetBValue(pDiagEsqBaixo);
+			vetorTemp[7] = GetBValue(pDiagDirCima);
+			vetorTemp[8] = GetBValue(pDiagDirBaixo);
+
+			// Chama função para ordenar o vetor temporário
+			Ordena(vetorTemp);	
+			
+			// b recebe o valor intermediário de BLUE dos pixels da matrix 3x3
+			b = vetorTemp[4];
+
+			// O valor de Alpha permancerá inalterado
+			PointColor(j, i, RGB(b,g,r)); 
+		}
+	}
+
+}
+
+}}}
 
 {{{
-// Função usada para ordenar o vetor do Median
+// Primeira versão não otimizada da função ordena
+void Ordena (int *vetor, int tamanho) {
+	int auxiliar;
+	
+	for (int i = 0; i < tamanho; i++){
+		for (int j = i+1; j < tamanho; j++){
+			if (vetor[i] > vetor[j]){
+			auxiliar = vetor[i];
+			vetor[i] = vetor[j];
+			vetor[j] = auxiliar;
+			}
+		}
+	}
+}
+
+}}}
+{{{
+// Função final usada para ordenar o vetor do Median
 void Ordena (int *vetor) {
     //  Recebe o nome do vetor de 9 posições como parâmetro
     //  Faz a ordenação dos 5 menores valores (não é necessário fazer o resto, pois necessitamos apenas do quinto menor)
@@ -3291,4 +3391,9 @@ void CSurface::RB3D()
 }
 
 }}}
+
+http://img213.imageshack.us/img213/6571/tigery.jpg
+http://img833.imageshack.us/img833/2639/tiger3d.jpg
+http://img221.imageshack.us/img221/9665/jaguarc.jpg
+http://img545.imageshack.us/img545/9872/jaguar3d.jpg
 -----
