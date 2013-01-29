@@ -3056,6 +3056,9 @@ Há uma versão iniciada não-funcional em comentário no repositório, mas não
 O Median Filter é um filtro de remoção de ruídos. O objetivo desse filtro é diminuir o efeito salt e pepper (sal e pimenta), que consistem nos pontos brancos e pretos e também nos ruídos coloridos presentes em uma imagem. Esse filtro percorre a imagem comparando o RGB do pixel atual com os de seus oito vizinhos, como uma matriz 3x3 onde o pixel atual é o central. Após obter o RGB de cada pixel, ordenamos os nove valores de forma separada em Red, Blue e Green e pegamos o valor mediano de cada. Dessa forma o novo pixel será formado pela mediana do RGB de seus vizinhos.
 
 == Naive == 
+
+Abaixo trazemos as implementações feitas estando estas divididas entre a implementação do filtro em si e as implementações das funções de ordenação dos pixels utilizadas pelo filtro.
+
 {{{
 
 //Grupo 2012
@@ -3140,7 +3143,7 @@ void CSurface::Median()
 
 }}}
 
-==Primeira versão não otimizada da função ordena==
+===Primeira versão não otimizada da função ordena===
 
 {{{
 void Ordena (int *vetor, int tamanho) {
@@ -3159,7 +3162,7 @@ void Ordena (int *vetor, int tamanho) {
 
 }}}
 
-==Função final usada para ordenar o vetor do Median==
+===Função final usada para ordenar o vetor do Median===
 
 {{{
 void Ordena (int *vetor) {
@@ -3347,9 +3350,24 @@ next31:
 }
 }}}
 
+===Imagens com a aplicação do filtro===
+
+Abaixo temos duas imagens uma colorida e outra preto e branco exemplificando a aplicação do filtro.
+
 http://img836.imageshack.us/img836/9015/balloonso.png http://img27.imageshack.us/img27/1818/balloons1o.png
 http://img829.imageshack.us/img829/3999/raiox.png
 http://img10.imageshack.us/img10/2843/raiox1.png
+
+==MMX e SSE==
+
+Pelo fato de o filtro não utilizar em sua implementação uma fórmula matemática para cálculo dos pixels e sim uma ordenação destes, o grupo obteve problemas ao tentar implementar uma versão utilizando as instruções MMX e SSE.
+
+==Análise de Desempenho==
+
+Desta forma focamos em melhorar o desempenho do filtro melhorando a função de ordenação.
+
+O gráfico abaixo mostra a comparação entre as duas funções implementadas que foram apresentadas na seção anterior. 
+
 
 ----
 
@@ -3399,6 +3417,69 @@ http://img213.imageshack.us/img213/6571/tigery.jpg
 http://img833.imageshack.us/img833/2639/tiger3d.jpg
 http://img221.imageshack.us/img221/9665/jaguarc.jpg
 http://img545.imageshack.us/img545/9872/jaguar3d.jpg
+
+
+==MMX (VERSÃO NÃO FUNCIONAL)==
+
+O grupo teve problemas ao implementar a versão do filtro utilizando as instruções MMX, o código que trazemos aqui é a última versão não funcional deste. 
+
+{{{
+
+void CMMXSurface32Intrinsic::RB3D() {
+	int height = GetVisibleHeight()*2;				//altura multiplicada por 2 pois são pixels de 32 bits em variáveis de 64 bits (2x maior)
+	DWORD *pCur  = (DWORD *)GetPixelAddress(0,0);	// cada pixel tem 32bits, 1byte para cada canal de cor: alfa, red, green, blue
+
+	// Variaveis do tipo unsigned long long, de 64 bits
+	ULONGLONG mascara = 0xFF;	//seleciona um byte de alguma variável (utilizada para pegar valores individuais de RGB)	
+	ULONGLONG mascara2 = 0xFFFFFF00;
+	ULONGLONG mascara3 = 0xFF0000;
+	ULONGLONG mascara4 = 0xFF00FFFF;
+	ULONGLONG pixel;	//recebe os valores referentes a um ponto da tela
+	ULONGLONG direito, esquerdo=0;		//recebe os valores do próximo ponto a partir de pixel 
+
+	pixel = *(ULONGLONG *)pCur;	//faz um casting 64 bits dos dados do ponto atual na variável pixel
+	for (int i=0; i<30; i++){
+	//loops para percorrer toda a tela
+	do {
+		int width = m_width;
+		do {
+
+			direito = *(ULONGLONG *)(pCur+1);	//próximo ponto recebe o ponteiro que aponta para um ponto na tela + 1
+
+			//utilização dos registradores mmx 64 bits com inline assembly 
+			__asm{
+					movq mm0, pixel		//registrador mm0 reebe o valor do pixel atual
+					pand mm0, mascara	//valor de mm0 recebe uma mascara para selecionar seu 1 byte menos significativo (B)
+					movq mm1, direito
+					pand mm1, mascara2
+					paddd mm1, mm0
+					movq direito, mm1
+										
+					movq mm0, pixel		//recarrega o valor do pixel em mm0
+					pand mm0, mascara3
+					movq mm1, esquerdo
+					pand mm1, mascara4	//utiliza mascara para isolar um byte (R)
+					paddd mm1, mm0
+					movq esquerdo, mm1
+
+				
+					
+			}
+
+
+	
+			
+			*(ULONGLONG *)pCur = pixel;		//joga o resultado no ponto apontado da tela
+			*(ULONGLONG *)(pCur+1) = direito;
+			*(ULONGLONG *)(pCur-1) = esquerdo;
+			esquerdo = pixel;
+			pixel = direito;					//recebe o próximo pixel a ser processado
+			pCur++;							//avança o ponteiro sobre a tela
+		} while (--width > 0);
+	} while (--height > 0);
+}
+}
+}}}
 -----
 <b>Ciano</b>
 
