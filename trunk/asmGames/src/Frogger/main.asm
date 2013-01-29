@@ -549,12 +549,12 @@ FROG_AtualizarTransito proc
 	Atualizar:
 		cmp FROG_TransitoSentido[esi], 35
 		je NAOMOVER
-		mov dx, FROG_VelocAtual[esi]		;#?determina o delay de ciclos para que a rotação seja efetuada
+		mov dx, FROG_VelocAtual[esi]		;#?determina o delay de ciclos para que a rotaÃ§Ã£o seja efetuada
 		cmp dx, 0
 		
 		jne skip
-			mov bx, FROG_TransitoLinha[esi]		;#?determina qual linha do trânsito sofrerá rotação
-			mov ax, FROG_TransitoSentido	  [esi]		;#?determina qual sentido o trânsito está orientado [ímpar <- / par ->]
+			mov bx, FROG_TransitoLinha[esi]		;#?determina qual linha do trÃ¢nsito sofrerÃ¡ rotaÃ§Ã£o
+			mov ax, FROG_TransitoSentido	  [esi]		;#?determina qual sentido o trÃ¢nsito estÃ¡ orientado [Ã­mpar <- / par ->]
 			shr ax, 1
 			shl ax, 15
 			shr ax, 15
@@ -580,7 +580,7 @@ FROG_AtualizarTransito endp
 FROG_RotacionarTransito proc
 	pushad
 
-	mov ax, FROG_TransitoSentido	  [esi]		;#?determina qual sentido o trânsito está orientado [ímpar <- / par ->]
+	mov ax, FROG_TransitoSentido	  [esi]		;#?determina qual sentido o trÃ¢nsito estÃ¡ orientado [Ã­mpar <- / par ->]
 	shl ax, 15
 	shr ax, 15
 
@@ -670,7 +670,7 @@ FROG_RotacionarTransito endp
 FROG_RotacionarAgua proc
 	pushad
 
-	mov ax, FROG_TransitoSentido	  [esi]		;#?determina qual sentido o trânsito está orientado [ímpar <- / par ->]
+	mov ax, FROG_TransitoSentido	  [esi]		;#?determina qual sentido o trÃ¢nsito estÃ¡ orientado [Ã­mpar <- / par ->]
 	shl ax, 15
 	shr ax, 15
 
@@ -947,18 +947,18 @@ AchouLinha:
 	DesenharSapoA_1:
 		mov	al, blue + (lightgreen * 16)
 		call SetTextColor
-		mWrite "¢ •"
+		mWrite "Â¢ Â•"
 		jmp D_Finally
 	DesenharSapoA_2:
 		mov	al, blue + (lightgreen * 16)
 		call SetTextColor
 		cmp FROG_respiracao, 3
 		ja FROG_respiracao_A
-			mWrite ")”("
+			mWrite ")Â”("
 			inc FROG_respiracao
 			jmp D_Finally
 		FROG_respiracao_A:
-			mWrite ")™("
+			mWrite ")Â™("
 			inc FROG_respiracao
 			cmp FROG_respiracao, 6
 			jne D_Finally
@@ -969,18 +969,18 @@ AchouLinha:
 	DesenharSapoB_1:
 		mov	al, white + (lightBlue *16)
 		call SetTextColor
-		mWrite "¢ •"
+		mWrite "Â¢ Â•"
 		jmp D_Finally
 	DesenharSapoB_2:
 		mov	al, white + (lightBlue *16)
 		call SetTextColor
 		cmp FROG_respiracao, 3
 		ja FROG_respiracao_B
-			mWrite ")”("
+			mWrite ")Â”("
 			inc FROG_respiracao
 			jmp D_Finally
 		FROG_respiracao_B:
-			mWrite ")™("
+			mWrite ")Â™("
 			inc FROG_respiracao
 			cmp FROG_respiracao, 6
 			jne D_Finally
@@ -997,7 +997,7 @@ AchouLinha:
 	DesenharMortoA_2:
 		mov	al, white + (red * 16)
 		call SetTextColor
-		mWrite ")™("
+		mWrite ")Â™("
 		jmp D_Finally
 	
 	DesenharMortoB_1:
@@ -1009,7 +1009,7 @@ AchouLinha:
 	DesenharMortoB_2:
 		mov	al, white + (red * 16)
 		call SetTextColor
-		mWrite ")™("
+		mWrite ")Â™("
 
 	D_Finally:	
 	ret
@@ -1037,7 +1037,7 @@ FROG_NovoCampo ENDP
 
 ; =================================================
 ; Procedimento: FROG_DefinirCampo
-; Descricao: extrai as informações necessárias previamente armazenadas no vetor de FROG_Campo_Temp.
+; Descricao: extrai as informaÃ§Ãµes necessÃ¡rias previamente armazenadas no vetor de FROG_Campo_Temp.
 FROG_DefinirCampo PROC
 
 	mov ecx, 15
@@ -1346,7 +1346,7 @@ FROG_ExibirIntro PROC
 	call OpenInputFile
 	cmp eax, INVALID_HANDLE_VALUE
 	jne Intro_Cont
-	jmp PressioneEnter
+	jmp PulouIntro
 	Intro_Cont:
 	mov FROG_fHandle, eax
 	mov edx, OFFSET FROG_Intro
@@ -1367,17 +1367,14 @@ FROG_ExibirIntro PROC
 	call Delay
 	mov eax, 0
 	call ReadKey
-	cmp eax, 7181
-	je PulouIntro
+	cmp eax, 1
+	ja PulouIntro
 	inc esi
 	loop Intro_L
 
 	mov eax, 0
-
-	PressioneEnter:	
+ 
 	call ReadChar
-	cmp eax, 7181
-	jne PressioneEnter
 	PulouIntro:
 	ret
 FROG_ExibirIntro ENDP
@@ -1430,7 +1427,7 @@ FROG_InitJogo endp
 
 ; =================================================
 ; Procedimento: FROG_NovoJogo
-; Descricao: chamado por InitJogo, quando um dos sapos morre ou quando há mudança de fase.
+; Descricao: chamado por InitJogo, quando um dos sapos morre ou quando hÃ¡ mudanÃ§a de fase.
 ; Restaura as variaveis dos sapos.
 FROG_NovoJogo proc
 	NovoJogo:
