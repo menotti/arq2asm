@@ -1160,16 +1160,18 @@ FROG_ExibirHUD proc
 	call Gotoxy
 	mWrite "   Level: "
 	mov al, FROG_fCampo[17]
-	cmp al, 0
-	jne SemDecimal
+	mov bl, FROG_fCampo[18]
+	inc bl
+	cmp bl, 58
+	jne NaoEhDez
+	mov bl, 48
+	inc al
+	NaoEhDez:
+	cmp al, 48
+	je SemDecimal
 	call WriteChar
 	SemDecimal:
-	mov al, FROG_fCampo[18]
-	inc al
-	cmp al, 10
-	jne NaoEhDez
-	mov al, 0
-	NaoEhDez:
+	mov al, bl
 	call WriteChar
 	
 	MostraA:
@@ -1256,16 +1258,20 @@ FROG_EntreFases PROC
 
 	mWrite "Level: "
 	mov al, FROG_fCampo[17]
-	cmp al, 0
-	jne SemDecimal
-	call WriteChar
-	SemDecimal:
-	mov al, FROG_fCampo[18]
-	inc al
-	cmp al, 10
+	mov bl, FROG_fCampo[18]
+	inc bl
+	
+	cmp bl, 58
 	jne NaoEhDez
-	mov al, 0
+		mov bl, 48
+		inc al
 	NaoEhDez:
+	
+	cmp al, 48
+	je SemDecimal
+		call WriteChar
+	SemDecimal:
+	mov al, bl
 	call WriteChar
 
 	add dh, 2
