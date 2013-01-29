@@ -55,10 +55,10 @@ nomeArqLore2 BYTE "src/Labirinto/Historia/lore2.txt", 0
 nomeArqLore3 BYTE "src/Labirinto/Historia/lore3t.txt", 0
 nomeArqLore4 BYTE "src/Labirinto/Historia/Fase10.txt", 0
 nomeArqLore5 BYTE "src/Labirinto/Historia/Dragon1.txt", 0
-nomeArqLore6 BYTE "src/Labirinto/Historia/dialogofinal.txt", 0
+nomeArqLore6 BYTE "src/Labirinto/Historia/chamaDialogoFinal.txt", 0
 nomeArqLore7 BYTE "src/Labirinto/Historia/enigmas.txt",0
 nomeArqLore8 BYTE "src/Labirinto/Historia/morte.txt",0
-nomeArqLore9 BYTE "src/Labirinto/Historia/dialogofinal2.txt",0
+nomeArqLore9 BYTE "src/Labirinto/Historia/chamaDialogoFinal2.txt",0
 nomeArqLore10 BYTE "src/Labirinto/Historia/Dragon2.txt",0
 nomeArqLore11 BYTE "src/Labirinto/Historia/creditos.txt", 0
 
@@ -97,12 +97,15 @@ msgPont7 BYTE "VOCE OBTEVE UMA MEDALHA DE BRONZE :| ", 0dh, 0ah, 0
 
 passos WORD 0
 seusMelhoresPassos WORD 10 DUP (1000)
-melhoresPassos WORD 132, 142, 114, 128, 82, 103, 131, 132, 134, 99
+melhoresPassos WORD 134, 142, 114, 128, 82, 103, 131, 132, 134, 99
 
+teleporte BYTE 0
+adressY DWORD 0
+adressQ DWORD 0
+restauraK DWORD 0
 .code
 
 jogaLabirinto PROC
-; funcao MAIN onde a parte logica do jogo acontece
 
     mov al, 1
 	call mudaCores
@@ -121,7 +124,7 @@ menuInicial:
 
 	jmp voltar
 
-dif:
+  dif:
 	call escreveDificuldade
 	call escreveOpcao
 
@@ -153,7 +156,7 @@ historia:
 	call LoreInicial
 	mov lore, 1
 
-fase:
+  fase:
 
 	call escreveFase
 	call escreveOpcao
@@ -178,13 +181,13 @@ fase:
 	mov mapaPossivel, 10
 	jmp fase
 
-jogo:
+  jogo:
 	call leLabirinto
 	mov ecx, 1
 	call atualizaLabirinto
 	mov passos, 0	
 
-continua:
+  continua:
 	mov eax, posicaoVelha
 	cmp eax, posicao
 	je naoConta
@@ -196,7 +199,7 @@ continua:
 	call Gotoxy
     call escreveLabirinto
  
- volta:   
+  volta:   
     call ReadChar
     
     cmp ah, 48h
@@ -253,13 +256,13 @@ continua:
     
     jmp continua
 
-fim:
+  fim:
 	call Clrscr
 	call mostraPontuacao
 	;call liberaMapa
 	call ReadKey
     
-sair::
+sair:: ;LABEL GLOBAL QUANDO PRECISA REINICIAR A FASE
     call Clrscr
 	jmp fase
 
@@ -419,10 +422,10 @@ desliberaMapa PROC
     
 deslibera:
     mov al, [edx]
-    cmp al, 35
+	cmp al, '#'
     jne nMuda5
     
-    mov al, 2ah
+    mov al, '*'
     mov [edx], al
     
     nMuda5: 
@@ -444,10 +447,10 @@ liberaMapa PROC
 
 libera:
     mov al, [edx]
-    cmp al, 2ah
+    cmp al, '*'
     jne nMuda3
     
-    mov al, 35
+	mov al, '#'
     mov [edx], al
     
     nMuda3: 
@@ -468,7 +471,7 @@ buscaPosicao PROC
 
 busca:
 	mov al, [esi]
-	cmp al, 79
+	cmp al, 'O'
 	je sai
 	inc esi
 loop busca
@@ -487,7 +490,7 @@ buscaSaida PROC
 	
 busca:
 	mov al, [esi]
-	cmp al, 70
+	cmp al, 'F'
 	je sai
 	inc esi
 	loop busca
@@ -552,13 +555,13 @@ escreveChar PROC USES ebx
 
 	mov al,[esi]
 
-	cmp al, 79
+	cmp al, 'O'
 	je p
 
-	cmp al, 88
-	je p
+	cmp al, 'X'
+	je armadilha
 
-	cmp al, 77
+	cmp al, 'M'
 	je mino
 
 	cmp al, 0dh
@@ -567,16 +570,16 @@ escreveChar PROC USES ebx
 	cmp al, 0ah
 	je p
 
-	cmp al, 35
+	cmp al, '#'
 	je parede
 
-	cmp al, 73
+	cmp al, 'I'
 	je p
 
 	cmp passos, 1 ;mostra o inicio e fim por 3 passos
 	ja nParede
 
-	cmp al, 70
+	cmp al, 'F'
 	je p
 
 	jmp nParede
@@ -585,22 +588,31 @@ p:
 	call WriteChar
 	jmp escreveu
 
+armadilha:
+	mov al, 4
+	call mudaCores
+	mov al, 'X'
+	call WriteChar
+	mov al, 1
+	call mudaCores
+	jmp escreveu
+
 mino:
 	mov al, 4
 	call mudaCores
-	mov al, 77
+	mov al, 'M'
 	call WriteChar
 	mov al, 1
 	call mudaCores
 	jmp escreveu
 
 parede:
-	mov al, 35
+	mov al, '#'
 	call WriteChar
 	jmp escreveu
 
 nParede:
-	mov al, 32
+	mov al, 32 ;espaco
 	call WriteChar
 	jmp escreveu
 
@@ -684,33 +696,98 @@ verificaMovimento PROC uses EAX
 ; Verifica se o movimento e possivel (nao encara uma parede)
     mov al, [edi]
     
-    cmp al, 32
+    cmp al, 32 ;espaco
     je move
     
-	cmp al, 70
+	cmp al, 'F'
     je move
 
-	cmp al, 73
+	cmp al, 'I'
     je sair
 
-	cmp al, 78
+	cmp al, 'N'
     je morreMino
 
 	cmp al, 'X'
 	je morreArmadilha
 
-	cmp al, 90
+
+	cmp al, 'Y'
+	jne pula1
+	mov bl, 'Q'
+	mov teleporte, bl
+	mov dl, bl
+	call fazTeletransporte
+pula1:
+	
+	cmp al, 'Q'
+	jne pula2
+	mov bl, 'Y'
+	mov teleporte, bl
+	mov dl, bl
+	call fazTeletransporte
+	
+pula2:
+
+	cmp al, 'R'
+	jne pula4
+	mov bl, 'S'
+	mov teleporte, bl
+	mov dl, bl
+	call fazTeletransporte
+pula4:
+	
+	cmp al, 'S'
+	jne pula5
+	mov bl, 'R'
+	mov teleporte, bl
+	mov dl, bl
+	call fazTeletransporte
+pula5:
+
+	cmp al, 'T'
+	jne pula6
+	mov bl, 'U'
+	mov teleporte, bl
+	mov dl, bl
+	call fazTeletransporte
+pula6:
+
+cmp al, 'U'
+	jne pula7
+	mov bl, 'T'
+	mov teleporte, bl
+	mov dl, bl
+	call fazTeletransporte
+pula7:
+
+cmp al, 'V'
+	jne pula8
+	mov bl, 'W'
+	mov teleporte, bl
+	mov dl, bl
+	call fazTeletransporte
+pula8:
+
+cmp al, 'W'
+	jne pula9
+	mov bl, 'V'
+	mov teleporte, bl
+	mov dl, bl
+	call fazTeletransporte
+pula9:
+
+	cmp al, 'Z'
 	jne nMove
-	call DialogoFinal
+	call chamaDialogoFinal
 	jmp sair
 
 morreArmadilha:
-	call Morte
+	call chamaMorte
 	jmp sair
 
 morreMino:
-
-	call TelaPreta
+	call mudaTelaPreta
 retornaErro:
 	mov esi, OFFSET matriz
 	mov edx, OFFSET nomeArqMino1
@@ -746,10 +823,10 @@ L3:
     
 move: 
     mov eax, posicao
-    mov bl, 32
+    mov bl, 32 ;espaco
     mov [eax], bl
     mov posicao, edi
-    mov al, 79
+    mov al, 'O'
     mov [edi], al
     
     mov al, liberado
@@ -761,6 +838,7 @@ move:
 nMove: 
 	mov ecx, 1
 	call atualizaLabirinto
+
     ret
 verificaMovimento ENDP
 
@@ -977,10 +1055,10 @@ atualizaLabirinto ENDP
 substituiParede PROC
     
     mov al, [edi]
-    cmp al, 42
+    cmp al, '*'
     jne nMuda
     
-    mov al, 35
+	mov al, '#'
     mov [edi], al
     
 nMuda:
@@ -992,9 +1070,9 @@ substituiParede ENDP
 substituiMino PROC
     
     mov al, [edi]
-    cmp al, 80
+    cmp al, 'P'
     jne nMuda
-    mov al, 77
+    mov al, 'M'
     mov [edi], al
 nMuda:
 
@@ -1004,10 +1082,10 @@ substituiMino ENDP
 substituiArmadilha PROC
 
 mov al, [edi]
-    cmp al, 65
+    cmp al, 'A'
     jne nMuda
     
-    mov al, 88
+    mov al, 'X'
     mov [edi], al
 nMuda:
 	ret
@@ -1248,6 +1326,13 @@ fim:
 	ret
 mudaCores ENDP
 
+mudaTelaPreta PROC
+	mov al, 2
+	call mudaCores
+	call Clrscr
+ret
+mudaTelaPreta ENDP
+
 LoreInicial PROC USES edx eax esi
 	call Clrscr
 	mov eax, 0
@@ -1443,7 +1528,7 @@ retornaErro3:
 	call ReadFromFile
 	mov ecx, eax
 
-	call TelaPreta
+	call mudaTelaPreta
 	L3:
 	mov al, [esi]
 	mov dl, al
@@ -1482,7 +1567,7 @@ x:
 ret
 LoreInicial ENDP
 
-DialogoFinal PROC
+chamaDialogoFinal PROC
 
 ;revelação Dragão
     call Clrscr
@@ -1515,7 +1600,7 @@ L3:
 	call ReadFromFile
 	mov ecx, eax
 	mov esi, OFFSET matriz
-	call TelaPreta
+	call mudaTelaPreta
 L33:
 	;colorindo separadamente o dragao e a moça
 L4:
@@ -1627,19 +1712,19 @@ pulaleitura1:
 	call ReadInt
 	cmp eax, 1
 	je respcerta1
-	call Morte
+	call chamaMorte
 	jmp finalmorte
 pulaleitura2:
 	call ReadInt
 	cmp eax, 3
 	je respcerta1
-	call Morte
+	call chamaMorte
 	jmp finalmorte
 pulaleitura3:
 	call ReadInt
 	cmp eax, 1
 	je saiEnigmas
-	call Morte
+	call chamaMorte
 	jmp finalmorte
 respcerta1:
 	call Clrscr
@@ -1747,9 +1832,9 @@ L1:
 	mov al, 1
 	call mudacores
 	ret
-DialogoFinal ENDP
+chamaDialogoFinal ENDP
 
-Morte PROC
+chamaMorte PROC
 	call Clrscr
 	mov edx, OFFSET nomeArqLore8
 	call OpenInputFile
@@ -1759,7 +1844,7 @@ Morte PROC
 	call ReadFromFile
 	mov ecx, eax
 	mov esi, OFFSET matriz
-	call TelaPreta
+	call mudaTelaPreta
 
 L5:
 	mov al, [esi]
@@ -1803,14 +1888,7 @@ r:
 	call CloseFile
 
 ret
-Morte ENDP
-
-TelaPreta PROC
-	mov al, 2
-	call mudaCores
-	call Clrscr
-ret
-TelaPreta ENDP
+chamaMorte ENDP
 
 escreveVoceMorreu PROC
 
@@ -1834,3 +1912,34 @@ L1:
 	call Clrscr
 ret
 escreveVoceMorreu ENDP
+
+fazTeletransporte PROC
+
+	mov eax, posicao
+	push eax
+	mov bl, 32
+    mov [eax], bl
+	mov ecx, tamanhoM
+	mov edi, OFFSET matriz
+L1:
+	cmp [edi], dl
+	je sai
+	inc edi
+	loop L1
+sai:
+	push edi
+    mov posicao, edi
+    mov al, 79
+    mov [edi], al
+    
+    mov al, liberado
+    cmp al, 1
+  
+	pop edi
+	pop eax
+	mov adressY, eax
+	mov adressQ, edi 
+ret
+fazTeletransporte ENDP
+
+
