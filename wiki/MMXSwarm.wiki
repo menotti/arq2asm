@@ -3416,6 +3416,8 @@ void CSurface::RB3D()
 
 }}}
 
+===Imagens com a aplicação do filtro===
+
 http://img213.imageshack.us/img213/6571/tigery.jpg
 http://img833.imageshack.us/img833/2639/tiger3d.jpg
 http://img221.imageshack.us/img221/9665/jaguarc.jpg
