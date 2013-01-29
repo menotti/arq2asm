@@ -3052,7 +3052,7 @@ Há uma versão iniciada não-funcional em comentário no repositório, mas não
 
 
 
-== Median Filter ==
+= Median Filter =
 
 O Median Filter é um filtro de remoção de ruídos. O objetivo desse filtro é diminuir o efeito salt e pepper (sal e pimenta), que consistem nos pontos brancos e pretos e também nos ruídos coloridos presentes em uma imagem. Esse filtro percorre a imagem comparando o RGB do pixel atual com os de seus oito vizinhos, como uma matriz 3x3 onde o pixel atual é o central. Após obter o RGB de cada pixel, ordenamos os nove valores de forma separada em Red, Blue e Green e pegamos o valor mediano de cada. Dessa forma o novo pixel será formado pela mediana do RGB de seus vizinhos.
 
@@ -3061,7 +3061,7 @@ O Median Filter é um filtro de remoção de ruídos. O objetivo desse filtro é
 
 
 
-== 3D Profundidade (Red/Blue) ==
+= 3D Profundidade (Red/Blue) =
 
 O filtro gera profundidade na imagem. Para visualizar o efeito é necessário o uso de óculos 3D Red/ Blue. 
 Imagem original:
