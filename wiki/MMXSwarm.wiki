@@ -3364,10 +3364,13 @@ Pelo fato de o filtro não utilizar em sua implementação uma fórmula matemát
 
 ==Análise de Desempenho==
 
-Desta forma focamos em melhorar o desempenho do filtro melhorando a função de ordenação.
+Como não implementamos as versões MMX e SEE focamos em melhorar o desempenho do filtro melhorando a função de ordenação.
 
 O gráfico abaixo mostra a comparação entre as duas funções implementadas que foram apresentadas na seção anterior. 
 
+http://img690.imageshack.us/img690/98/desempenhoy.png
+
+Os valores são dados em FPS.
 
 ----
 
