@@ -101,12 +101,17 @@ cenário.
  * *FROG_RotacionarAgua*: executa a mesma operação que o procedimento acima, mas para os elementos superiores da matriz. Esse procedimento também rotaciona o sapo (visualmente, ele estaria sobre uma plataforma de madeira).
  * *FROG_DesenharCampo*: atualiza o campo no console.
  * *FROG_DesenharCaracteres*: chamado pelo procedimento acima, esse tem como objetivo interpretar os elementos na matriz e desenhá-los no console de um jeito melhor.
- * *FROG_DefinirCampo*: busca, do arquivo "campo.txt", os valores que devem ser inseridos na matriz.
+ * *FROG_LerCampo*: lê o arquivo de campo e grava ele em um vetor.
+ * *FROG_DefinirCampo*: define o campo, a partir do vetor que armazena as informações do arquivo.
+ * *FROG_ExibirHUD*: mostra informações, como número de vidas, número de passos, level da fase, nome da fase, etc...
  * *FROG_ExibirVitoria*: exibe janela de vitória.
  * *FROG_ExibirDerrota*: exibe janela de derrota.
  * *FROG_ExibirIntro*: exibe janela de introdução.
  * *FROG_InitJogo*: chama o procedimento acima, estabelece o número de vidas, e chama o procedimento abaixo.
+ * *FROG_NovoCampo*: aumenta a variável que guarda o nome do arquivo (para a próxima fase) e chama FROG_DefinirCampo.
  * *FROG_NovoJogo*: restaura os valores inicias das variáveis e do campo.
+ * *FROG_PressEnter*: exibe a mensagem de "pressione enter" abaixo do campo e espera o Enter ser inserido.
+ * *FROG_EntreFases*: exibe uma tela preta com mensagem que mostra qual o número e nome do próximo level. Espera Enter para continuar.
 
 -------------
 = Correção de bugs (versão 1.1) =
