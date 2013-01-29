@@ -7,11 +7,11 @@ INCLUDE macros.inc
 
 ; Inclua um arquivo para implementacao do seu jogo aqui
 INCLUDE forca/forca.asm
-INCLUDE SlidingPuzzle/PuzzleMain.asm
+;INCLUDE SlidingPuzzle/PuzzleMain.asm - problematico tive que comentar> lucas carvalhaes
 INCLUDE GeeckoGames/GeeckoGamesSokoban.asm
 INCLUDE SpaceInvaders/Space_Invaders.asm
 INCLUDE Labirinto/labirinto.asm
-;INCLUDE LaserMan/lman_proc.asm
+INCLUDE LaserMan/lman_proc.asm
 Include Snake/snake.asm
 INCLUDE Frogger/Frogger.asm
 
@@ -27,7 +27,8 @@ myMenu	BYTE	80 dup ('='),
 				'4 - Labirinto da Morte', 13, 10,
 				'5 - Frogger', 13, 10,
 				'6 - Snake', 13, 10,
-        '7 - Sliding Puzzle', 13, 10,
+				'7 - Sliding Puzzle', 13, 10,
+				'8 - Laser Man(The incomplete saga)', 13, 10,
 				'0 - Sair!', 13, 10, 13, 10,
 				'Opcao: ', 0
 .code
@@ -74,10 +75,13 @@ SnakeGame:
 	call snake
    
 SPuzzle:
-  cmp eax, 7
-  jne menu
-  call SlidingPuzzle
-
+	cmp eax, 7
+	jne LaserMan
+	;call SlidingPuzzle - problematico tive que comentar> lucas carvalhaes
+LaserMan:
+	cmp eax, 8
+	jne menu
+	call LMAN
 jmp menu			;Para retornar ao menu depois q acabar algum jogo
 
 fim:

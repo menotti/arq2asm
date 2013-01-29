@@ -6,6 +6,7 @@ INCLUDE lmanKeysDef.asm
 INCLUDE lmanIO.asm
 INCLUDE lmanDrawing.asm
 INCLUDE lmanGame.asm
+INCLUDE Macros.inc
 
 ; INICIO DA ZONA DE DADOS=================================================
 .data
@@ -35,7 +36,7 @@ nocursor DWORD 100 ;The cursor size (0 - 100% of the cell)
 nocursorb DWORD 0 ;The cursor visibility (1 or 0)
 
 ;Agradeço ao grupo do space invaders por esse incrível trecho de conhecimento!
-windowRect    SMALL_RECT <0,0,79,29> ; left,top,right,bottom
+windowRectLMan SMALL_RECT <0,0,79,29> ; left,top,right,bottom
 
 ; FIM DA ZONA DE DADOS===================================================
 .code
@@ -60,6 +61,8 @@ call SetTextColor
 call LoadGameReg
 
 ;Pede as iniciais do jogador
+;Limpa a tela
+call Clrscr
 call getInicials
 call clrscr
 
