@@ -3049,12 +3049,19 @@ void CMMXSurface32Intrinsic::Solarize()
 == SSE ==
 Há uma versão iniciada não-funcional em comentário no repositório, mas não conseguimos implementá-la adequadamente a tempo.
 
-Median Filter
+
+
+
+== Median Filter ==
 
 O Median Filter é um filtro de remoção de ruídos. O objetivo desse filtro é diminuir o efeito salt e pepper (sal e pimenta), que consistem nos pontos brancos e pretos e também nos ruídos coloridos presentes em uma imagem. Esse filtro percorre a imagem comparando o RGB do pixel atual com os de seus oito vizinhos, como uma matriz 3x3 onde o pixel atual é o central. Após obter o RGB de cada pixel, ordenamos os nove valores de forma separada em Red, Blue e Green e pegamos o valor mediano de cada. Dessa forma o novo pixel será formado pela mediana do RGB de seus vizinhos.
 
+== Naive == 
 
-3D Profundidade (Red/Blue)
+
+
+
+== 3D Profundidade (Red/Blue) ==
 
 O filtro gera profundidade na imagem. Para visualizar o efeito é necessário o uso de óculos 3D Red/ Blue. 
 Imagem original:
@@ -3063,6 +3070,8 @@ Aplicando o efeito:
  
  O código trabalha mudando o valor do pixel atual com seus vizinhos, movendo o valor de R (red) para o pixel à esquerda, e o valor de B (blue) para o pixel à direita. Mantendo O valor de G (green) na posição original. Isso é feito repetidamente em um loop.
 
+== Naive ==
+ 
 void CSurface::RB3D()
 {	
 	
