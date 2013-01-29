@@ -91,13 +91,12 @@ cenário.
  * *FROG_VerificarVitoria*: verifica se a posição vertical do sapo é 1. Se sim, ele esta na primeira linha, o que mostra que este atravessou todo o campo. A variável FROG_ganhouJogo recebe 1. Caso contrario, nada acontece.
  * *FROG_ControleMovimento*: lê uma tecla pressionada pelo jogador e, caso essa seja uma seta direcional, chama um dos seguintes procedimentos, a fim de movimentar o sapo pelo campo.
 
-  * FROG_MovimentaEsq proc
-  * FROG_MovimentaDir proc
-  * FROG_MovimentaCima proc
-  * FROG_MovimentaBaixo proc
+ * * FROG_MovimentaEsq *: movimenta para a esquerda.
+ * * FROG_MovimentaDir *: movimenta para a direita.
+ * * FROG_MovimentaCima *: movimenta para cima.
+ * * FROG_MovimentaBaixo *: movimenta para baixo.
 
- * *FROG_AtualizarTransito*: interpreta os vetores responsáveis por definir quais linhas, em qual sentido e com que velocidade devem se movimentar
-; e invoca o procedimento pra realizar tal operação.
+ * *FROG_AtualizarTransito*: interpreta os vetores responsáveis por definir quais linhas, em qual sentido e com que velocidade devem se movimentar e invoca o procedimento pra realizar tal operação.
  * *FROG_RotacionarTransito*: dados a linha (dx) e o sentido (ax), rotaciona os elementos da linha.
  * *FROG_RotacionarAgua*: executa a mesma operação que o procedimento acima, mas para os elementos superiores da matriz. Esse procedimento também rotaciona o sapo (visualmente, ele estaria sobre uma plataforma de madeira).
  * *FROG_DesenharCampo*: atualiza o campo no console.
