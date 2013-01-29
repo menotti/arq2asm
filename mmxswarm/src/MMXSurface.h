@@ -21,6 +21,8 @@ public:
 	virtual void Azular();		// Grupo 5
 	virtual void Esverdear();		// Grupo 5
 	virtual void Envermelhar();		// Grupo 5
+	virtual void Ciano();
+	virtual void Magenta();
 	virtual void Posterize();	// Grupo 9
 	virtual void GrayFilter();  // Grupo 12
 	virtual void RGBAdjust();	// Grupo 14
@@ -29,7 +31,7 @@ public:
 	virtual void Invert();   //GRUPO 7
 	virtual void Solarize();	// Grupo 18
 	//virtual void Mirror();	// Grupo 18
-	virtual void Gradient();	//Grupo 8
+	//virtual void Gradient();	//Grupo 8
 	virtual void MandelBrot();
 	virtual void Rescale();      // grupo 17
 	virtual void ChannelMix();  // grupo 11

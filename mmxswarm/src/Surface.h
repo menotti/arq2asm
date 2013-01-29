@@ -73,7 +73,7 @@ public:
 	 virtual void GrayScale();
 
 	 //Grupo 8
-	 virtual void Gradient();
+	 //virtual void Gradient();
 
 	 //grupo 13
 	 virtual void Threshold();
@@ -105,6 +105,10 @@ public:
 
 	 //GRUPO 7
 	 virtual void Invert();
+
+	 ////RODRIGO///////////////////////////////////////
+	 virtual void Ciano();
+	 virtual void Magenta();
 
 	 //Grupo 17
 	 virtual void Rescale();

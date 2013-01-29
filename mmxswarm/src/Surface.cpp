@@ -12,6 +12,7 @@
 #include "stdafx.h"
 #include "Surface.h"
 
+
 void CSurface::Create(CWnd *pWnd, int nBitDepth)
 {
 	// no palettes
@@ -215,6 +216,7 @@ void CSurface::GrayScale()
 }
 
 //grupo 8
+/*
 void CSurface::Gradient()
 {
 	COLORREF cCur;		//declara um dword
@@ -233,7 +235,7 @@ void CSurface::Gradient()
 		}
 	}
 }
-
+*/
 //Grupo5
 void CSurface::Sobel()
 {
@@ -695,6 +697,55 @@ void CSurface::Threshold()
 		}
 	}
 }
+///////////////Rodrigo//////////////////////////////
+void CSurface::Ciano()
+{  
+	COLORREF cCur;
+	
+
+	//Percorre toda imagem
+    for (int y = 0; y < m_wndHeight; y++) {
+        for (int x = 0; x < m_wndWidth; x++) {
+			cCur = PointColorD(x,y);
+			int R = GetRValue(cCur);
+			int G = GetGValue(cCur);
+			int B = GetBValue(cCur);
+			int NC = (R+G+B)/3;
+			COLORREF newPixCol =  RGB(0,NC,NC);
+			PointColorT(x,y,newPixCol);
+		}
+     
+    }
+
+	//Quando terminar, copia o resultado para a imagem corrente
+	Copy(t_image);
+	
+}
+
+void CSurface::Magenta()
+{  
+	COLORREF cCur;
+	
+
+	//Percorre toda imagem
+    for (int y = 0; y < m_wndHeight; y++) {
+        for (int x = 0; x < m_wndWidth; x++) {
+			cCur = PointColorD(x,y);
+			int R = GetRValue(cCur);
+			int G = GetGValue(cCur);
+			int B = GetBValue(cCur);
+			int NC = (R+G+B)/3;
+			COLORREF newPixCol =  RGB(NC,0,NC);
+			PointColorT(x,y,newPixCol);
+		}
+     
+    }
+
+	//Quando terminar, copia o resultado para a imagem corrente
+	Copy(t_image);
+	
+}
+///////////////Rodrigo//////////////////////////////
 
 //Grupo 11
 void CSurface::ChannelMix()
@@ -707,7 +758,7 @@ void CSurface::ChannelMix()
 			cCur = PointColor(j,i);
 
 			
-			 r = (BYTE)(GetCValue(cCur));
+				r = (BYTE)(GetCValue(cCur));
                 g = (BYTE)(GetMValue(cCur));
                 b = (BYTE)(GetYValue(cCur));
                         
@@ -753,15 +804,22 @@ void CSurface::Rescale() {
 		}
 	}
 }
+
+
+
+
+
+
+
 // Grupo 20
 void CSurface::Amarelar()
 {	
 	// Azular
 	COLORREF cCur;
 	
-
+	
 	//Percorre toda imagem
-    for (int y = 0; y < m_wndHeight; y++) {
+	 for (int y = 0; y < m_wndHeight; y++) {
         for (int x = 0; x < m_wndWidth; x++) {
 			cCur = PointColorD(x,y);
 			int R = GetRValue(cCur);
@@ -771,7 +829,6 @@ void CSurface::Amarelar()
 			COLORREF newPixCol =  RGB(NC,NC,0);
 			PointColorT(x,y,newPixCol);
 		}
-     
     }
 
 	//Quando terminar, copia o resultado para a imagem corrente

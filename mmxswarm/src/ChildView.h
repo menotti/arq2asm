@@ -52,7 +52,7 @@ protected:
 	afx_msg void OnUpdatePauseBlit(CCmdUI* pCmdUI);
 	afx_msg void OnUpdateUseFade(CCmdUI* pCmdUI);
 	afx_msg void OnUpdateUseGray(CCmdUI* pCmdUI);	//Grupo 4
-	afx_msg void OnUpdateUseGradient(CCmdUI* pCmdUI);	//Grupo 8
+	//afx_msg void OnUpdateUseGradient(CCmdUI* pCmdUI);	//Grupo 8
 	afx_msg void OnUpdateUseSobel(CCmdUI* pCmdUI);//Grupo 5
 	afx_msg void OnUpdateUseAzular(CCmdUI* pCmdUI);	// Grupo 5
 	afx_msg void OnUpdateUseEsverdear(CCmdUI* pCmdUI);	// Grupo 5
@@ -66,6 +66,8 @@ protected:
 	afx_msg void OnUpdateUseThreshold(CCmdUI* pCmdUI); //grupo 13
 	afx_msg void OnUpdateUseChannelmix(CCmdUI* pCmdUI); //Grupo 11
 	afx_msg void OnUpdateUseInvert(CCmdUI* pCmdUI); //grupo 7
+	afx_msg void OnUpdateUseCiano(CCmdUI* pCmdUI); //////////////////Rodrigo
+	afx_msg void OnUpdateUseMagenta(CCmdUI* pCmdUI); //////////////////Rodrigo
 	afx_msg void OnUpdateModeWebcam(CCmdUI* pCmdUI); //grupo 16
 
 	
@@ -103,6 +105,8 @@ protected:
 	afx_msg void OnViewUseThreshold(); //grupo 13
 	afx_msg void OnViewUseChannelmix(); //Grupo 11
 	afx_msg void OnViewUseInvert(); //grupo 7
+	afx_msg void OnViewUseCiano(); //////////Rodrigo
+	afx_msg void OnViewUseMagenta(); //////////Rodrigo
 	afx_msg void OnViewUseMirror(); //grupo 18
 	afx_msg void OnModeWebcam();	//grupo 16
 	afx_msg void OnViewUseRescale(); //grupo 17
@@ -168,6 +172,8 @@ private:
 	bool	m_bUseSolarize;//Grupo 18
 	bool	m_bUseThreshold; //grupo 13
     bool	m_bUseInvert; //grupo 7
+	bool	m_bUseCiano; ////////////////Rodrigo
+	bool	m_bUseMagenta; ////////////////Rodrigo
 	bool	m_bUseMirror; //grupo 18
 	bool	m_bUseAmarelar; //grupo 20
 	bool	m_bUseRB3D; //grupo 2012
