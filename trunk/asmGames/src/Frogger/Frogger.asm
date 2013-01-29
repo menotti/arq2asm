@@ -62,6 +62,7 @@ FROG_MovimentaBaixo proto, ; FROG_MovimentaEsq: movimenta o sapo "qualSapo" para
 	FROG_resetJogo byte 0 ; quando ativo, simplesmente reseta o jogo
 	FROG_coop byte 0		; o jogo ee cooperativo?
 	FROG_Movimentos byte 0	; contador de movimentos realizados (por ambos os sapos, quando no modo cooperativo)
+	FROG_Movimentos_Total byte 0 ; 
 
 	; as tres variaveis abaixo sao utilizadas para recuperar a informacao contida em arquivos
 	FROG_fCampo	 byte "src/Frogger/campo00.txt", 0
@@ -86,7 +87,7 @@ FROG_MovimentaBaixo proto, ; FROG_MovimentaEsq: movimenta o sapo "qualSapo" para
 ; ================================================
 ; PROCEDIMENTO PRINCIPAL.
 ; Executa um loop ate que o jogador ganhe, perca ou saia do jogo.
-FROG_Clock proc
+FROG_Clock proc USES EDX
 	mov edx, 0
 	mov eax, 1
 	
@@ -103,6 +104,9 @@ FROG_Clock proc
 			call FROG_ExibirVitoria
 			jmp  FROG_Clock_Finally
 			NovaFase:
+			mov dl, FROG_Movimentos
+			mov FROG_Movimentos_Total, dl
+			call FROG_EntreFases
 			call FROG_NovoJogo
 			jmp  FROG_Clock_Finally
 		Clock_NaoGanhou:
@@ -121,6 +125,13 @@ FROG_Clock proc
 		jne VerificaSeBPerdeu
 			dec FROG_A_Vidas
 			cmp FROG_A_Vidas, 0
+			je SemEnterA
+			call FROG_DesenharCampo
+			call FROG_PressEnter
+			SemEnterA:
+			mov dl, FROG_Movimentos_Total
+			mov FROG_Movimentos, dl
+			cmp FROG_A_Vidas, 0
 			je FimJogo
 			call FROG_NovoJogo
 			jmp  FROG_Clock_Finally
@@ -129,12 +140,17 @@ FROG_Clock proc
 		cmp FROG_BperdeuJogo, 1
 		jne ContinuaJogo
 			dec FROG_B_Vidas
+			call FROG_DesenharCampo
+			mov dl, FROG_Movimentos_Total
+			mov FROG_Movimentos, dl
 			cmp FROG_B_Vidas, 0
 			je FimJogo
 			call FROG_NovoJogo
 			jmp  FROG_Clock_Finally
 		
 		FimJogo:
+			call FROG_DesenharCampo
+			call FROG_PressEnter
 			call FROG_ExibirDerrota
 			jmp  FROG_Clock_Finally
 
@@ -758,6 +774,7 @@ FROG_RotacionarAgua endp
 ; Descricao: parte grafica do jogo.
 FROG_DesenharCampo proc
 	pushad
+
 	mov edx, 0
 	mov dh, FROG_CAMPO_INI_X
 	mov dl, FROG_CAMPO_INI_Y
@@ -927,7 +944,7 @@ AchouLinha:
 	DesenharSapoA_1:
 		mov	al, blue + (lightgreen * 16)
 		call SetTextColor
-		mWrite "• ¢"
+		mWrite "¢ •"
 		jmp D_Finally
 	DesenharSapoA_2:
 		mov	al, blue + (lightgreen * 16)
@@ -947,12 +964,12 @@ AchouLinha:
 
 ;------- Sapo B --------
 	DesenharSapoB_1:
-		mov	al, white + (magenta *16)
+		mov	al, white + (lightBlue *16)
 		call SetTextColor
-		mWrite "• ¢"
+		mWrite "¢ •"
 		jmp D_Finally
 	DesenharSapoB_2:
-		mov	al, white + (magenta *16)
+		mov	al, white + (lightBlue *16)
 		call SetTextColor
 		cmp FROG_respiracao, 3
 		ja FROG_respiracao_B
@@ -1118,11 +1135,11 @@ FROG_DefinirMovimentos ENDP
 ; Descricao: exibe informacoes referentes ao sapos e ao jogo, como numero de passos,
 ; nome da fase, vidas restantes ou informacoes sobre como entrar no modo cooperativo.
 FROG_ExibirHUD proc
-	mov al, black + 16*white
+	mov al, white + 16*black
 	call SetTextColor
 
-	mov dh, 2
-	mov dl, 29
+	mov dh, 19
+	mov dl, 53
 	call Gotoxy
 	mov ecx, 20
 	mov esi, 0
@@ -1135,11 +1152,27 @@ FROG_ExibirHUD proc
 			inc esi
 	loop WTITLE
 
-	mov dh, 0
-	mov dl, 5
+	mov dh, 17
+	mov dl, 53
 	call Gotoxy
+	mWrite "   Level: "
+	mov al, FROG_fCampo[17]
+	cmp al, 0
+	jne SemDecimal
+	call WriteChar
+	SemDecimal:
+	mov al, FROG_fCampo[18]
+	inc al
+	cmp al, 10
+	jne NaoEhDez
+	mov al, 0
+	NaoEhDez:
+	call WriteChar
 	
 	MostraA:
+		mov dl, 5
+		mov dh, 0
+		call Gotoxy
 		mWrite "Sapo A: "
 		movzx ecx, FROG_A_Vidas
 		l1:
@@ -1150,7 +1183,10 @@ FROG_ExibirHUD proc
 	
 	cmp FROG_coop, 1
 	jne ExibirCoop
-		mWrite " Sapo B: "
+		mov dl, 37
+		mov dh, 0
+		call Gotoxy
+		mWrite "Sapo B: "
 		movzx ecx, FROG_B_Vidas
 		l2:
 			mWrite 3
@@ -1160,7 +1196,13 @@ FROG_ExibirHUD proc
 		jmp ExibirMovimentos
 
 	ExibirCoop:
-		mWrite " F2: um segundo sapo aparecara magicamente!"
+		mov dh, 0
+		mov dl, 28
+		call Gotoxy
+		mWrite "F2: um segundo sapo"
+		inc dh
+		call Gotoxy
+		mWrite "aparecera magicamente!"
 	
 	ExibirMovimentos:
 	mov dh, 2
@@ -1174,25 +1216,92 @@ FROG_ExibirHUD proc
 	ret
 FROG_ExibirHUD endp
 
+
+; =================================================
+; Procedimento: FROG_PressEnter
+; Descricao: exibe a mensagem "PRESS ENTER TO CONTINUE" abaixo do campo
+FROG_PressEnter PROC
+
+	mov dh, 34
+	mov dl, 5
+	call Gotoxy
+	mov	ax, white + (black * 16)
+	call SetTextColor
+	mWrite "P R E S S   E N T E R   T O   C O N T I N U E"
+
+	PressioneEnter:	
+	call ReadChar
+	cmp eax, 7181
+	jne PressioneEnter
+
+	ret
+
+FROG_PressEnter ENDP
+
+; =================================================
+; Procedimento: FROG_EntreFases
+; Descricao: exibe tela preta com a mensagem Level: ??
+FROG_EntreFases PROC
+	
+	mov al, white + 16*black
+	call SetTextColor
+	call Clrscr
+
+	mov dh, 15
+	mov dl, 20
+	call Gotoxy
+
+	mWrite "Level: "
+	mov al, FROG_fCampo[17]
+	cmp al, 0
+	jne SemDecimal
+	call WriteChar
+	SemDecimal:
+	mov al, FROG_fCampo[18]
+	inc al
+	cmp al, 10
+	jne NaoEhDez
+	mov al, 0
+	NaoEhDez:
+	call WriteChar
+
+	add dh, 2
+	mov dl, 15
+	call Gotoxy
+
+	mov ecx, 20
+	mov esi, 0
+	WTITLE:
+		mov al, FROG_Campo_Temp[esi]
+		cmp al, 35
+		je NTITLE
+			call WriteChar
+		NTITLE:
+			inc esi
+	loop WTITLE
+
+	call ReadChar
+
+	ret
+FROG_EntreFases ENDP
+
 ; =================================================
 ; Procedimento: FROG_ExibirVitoria
 ; Descricao: exibe mensagem de vitoria quando os dois sapos atravessam todo o campo
 FROG_ExibirVitoria proc
-	call FROG_DesenharCampo
-	mov	ax, red + (white * 16)
+	mov al, white + 16*black
 	call SetTextColor
+	call Clrscr
 
-	mov dl, 7
-	mov dh, 8
+	mov dh, 15
+	mov dl, 15
 	call Gotoxy
-	
-	mWrite " V O C E    G A N H O U ! ! ! ! ! ! ! ! ! ! ! ! ! "	
+	mWrite "V O C E    G A N H O U ! !"	
 	add dh, 2
+	mov dl, 3
 	call Gotoxy
-	mWrite " Parabens! O sapo conseguiu sobreviver aos terriveis humanos! "
-	inc dh
-	call Gotoxy
-	mWrite " Pressione qualquer tecla para voltar ao menu inicial. "
+	mWrite "Parabens! O sapo conseguiu sobreviver aos terriveis humanos! "
+
 	call ReadChar
 	
 	ret
@@ -1202,22 +1311,19 @@ FROG_ExibirVitoria endp
 ; Procedimento: FROG_ExibirDerrota
 ; Descricao: exibe mensagem de derrota quando um dos sapos perde todas as suas vidas.
 FROG_ExibirDerrota proc
-	call FROG_DesenharCampo
-	mov	ax, red + (white * 16)
+	mov al, white + 16*black
 	call SetTextColor
-	
-	mov dl, 7
-	mov dh, 8
+	call Clrscr
+
+	mov dh, 15
+	mov dl, 15
 	call Gotoxy
-	
-	mWrite " V O C E   P E R D E U ! ! ! ! ! ! ! ! ! ! ! ! ! "	
+	mWrite "V O C E    P E R D E U ! !"	
 	add dh, 2
+	mov dl, 3
 	call Gotoxy
-	mWrite " Que pena! O sapo agora se encontra no plano espiritual. "
-	inc dh
-	call Gotoxy
+	mWrite "Que pena! O sapo agora se encontra no plano espiritual. "
 	
-	mWrite " Pressione qualquer tecla para tentar este incrivel desafio novamente. "
 	call ReadChar
 	
 	ret
@@ -1231,7 +1337,7 @@ FROG_ExibirIntro PROC
 	call OpenInputFile
 	cmp eax, INVALID_HANDLE_VALUE
 	jne Intro_Cont
-	ret
+	jmp PressioneEnter
 	Intro_Cont:
 	mov FROG_fHandle, eax
 	mov edx, OFFSET FROG_Intro
@@ -1240,17 +1346,30 @@ FROG_ExibirIntro PROC
 	mov eax, FROG_fHandle
 	call CloseFile
 	
+	mov al, black + 16*white
+	call SetTextColor
+
 	mov ecx, FROG_INTRO_TAM
 	mov esi, 0
 	Intro_L:
 	mov al, FROG_Intro[esi]
 	call WriteChar
+	mov al, 2
+	call Delay
+	mov eax, 0
+	call ReadKey
+	cmp eax, 7181
+	je PulouIntro
 	inc esi
 	loop Intro_L
 
 	mov eax, 0
+
+	PressioneEnter:	
 	call ReadChar
-	
+	cmp eax, 7181
+	jne PressioneEnter
+	PulouIntro:
 	ret
 FROG_ExibirIntro ENDP
 
@@ -1275,11 +1394,15 @@ FROG_EntrarOnlineB endp
 ; Descricao: chamado pelo main.asm do Menotti. Inicializa TUDO.
 FROG_InitJogo proc
 	MenuInicial:
-		mov al, black + 16*white
+		mov al, white + 16*black
 		call SetTextColor
 		call Clrscr
 		call FROG_ExibirIntro
 		mov FROG_ganharamJogo, 0
+		mov FROG_Movimentos, 0
+		mov FROG_Movimentos_Total, 0
+		mov FROG_fCampo[17], 48
+		mov FROG_fCampo[18], 48
 
 		; o jogador quer sair do jogo, pois pressionou a tecla ESC na tela de intro.
 		cmp eax, 283
@@ -1287,7 +1410,8 @@ FROG_InitJogo proc
 			mov FROG_coop, 0
 			mov FROG_A_Vidas, 3
 			mov FROG_B_Vidas, 3
-
+			call FROG_LerCampo
+			call FROG_EntreFases
 			call FROG_NovoJogo
 			jmp MenuInicial
 	
@@ -1297,16 +1421,18 @@ FROG_InitJogo endp
 
 ; =================================================
 ; Procedimento: FROG_NovoJogo
-; Descricao: chamado por InitJogo ou quando um dos sapos morre. Restaura as variaveis dos sapos.
-FROG_NovoJogo proc	
+; Descricao: chamado por InitJogo, quando um dos sapos morre ou quando há mudança de fase.
+; Restaura as variaveis dos sapos.
+FROG_NovoJogo proc
 	NovoJogo:
+	mov al, white + 16*black
+	call SetTextColor
 	call Clrscr
 
 	call FROG_LerCampo
 	call FROG_DefinirCampo
-	
+
 	mov FROG_resetJogo, 0
-	mov FROG_Movimentos, 0
 	
 	mov FROG_ApassouFase, 0
     mov FROG_AperdeuJogo, 0
