@@ -9,15 +9,15 @@ O objetivo do jogo consiste em um personagem O que percebe que sua mulher L some
 
 *Data de criação*: 12/12/2012
 
-*Última modificação*: 22/01/2013
+*Última modificação*: 29/01/2013
 
 -------------
 = Grupo de alunos =
 
- * Camilo Moreira - 359645
- * George Pagliuso - 407623
- * Heitor Chiquito - 407500
- * Pedro Augusto Vicente - 407658
+  * Camilo Moreira - 359645
+  * George Pagliuso - 407623
+  * Heitor Chiquito - 407500
+  * Pedro Augusto Vicente - 407658
 
 -------------
 = Desenvolvimento =
@@ -46,6 +46,8 @@ I - indica o início do labirinto. Se optar trocar de labirinto, volte até ele.
 F - final do labirinto. 
 
 M - Minotauro. NÃO ENCARE ELE!
+
+X - Armadilha. NÃO PISE NELA!
 
 Você deve fazer um caminho de I até F de forma que seja a menor possível.
 
@@ -95,21 +97,23 @@ PROC buscaPosicaoS: faz o mesmo que a função anterior, mas para a saída.
 
 PROC liberaMapa: deixa todo o mapa disponível ao usuário. Usada como auxiliar no desenvolvimento inicial.
 
-PROC desliberaMapa: reinicia o mapa liberado.
+PROC desliberaMapa: reinicia o mapa liberado. Todo o mapa anterior ao cheat também é perdido.
 
 PROC escreveLabirinto: passa para o procedimento escreveChar para desenhar a parte já percorrida do mapa, mostra o número de passos percorridos do usuário, seu melhor tempo e o recorde (menor possível) do labirinto.
 
-PROC escreveChar: escreve os caracteres definidos no mapa. Para o usuário O, o início I, o fim F, o minotauro M e as paredes. Para as paredes, existe uma lógica que troca o valor da memória *** por #, para saber o que já foi percorrido.
+PROC escreveChar: escreve os caracteres definidos no mapa. Para o usuário O, o início I, o fim F, o minotauro M, as armadilhas X e as paredes. Para as paredes, existe uma lógica que troca o valor da memória `*` por #, para saber o que já foi percorrido.
 
 PROC movimento: recebe a direção que o usuário escolheu e contém a lógica de movimenta quando possível o usuário no mapa.
 
-PROC verificaMovimento: verifica se o movimento é possível (não irá passar por cima de uma parede). Quando encontra alguns tipos de caracteres, não move, mas executa outras funções tais como mostrar que encontrou um Minotauro ou voltou a tela de escolher as fases.
+PROC verificaMovimento: verifica se o movimento é possível (não irá passar por cima de uma parede). Quando encontra alguns tipos de caracteres, não move, mas executa outras funções tais como mostrar que encontrou um Minotauro, um portal, uma armadilha ou voltou a tela de escolher as fases.
 
-PROC atualizaLabirinto: atualiza o que mudou no labirinto a cada passo. Aparece novas paredes e minotauros encontrados. O método carrega de acordo com o tamanho da visão.
+PROC atualizaLabirinto: atualiza o que mudou no labirinto a cada passo. Aparece novas paredes e minotauros encontrados. O método carrega de acordo com o tamanho da visão (1 ou 2).
 
-PROC substituiParede: troca o valor de *** por # na memória, para saber que aquela parede já foi descoberta no percurso. Chama a função substituiMino.
+PROC substituiParede: troca o valor de `*` por # na memória, para saber que aquela parede já foi descoberta no percurso. Chama a função substituiMino e substituiArmadilha.
 
 PROC substituiMino: idem a função anterior, troca o caractere P por M, quando o minotauro foi descoberto.
+
+PROC substituiArmadilha: idem a função anterior, troca o caractere A por X, quando a armadilha foi descoberta.
 
 PROC verificaBorda: verifica se o caractere lido está dentro ou fora do labirinto. Retorna 0 quando está fora e 1 quando está dentro. Apenas 0Dh e 0Ah devem ser valores fora do labirinto.
 
@@ -117,7 +121,19 @@ PROC mostraPontuacao: função chamada quando um labirinto é completado. Calcul
 
 PROC esperaXms: espera o valor de EBX em milisecundos usando a função GetMseconds. Similar a função Delay do biblioteca Irvine, antes desconhecida.
 
-PROC loreInicial: função que mostra a história inicial do jogo. Exibida apenas 1 vez.
+PROC mudaCores: recebe um valor específico em AL e escolhe um esquema de cores para ser mudado. Não é usado para colorir figuras, pois a lógica é um pouco diferente e depende dos caracteres.
+
+PROC mudaTelaPreta: similar a anterior, chamando tela preta com texto branco e limpando em seguida
+ 
+PROC loreInicial: função que mostra a história inicial do jogo. Exibida apenas 1 vez. Chamada pelo procedimento jogaLabirinto
+
+PROC chamaDialogoFinal: função que mostra a história final do jogo. Exibe duas figuras, uma parte em texto carregado do arquivo e algumas perguntas também carregado do arquivo. Após exibe os créditos.
+
+PROC chamaMorte: função que exibe uma morte quando você morre por meio de uma armadilha ou errou alguma pergunta do dragão.
+
+PROC escreveVoceMorreu: usada na função anterior. Devido a coloração foi deixada separada.
+
+PROC fazTeletransporte: usada para mudar o usuário de posição de acordo com algumas posições especiais no mapa.
 -------------
 
 #FIM DO DOCUMENTO
