@@ -3071,7 +3071,7 @@ Aplicando o efeito:
  O código trabalha mudando o valor do pixel atual com seus vizinhos, movendo o valor de R (red) para o pixel à esquerda, e o valor de B (blue) para o pixel à direita. Mantendo O valor de G (green) na posição original. Isso é feito repetidamente em um loop.
 
 == Naive ==
- 
+{{{ 
 void CSurface::RB3D()
 {	
 	
@@ -3101,5 +3101,5 @@ void CSurface::RB3D()
 	}
 }
 
-
+}}}
 -----
