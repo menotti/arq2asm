@@ -148,9 +148,9 @@ Quando o(os) sapo(os) vence(em) uma fase, o leitor buscará a próxima fase na p
 
 As propriedades das fases estão mais livres. Agora, é possível definir não só a ordem dos objetos pelos arquivos, mas também suas velocidades e suas texturas.
 
-[http://sphotos-c.ak.fbcdn.net/hphotos-ak-ash4/226040_332003303572802_296284615_n.jpg]
+[http://sphotos-d.ak.fbcdn.net/hphotos-ak-prn1/14962_332013336905132_1303246255_n.jpg]
 
-No exemplo acima, é possível ver a estrutura de cada arquivo. É *ESTRITAMENTE* importante que os primeiros 582 caracteres estejam estruturados dessa forma, incluindo a divisão em linhas. (totalizando 648 bytes)
+No exemplo acima, é possível ver a estrutura de cada arquivo. É *ESTRITAMENTE* importante que os primeiros 582 caracteres estejam estruturados dessa forma, incluindo a divisão em linhas. (totalizando 648 bytes) Qualquer caractere depois disso será irrelevante.
 
 A partir da procedimento FROG_LerMapa, o jogo carrega em um vetor de 648 bytes o arquivo, e acessa esse vetor em uma determinada posição para informação.
 
