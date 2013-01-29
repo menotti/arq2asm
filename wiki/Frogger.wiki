@@ -148,7 +148,7 @@ Quando o(os) sapo(os) vence(em) uma fase, o leitor buscará a próxima fase na p
 
 As propriedades das fases estão mais livres. Agora, é possível definir não só a ordem dos objetos pelos arquivos, mas também suas velocidades e suas texturas.
 
-[http://sphotos-d.ak.fbcdn.net/hphotos-ak-prn1/14962_332013336905132_1303246255_n.jpg]
+[http://sphotos-h.ak.fbcdn.net/hphotos-ak-prn1/69597_332316380208161_1295791066_n.jpg]
 
 No exemplo acima, é possível ver a estrutura de cada arquivo. É *ESTRITAMENTE* importante que os primeiros 582 caracteres estejam estruturados dessa forma, incluindo a divisão em linhas. (totalizando 648 bytes) Qualquer caractere depois disso será irrelevante.
 
