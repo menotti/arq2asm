@@ -3049,8 +3049,7 @@ void CMMXSurface32Intrinsic::Solarize()
 == SSE ==
 Há uma versão iniciada não-funcional em comentário no repositório, mas não conseguimos implementá-la adequadamente a tempo.
 
-
-
+----
 
 = Median Filter =
 
@@ -3062,6 +3061,7 @@ http://img836.imageshack.us/img836/9015/balloonso.png http://img27.imageshack.us
 http://img829.imageshack.us/img829/3999/raiox.png
 http://img10.imageshack.us/img10/2843/raiox1.png
 
+----
 
 = 3D Profundidade (Red/Blue) =
 
