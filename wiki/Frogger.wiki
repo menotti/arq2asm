@@ -148,78 +148,87 @@ Quando o(os) sapo(os) vence(em) uma fase, o leitor buscará a próxima fase na p
 
 As propriedades das fases estão mais livres. Agora, é possível definir não só a ordem dos objetos pelos arquivos, mas também suas velocidades e suas texturas.
 
-[http://i37.photobucket.com/albums/e81/0810119020/A_zps47583438.png]
+[http://sphotos-c.ak.fbcdn.net/hphotos-ak-ash4/226040_332003303572802_296284615_n.jpg]
 
-*Barao Geraldo City##
+No exemplo acima, é possível ver a estrutura de cada arquivo. É *ESTRITAMENTE* importante que os primeiros 582 caracteres estejam estruturados dessa forma, incluindo a divisão em linhas. (totalizando 648 bytes)
 
-S S 000000000000000 ²°± 6A ±²°
+A partir da procedimento FROG_LerMapa, o jogo carrega em um vetor de 648 bytes o arquivo, e acessa esse vetor em uma determinada posição para informação.
 
-1 3 003400000000354 ±°² 87 ²±°
+ * "Título##############" (os 20 primeiros bytes são reservados para o título do mapa, que, se menor que 20, deve ser preenchido com # no final até obter o tamanho de 20 bytes)
 
-1 2 000000000340000 ±°² 87 ²±°
+ * "S S 000000000000000 XXX CC XXX" representa cada uma das 15 linhas do mapa.
 
-1 3 000354000034000 ±°² 87 ²±°
+No lugar do primeiro S, coloca-se a direção (par: direita, ímpar: esquerda; caso seja 2 ou 3, o sapo se movimentará automaticamente na linha, como em exemplos de água). Nota-se que caso o sentido seja S, a linha não terá movimento.
 
-1 4 034000000035400 ±°² 87 ²±°
+No lugar do segundo S, coloca-se a velocidade. (1 é a maior velocidade possível, 4 já é uma velocidade bem lerda)
 
-S S 000000000000000 ±°  F7 ° °
+Os quinze 0s representam o quê de fato terá naquela linha, no campo. (0 representam chão. 1 a 8 representam obstáculos)
 
-S S 000000000000000 ²°± 6A ±²°
+Os primeiros XXX representam a parte de cima do desenho do chão, daquela linha.
 
-3 3 700000777777777 ÍÍÍ 60 ÍÍÍ
+Os CC representam a cor do desenho do chão (para ambas as partes de cima e de baixo). Ver abaixo sobre as cores.
 
-2 2 777700000077777 ÍÍÍ 60 ÍÍÍ
+Os segundos XXX representam a parte de baixo do desenho do chão, daquela linha.
 
-S S 000000000000000 ²°± 6A ±²°
+ * XXX CC
+ * XXX CC
 
-S S 000000000000000 ±°  F7 ° °
+Em ordem, para cada um dos seis exemplos acima, temos os gráficos dos obstáculos de 1 a 6.
 
-0 4 000021600002160 ±°² 87 ²±°
+Os primeiros XXX representam a parte de cima do obstáculo.
 
-1 3 000003540000000 ±°² 87 ²±°
+Os primeiros CC representam a cor da parte de cima do obstáculo.
 
-0 4 400000216000003 ±°² 87 ²±°
+Os segundos XXX representam a parte de baixo do obstáculo.
 
-S S 000000000000000 ±°  F7 ° °
+Os segundos CC representam a cor da parte de baixo do obstáculo.
 
+ * XXX CC XXX
+ * XXX CC XXX
 
-ÉÍ» 1F
+Representando, em ordem, os obstáculos 7 e 8. Em relação aos primeiros XXX e CC de cada linha, eles são iguais ao descrito acima. Porém, esses obstáculos possem um segundo gráfico (respiração), que será exibido no lugar do original em metade do tempo.
 
-ÍÍÍ 0F
+Os XXX após a parte de cima representam a segunda imagem da parte de cima.
 
-ÉÍ» 1F
+Os XXX após a parte de baixo representam a segunda imagem da parte de baixo.
 
-È©© 0F
+== Cores
 
-ÉËÍ F1
+O primeiro C representa a cor de fundo a ser exibida, e o segundo C representa a cor dos caracteres a serem exibidos.
 
-Í¸Í 1F
+As cores são:
 
-ÍÍ» F1
+0 - Preto
 
-Í¸Ê 1F
+1 - Azul
 
-ÍÍÍ F4
+2 - Verde
 
-ÍÍÍ 40
+3 - Cyan
 
-ËÍ» B8
+4 - Red
 
-©©Î 0F
+5 - Vermelho
 
-°±° 13 ±°°
+6 - Rosa
 
-±°° 13 °±°
+7 - Marrom
 
-123 8A ABC
+8 - Cinza Claro
 
-456 8B DEF*
+9 - Cinza
 
-No exemplo acima, é possível notar que cada arquivo segue a seguinte estrutura:
+A - Azul Claro
 
- * "Título"# (máximo de 20 caracteres e, caso menor, preenchidos com #s)
- * S S 000...000 OO (Sentido, veloc., linha da matriz e objetos)
- * OO FF (lista de texturas dos objetos definidos acima)
+B - Verde Claro
+
+C - Cyan Claro
+
+D - Rosa Claro
+
+E - Amarelo
+
+F - Branco
 
 -------------
 = Junção das versões 1.2a e 1.2b (versão 1.3) =
