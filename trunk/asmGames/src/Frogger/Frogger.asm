@@ -1343,7 +1343,7 @@ FROG_ExibirIntro PROC
 	call OpenInputFile
 	cmp eax, INVALID_HANDLE_VALUE
 	jne Intro_Cont
-	jmp PressioneEnter
+	jmp PulouIntro
 	Intro_Cont:
 	mov FROG_fHandle, eax
 	mov edx, OFFSET FROG_Intro
@@ -1364,17 +1364,14 @@ FROG_ExibirIntro PROC
 	call Delay
 	mov eax, 0
 	call ReadKey
-	cmp eax, 7181
-	je PulouIntro
+	cmp eax, 1
+	ja PulouIntro
 	inc esi
 	loop Intro_L
 
 	mov eax, 0
 
-	PressioneEnter:	
 	call ReadChar
-	cmp eax, 7181
-	jne PressioneEnter
 	PulouIntro:
 	ret
 FROG_ExibirIntro ENDP
