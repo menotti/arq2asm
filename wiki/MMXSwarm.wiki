@@ -3140,8 +3140,9 @@ void CSurface::Median()
 
 }}}
 
+==Primeira versão não otimizada da função ordena==
+
 {{{
-// Primeira versão não otimizada da função ordena
 void Ordena (int *vetor, int tamanho) {
 	int auxiliar;
 	
@@ -3157,8 +3158,10 @@ void Ordena (int *vetor, int tamanho) {
 }
 
 }}}
+
+==Função final usada para ordenar o vetor do Median==
+
 {{{
-// Função final usada para ordenar o vetor do Median
 void Ordena (int *vetor) {
     //  Recebe o nome do vetor de 9 posições como parâmetro
     //  Faz a ordenação dos 5 menores valores (não é necessário fazer o resto, pois necessitamos apenas do quinto menor)
