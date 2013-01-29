@@ -806,78 +806,281 @@ void CSurface::RB3D()
 		}
 	}
 }
-//Função usada para ordenar o vetor do Median
+
+// Função usada para ordenar o vetor do Median
+void Ordena (int *vetor) {
+    //  Recebe o nome do vetor de 9 posições como parâmetro
+    //  Faz a ordenação dos 5 menores valores (não é necessário fazer o resto, pois necessitamos apenas do quinto menor)
+    //  Apenas o quinto menor valor (mediana) é copiado de volta no vetor, para economizar o acesso à memória
+
+    char nono = 0;	    // utilizamos uma variável temporária para armazenar o nono valor do vetor (vetor[8])
+				    // os valores das posições 0 a 7 foram armazenados em registradores (ah, al, bh, bl, ch, cl, dh, dl)
+    __asm {
+		  mov edi, vetor
+
+		  mov edx, 0
+		  mov edx, [edi]+32
+		  mov nono, dl	   // nono = vetor[8]
+		  
+		  mov edx, [edi]
+		  mov ah, dl	   // ah = vetor[0]
+		  
+		  mov edx, [edi]+4
+		  mov al, dl	   // al = vetor[1]
+
+		  mov edx, [edi]+8
+		  mov bh, dl	   // bh = vetor[2]
+		  
+		  mov edx, [edi]+12
+		  mov bl, dl	   // bl = vetor[3]
+
+		  mov edx, [edi]+16
+		  mov ch, dl	   // ch = vetor[4], o valor que será retornado por ser a mediana
+
+		  mov edx, [edi]+20
+		  mov cl, dl	   // cl = vetor[5]
+
+
+					   // dh = vetor[6]
+					   // dl = vetor[7]
+		  mov edx, [edi]+24
+		  push edx
+			 mov edx, [edi]+28
+		  pop esi
+		  clc
+		  shl esi, 8
+		  add edx, esi
+
+		  //	ah é comparado a todos os outros valores do vetor (posições 1 a 8)
+		  // no fim desta fase, o menor valor estará em ah
+		  cmp ah, al
+		  jb next1
+		  xchg ah, al
+next1:
+		  cmp ah, bh
+		  jb next2
+		  xchg ah, bh
+next2:
+		  cmp ah, bl
+		  jb next3
+		  xchg ah, bl
+next3:
+		  cmp ah, ch
+		  jb next4
+		  xchg ah, ch
+next4:
+		  cmp ah, cl
+		  jb next5
+		  xchg ah, cl
+next5:
+		  cmp ah, dh
+		  jb next6
+		  xchg ah, dh
+next6:
+		  cmp ah, dl
+		  jb next7
+		  xchg ah, dl
+next7:
+		  cmp ah, nono
+		  jb next8
+		  xchg ah, nono
+next8:
+
+		  //	al é comparado aos próximos valores do vetor (2 a 8)
+		  // no fim desta fase, o segundo menor valor estará em al
+		  cmp al, bh
+		  jb next10
+		  xchg al, bh
+next10:
+		  cmp al, bl
+		  jb next11
+		  xchg al, bl
+next11:
+		  cmp al, ch
+		  jb next12
+		  xchg al, ch
+next12:
+		  cmp al, cl
+		  jb next13
+		  xchg al, cl
+next13:
+		  cmp al, dh
+		  jb next14
+		  xchg al, dh
+next14:
+		  cmp al, dl
+		  jb next15
+		  xchg al, dl
+next15:
+		  cmp al, nono
+		  jb next16
+		  xchg al, nono
+next16:
+
+		  //	bh é comparado aos próximos valores do vetor (3 a 8)
+		  // no fim desta fase, o terceiro menor valor estará em bh
+		  cmp bh, bl
+		  jb next17
+		  xchg bh, bl
+next17:
+		  cmp bh, ch
+		  jb next18
+		  xchg bh, ch
+next18:
+		  cmp bh, cl
+		  jb next19
+		  xchg bh, cl
+next19:
+		  cmp bh, dh
+		  jb next20
+		  xchg bh, dh
+next20:
+		  cmp bh, dl
+		  jb next21
+		  xchg bh, dl
+next21:
+		  cmp bh, nono
+		  jb next22
+		  xchg bh, nono
+next22:
+
+		  //	bl é comparado aos próximos valores do vetor (4 a 8)
+		  // no fim desta fase, o quarto menor valor estará em bl
+		  cmp bl, ch
+		  jb next23
+		  xchg bl, ch
+next23:
+		  cmp bl, cl
+		  jb next24
+		  xchg bl, cl
+next24:
+		  cmp bl, dh
+		  jb next25
+		  xchg bl, dh
+next25:
+		  cmp bl, dl
+		  jb next26
+		  xchg bl, dl
+next26:
+		  cmp bl, nono
+		  jb next27
+		  xchg bl, nono
+next27:
+
+		  //	ch é comparado aos próximos valores do vetor (5 a 8)
+		  // no fim desta fase, o quinto menor valor (a mediana) estará em ch
+		  cmp ch, cl
+		  jb next28
+		  xchg ch, cl
+next28:
+		  cmp ch, dh
+		  jb next29
+		  xchg ch, dh
+next29:
+		  cmp ch, dl
+		  jb next30
+		  xchg ch, dl
+next30:
+		  cmp ch, nono
+		  jb next31
+		  xchg ch, nono
+next31:
+
+		  mov edx, 0
+		  mov dl, ch
+		  mov [edi]+16, edx			//  valor da mediana é copiado na quinta posição do vetor (vetor[4])
+    }
+}
+// Primeira versão não otimizada da função ordena
 void Ordena (int *vetor, int tamanho) {
-int auxiliar;
-for (int i = 0; i < tamanho; i++){
-for (int j = i+1; j < tamanho; j++){
-if (vetor[i] > vetor[j]){
-auxiliar = vetor[i];
-vetor[i] = vetor[j];
-vetor[j] = auxiliar;
-}
-}
-}
+	int auxiliar;
+	
+	for (int i = 0; i < tamanho; i++){
+		for (int j = i+1; j < tamanho; j++){
+			if (vetor[i] > vetor[j]){
+			auxiliar = vetor[i];
+			vetor[i] = vetor[j];
+			vetor[j] = auxiliar;
+			}
+		}
+	}
 }
 //Grupo 2012
 void CSurface::Median()
 {
-COLORREF pAtual, pEsquerda, pDireita, pCima, pBaixo, pDiagEsqCima, pDiagEsqBaixo, pDiagDirCima, pDiagDirBaixo;
-int r, g, b;
-int vetorTemp[9];
-for (int i = 1; i < m_wndHeight; i++) {
-for (int j = 1; j < m_wndWidth; j++) {
+	COLORREF pAtual, pEsquerda, pDireita, pCima, pBaixo, pDiagEsqCima, pDiagEsqBaixo, pDiagDirCima, pDiagDirBaixo;
+	int r, g, b;
+	int vetorTemp[9]; // 
+	
+	//Dois laços de repetição que percorrem a imagem, pixel por pixel
+	for (int i = 1; i < m_wndHeight; i++) {
+		for (int j = 1; j < m_wndWidth; j++) {
 
-pAtual = PointColor(j, i);
-pEsquerda = PointColor(j-1, i);
-pDireita = PointColor(j+1, i);
-pCima = PointColor(j, i-1);
-pBaixo = PointColor(j, i+1);
-pDiagEsqCima = PointColor(j-1, i-1);
-pDiagEsqBaixo = PointColor(j-1, i+1);
-pDiagDirCima = PointColor(j+1, i-1);
-pDiagDirBaixo = PointColor(j+1, i+1);
+			//Atribui as posições dos pixels em função do pixel atual no formato de uma matriz 3x3
+			pAtual = PointColor(j, i);
+			pEsquerda = PointColor(j-1, i);
+			pDireita = PointColor(j+1, i);
+			pCima = PointColor(j, i-1);
+			pBaixo = PointColor(j, i+1);
+			pDiagEsqCima = PointColor(j-1, i-1);
+			pDiagEsqBaixo = PointColor(j-1, i+1);
+			pDiagDirCima = PointColor(j+1, i-1);
+			pDiagDirBaixo = PointColor(j+1, i+1);
 
-vetorTemp[0] = GetRValue(pAtual);	
-vetorTemp[1] = GetRValue(pEsquerda);
-vetorTemp[2] = GetRValue(pDireita);
-vetorTemp[3] = GetRValue(pCima);
-vetorTemp[4] = GetRValue(pBaixo);
-vetorTemp[5] = GetRValue(pDiagEsqCima);
-vetorTemp[6] = GetRValue(pDiagEsqBaixo);
-vetorTemp[7] = GetRValue(pDiagDirCima);
-vetorTemp[8] = GetRValue(pDiagDirBaixo);	
+			//Os valores de RED dos 9 pixels são colocados na matriz temporária
+			vetorTemp[0] = GetRValue(pAtual);	
+			vetorTemp[1] = GetRValue(pEsquerda);
+			vetorTemp[2] = GetRValue(pDireita);
+			vetorTemp[3] = GetRValue(pCima);
+			vetorTemp[4] = GetRValue(pBaixo);
+			vetorTemp[5] = GetRValue(pDiagEsqCima);
+			vetorTemp[6] = GetRValue(pDiagEsqBaixo);
+			vetorTemp[7] = GetRValue(pDiagDirCima);
+			vetorTemp[8] = GetRValue(pDiagDirBaixo);	
 
-Ordena(vetorTemp,sizeof(vetorTemp)/sizeof(int));
-r = vetorTemp[4];
+			// Chama função para ordenar o vetor temporário
+			Ordena(vetorTemp);
 
-vetorTemp[0] = GetGValue(pAtual);	
-vetorTemp[1] = GetGValue(pEsquerda);
-vetorTemp[2] = GetGValue(pDireita);
-vetorTemp[3] = GetGValue(pCima);
-vetorTemp[4] = GetGValue(pBaixo);
-vetorTemp[5] = GetGValue(pDiagEsqCima);
-vetorTemp[6] = GetGValue(pDiagEsqBaixo);
-vetorTemp[7] = GetGValue(pDiagDirCima);
-vetorTemp[8] = GetGValue(pDiagDirBaixo);
+			// r recebe o valor intermediário de RED dos pixels da matrix 3x3
+			r = vetorTemp[4];
 
-Ordena(vetorTemp,sizeof(vetorTemp)/sizeof(int));	
-g = vetorTemp[4];
-vetorTemp[0] = GetBValue(pAtual);
-vetorTemp[1] = GetBValue(pEsquerda);
-vetorTemp[2] = GetBValue(pDireita);
-vetorTemp[3] = GetBValue(pCima);
-vetorTemp[4] = GetBValue(pBaixo);
-vetorTemp[5] = GetBValue(pDiagEsqCima);
-vetorTemp[6] = GetBValue(pDiagEsqBaixo);
-vetorTemp[7] = GetBValue(pDiagDirCima);
-vetorTemp[8] = GetBValue(pDiagDirBaixo);
+			//Os valores de GREEN dos 9 pixels são colocados na matriz temporária
+			vetorTemp[0] = GetGValue(pAtual);	
+			vetorTemp[1] = GetGValue(pEsquerda);
+			vetorTemp[2] = GetGValue(pDireita);
+			vetorTemp[3] = GetGValue(pCima);
+			vetorTemp[4] = GetGValue(pBaixo);
+			vetorTemp[5] = GetGValue(pDiagEsqCima);
+			vetorTemp[6] = GetGValue(pDiagEsqBaixo);
+			vetorTemp[7] = GetGValue(pDiagDirCima);
+			vetorTemp[8] = GetGValue(pDiagDirBaixo);
 
-Ordena(vetorTemp,sizeof(vetorTemp)/sizeof(int));	
-b = vetorTemp[4];
+			// Chama função para ordenar o vetor temporário
+			Ordena(vetorTemp);	
+			
+			// g recebe o valor intermediário de GREEN dos pixels da matrix 3x3
+			g = vetorTemp[4];
 
-PointColor(j, i, RGB(b,g,r)); // RGBs are physically inverted
-}
-}
+			//Os valores de BLUE dos 9 pixels são colocados na matriz temporária
+			vetorTemp[0] = GetBValue(pAtual);
+			vetorTemp[1] = GetBValue(pEsquerda);
+			vetorTemp[2] = GetBValue(pDireita);
+			vetorTemp[3] = GetBValue(pCima);
+			vetorTemp[4] = GetBValue(pBaixo);
+			vetorTemp[5] = GetBValue(pDiagEsqCima);
+			vetorTemp[6] = GetBValue(pDiagEsqBaixo);
+			vetorTemp[7] = GetBValue(pDiagDirCima);
+			vetorTemp[8] = GetBValue(pDiagDirBaixo);
+
+			// Chama função para ordenar o vetor temporário
+			Ordena(vetorTemp);	
+			
+			// b recebe o valor intermediário de BLUE dos pixels da matrix 3x3
+			b = vetorTemp[4];
+
+			// O valor de Alpha permancerá inalterado
+			PointColor(j, i, RGB(b,g,r)); 
+		}
+	}
 
 }
