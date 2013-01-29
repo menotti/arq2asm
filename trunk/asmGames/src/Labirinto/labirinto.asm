@@ -55,10 +55,10 @@ nomeArqLore2 BYTE "src/Labirinto/Historia/lore2.txt", 0
 nomeArqLore3 BYTE "src/Labirinto/Historia/lore3t.txt", 0
 nomeArqLore4 BYTE "src/Labirinto/Historia/Fase10.txt", 0
 nomeArqLore5 BYTE "src/Labirinto/Historia/Dragon1.txt", 0
-nomeArqLore6 BYTE "src/Labirinto/Historia/chamaDialogoFinal.txt", 0
+nomeArqLore6 BYTE "src/Labirinto/Historia/DialogoFinal.txt", 0
 nomeArqLore7 BYTE "src/Labirinto/Historia/enigmas.txt",0
 nomeArqLore8 BYTE "src/Labirinto/Historia/morte.txt",0
-nomeArqLore9 BYTE "src/Labirinto/Historia/chamaDialogoFinal2.txt",0
+nomeArqLore9 BYTE "src/Labirinto/Historia/DialogoFinal2.txt",0
 nomeArqLore10 BYTE "src/Labirinto/Historia/Dragon2.txt",0
 nomeArqLore11 BYTE "src/Labirinto/Historia/creditos.txt", 0
 
@@ -1672,6 +1672,7 @@ L31:
 	call CloseFile
 
 ;Enigmas
+engimasDeNovo:
 	mov al, 4
 	call mudaCores
 	call Clrscr
@@ -1713,19 +1714,19 @@ pulaleitura1:
 	cmp eax, 1
 	je respcerta1
 	call chamaMorte
-	jmp finalmorte
+	jmp engimasDeNovo
 pulaleitura2:
 	call ReadInt
 	cmp eax, 3
 	je respcerta1
 	call chamaMorte
-	jmp finalmorte
+	jmp engimasDeNovo
 pulaleitura3:
 	call ReadInt
 	cmp eax, 1
 	je saiEnigmas
 	call chamaMorte
-	jmp finalmorte
+	jmp engimasDeNovo
 respcerta1:
 	call Clrscr
 	add esi, 3
