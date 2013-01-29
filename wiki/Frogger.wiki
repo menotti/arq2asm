@@ -127,7 +127,7 @@ cenário.
  * *FROG_InitJogo*: chama o procedimento acima, estabelece o número de vidas, e chama o procedimento abaixo.
  * *FROG_LerCampo*: lê o arquivo de campo e grava ele em um vetor.
  * *FROG_DefinirCampo*: define o campo, a partir do vetor que armazena as informações do arquivo.
- * *FROG_NovoCampo*: aumenta a variável que guarda o nome do arquivo (para a próxima fase) e chama FROG_DefinirCampo.
+ * *FROG_NovoCampo*: aumenta a variável que guarda o nome do arquivo (para a próxima fase) e chama FROG_DefinirCampo. Créditos ao TioGuedes por esse procedimento.
  * *FROG_NovoJogo*: restaura os valores inicias das variáveis e do campo.
 
 === Procedimentos de Desenho ===
