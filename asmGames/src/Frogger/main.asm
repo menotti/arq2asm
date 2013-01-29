@@ -1363,7 +1363,7 @@ FROG_ExibirIntro PROC
 	Intro_L:
 	mov al, FROG_Intro[esi]
 	call WriteChar
-	mov al, 2
+	mov eax, 2
 	call Delay
 	mov eax, 0
 	call ReadKey
