@@ -3058,7 +3058,7 @@ O Median Filter é um filtro de remoção de ruídos. O objetivo desse filtro é
 
 == Naive == 
 
-http://imageshack.us/photo/my-images/836/balloonso.png
+http://img836.imageshack.us/img836/9015/balloonso.png
 
 
 = 3D Profundidade (Red/Blue) =
