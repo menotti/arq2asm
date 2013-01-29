@@ -168,46 +168,45 @@ O resultado pode ser visto na imagem abaixo:
 
 O jogo é atualmente composto por dez fases.
 
+1. Barão Geraldo City
 
 [http://sphotos-d.ak.fbcdn.net/hphotos-ak-ash4/314873_331996443573488_1654685255_n.jpg]
 
-1. Barão Geraldo City
+2. São Paulo City
 
 [http://sphotos-b.ak.fbcdn.net/hphotos-ak-ash4/484732_331996450240154_1100967264_n.jpg]
 
-2. São Paulo City
+3. Nova York City
 
 [http://sphotos-h.ak.fbcdn.net/hphotos-ak-prn1/69644_331996453573487_1729904192_n.jpg]
 
-3. Nova York City
+4. Vulcano
 
 [http://sphotos-e.ak.fbcdn.net/hphotos-ak-ash4/309757_331996483573484_459190532_n.jpg]
 
-4. Vulcano
+5. Digital Chaos
 
 [http://sphotos-c.ak.fbcdn.net/hphotos-ak-ash4/408498_331996490240150_743562494_n.jpg]
 
-5. Digital Chaos
+6. Amazonas Rainforest
 
 [http://sphotos-a.ak.fbcdn.net/hphotos-ak-prn1/46709_331996500240149_1736752528_n.jpg]
 
-6. Amazonas Rainforest
+7. Texas Stampede
 
 [http://sphotos-g.ak.fbcdn.net/hphotos-ak-ash4/385369_331996520240147_1349147487_n.jpg]
 
-7. Texas Stampede
+8. The Asteroid Field
 
 [http://sphotos-e.ak.fbcdn.net/hphotos-ak-ash4/408534_331998680239931_1383827925_n.jpg]
 
-8. The Asteroid Field
+9. The Helltrix
 
 [http://sphotos-b.ak.fbcdn.net/hphotos-ak-ash3/533855_331996536906812_1417044941_n.jpg]
 
-9. The Helltrix
+10. The Final Boss
 
 [http://sphotos-e.ak.fbcdn.net/hphotos-ak-ash3/549931_331996550240144_1491065989_n.jpg]
-
-10. The Final Boss
 
 --------------
 #FIM DO DOCUMENTO
