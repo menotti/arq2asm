@@ -150,7 +150,6 @@ BEGIN
         MENUITEM "Use &Solarize\tL",            ID_VIEW_USE_SOLARIZE
         MENUITEM "Use &Threshold\tK",           ID_VIEW_USE_THRESHOLD
         MENUITEM "Use &Invert\tY",              ID_VIEW_USE_INVERT
-        MENUITEM "Use &Gradient\tD",            ID_VIEW_USE_GRADIENT
         MENUITEM "Use &ChannelMix\tAlt+C",      ID_VIEW_USE_CHANNELMIX
         MENUITEM "Use &Rescale\tW",             ID_VIEW_USE_RESCALE
         MENUITEM "Use Azular",                  ID_VIEW_USE_AZULAR
@@ -159,6 +158,8 @@ BEGIN
         MENUITEM "Use &Mirror\tU",              ID_VIEW_USE_MIRROR
         MENUITEM "Use &RB3D\tAlt+3",			ID_VIEW_USE_RB3D
 		MENUITEM "Use &Median\tAlt+1",			ID_VIEW_USE_MEDIAN
+		MENUITEM "Use &Ciano\tAlt+Z",			ID_VIEW_USE_CIANO
+		MENUITEM "Use &Magenta\tZ",         ID_VIEW_USE_MAGENTA
     END
     POPUP "&Mode"
     BEGIN
@@ -193,26 +194,27 @@ BEGIN
     "S",            ID_FILE_SAVE,           VIRTKEY, CONTROL, NOINVERT
     VK_F6,          ID_NEXT_PANE,           VIRTKEY, NOINVERT
     VK_F6,          ID_PREV_PANE,           VIRTKEY, SHIFT, NOINVERT
+    "S",            ID_STATIC_MODE,         VIRTKEY, CONTROL, NOINVERT
+    "T",            ID_VIEW_PAUSE_BLIT,     VIRTKEY, NOINVERT
     "B",            ID_VIEW_PAUSE_BLUR,     VIRTKEY, NOINVERT
     "S",            ID_VIEW_PAUSE_SWARM,    VIRTKEY, NOINVERT
-    "T",            ID_VIEW_PAUSE_BLIT,     VIRTKEY, NOINVERT
+    "A",            ID_VIEW_USE_AMARELAR,   VIRTKEY, ALT, NOINVERT
+    "C",            ID_VIEW_USE_CHANNELMIX, VIRTKEY, ALT, NOINVERT
+    "Z",            ID_VIEW_USE_CIANO,      VIRTKEY, ALT, NOINVERT
+	"Z",            ID_VIEW_USE_MAGENTA,     VIRTKEY,NOINVERT
     "F",            ID_VIEW_USE_FADE,       VIRTKEY, NOINVERT
     "G",            ID_VIEW_USE_GRAY,       VIRTKEY, NOINVERT
-    "D",            ID_VIEW_USE_GRADIENT,   VIRTKEY, NOINVERT
-    "S",            ID_VIEW_USE_SOBEL,      VIRTKEY, ALT, NOINVERT
-    "P",            ID_VIEW_USE_POSTERIZE,  VIRTKEY, NOINVERT
     "R",            ID_VIEW_USE_GRAYF,      VIRTKEY, NOINVERT
-    "A",            ID_VIEW_USE_RGBADJUST,  VIRTKEY, NOINVERT
-    "M",            ID_VIEW_USE_MASK,       VIRTKEY, NOINVERT
+    "Y",            ID_VIEW_USE_INVERT,     VIRTKEY, NOINVERT
     "M",            ID_VIEW_USE_MANDEL,     VIRTKEY, ALT, NOINVERT
+    "M",            ID_VIEW_USE_MASK,       VIRTKEY, NOINVERT
+    "U",            ID_VIEW_USE_MIRROR,     VIRTKEY, NOINVERT
+    "P",            ID_VIEW_USE_POSTERIZE,  VIRTKEY, NOINVERT
+    "W",            ID_VIEW_USE_RESCALE,    VIRTKEY, NOINVERT
+    "A",            ID_VIEW_USE_RGBADJUST,  VIRTKEY, NOINVERT
+    "S",            ID_VIEW_USE_SOBEL,      VIRTKEY, ALT, NOINVERT
     "L",            ID_VIEW_USE_SOLARIZE,   VIRTKEY, NOINVERT
     "K",            ID_VIEW_USE_THRESHOLD,  VIRTKEY, NOINVERT
-    "Y",            ID_VIEW_USE_INVERT,     VIRTKEY, NOINVERT
-    "C",            ID_VIEW_USE_CHANNELMIX, VIRTKEY, ALT, NOINVERT
-    "S",            ID_STATIC_MODE,         VIRTKEY, CONTROL, NOINVERT
-    "W",            ID_VIEW_USE_RESCALE,    VIRTKEY, NOINVERT
-    "U",            ID_VIEW_USE_MIRROR,     VIRTKEY, NOINVERT
-    "A",            ID_VIEW_USE_AMARELAR,   VIRTKEY, ALT, NOINVERT
 	"3",            ID_VIEW_USE_RB3D,		VIRTKEY, ALT, NOINVERT
 	"1",            ID_VIEW_USE_MEDIAN,		VIRTKEY, ALT, NOINVERT
 END
@@ -424,7 +426,7 @@ END
 LANGUAGE 9, 1
 #pragma code_page(1252)
 #endif //_WIN32
-#include "MMXSwarm.rc2"  // non-Microsoft Visual C++ edited resources
+#include "res\MMXSwarm.rc2"  // non-Microsoft Visual C++ edited resources
 #include "afxres.rc"         // Standard components
 #endif
 

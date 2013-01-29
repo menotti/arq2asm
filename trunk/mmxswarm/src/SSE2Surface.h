@@ -28,8 +28,10 @@ public:
 	virtual void Azular();	// Grupo 5
 	virtual void Esverdear();	// Grupo 5
 	virtual void Envermelhar();	// Grupo 5
+	virtual void Ciano();
+	virtual void Magenta();
 	//virtual void Solarize();	// Grupo 18
-	virtual void Gradient();	//Grupo 8
+	//virtual void Gradient();	//Grupo 8
 	virtual void Amarelar();	//Grupo 20
 protected:
 	virtual void OnCreated();
