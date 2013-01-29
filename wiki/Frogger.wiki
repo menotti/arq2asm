@@ -83,7 +83,7 @@ cenário.
  * *FROG_Movimentos*: contabiliza os movimentos dos sapos.
  * *FROG_Movimento_Total*: contabiliza os movimentos dos sapos das fases que já passaram.
 
-== Variáveis do Sapo A
+== Variáveis do Sapo A ==
 
  * * FROG_sapoA_X*: armazena a posição horizontal do sapo A no campo.
  * * FROG_sapoA_Y*: armazena a posição vertical do sapo A no campo.
@@ -91,7 +91,7 @@ cenário.
  * * FROG_AperdeuJogo*: verifica se o sapo A perdeu.
  * * FROG_A_Vidas*: contabiliza o número de vidas do sapo A.
 
-== Variáveis do Sapo B
+== Variáveis do Sapo B ==
 
  * * FROG_sapoB_X*: armazena a posição horizontal do sapo B no campo.
  * * FROG_sapoB_Y*: armazena a posição vertical do sapo B no campo.
@@ -213,7 +213,7 @@ Os XXX após a parte de cima representam a segunda imagem da parte de cima.
 
 Os XXX após a parte de baixo representam a segunda imagem da parte de baixo.
 
-== Cores
+== Cores ==
 
 O primeiro C representa a cor de fundo a ser exibida, e o segundo C representa a cor dos caracteres a serem exibidos.
 
