@@ -3,10 +3,10 @@ TITLE Add and Subtract              (AddSub.asm)
 ; This program adds and subtracts 32-bit integers.
 ; Last update: 06/01/2006
 
-INCLUDE Irvine32.inc
+;INCLUDE Irvine32.inc
 
 .data
-	sequencia WORD 20 dup(?)
+	sequencia WORD 30 dup(?)
 	fraseAbertura1 BYTE "Esse jogo eh conhecido como Genius!!", 0
 	fraseAbertura2 BYTE "Ele eh composto em ver a sequencia que o computador ira gerar", 0
 	fraseAbertura3 BYTE "e repeti-lo através das setas do teclado.", 0
@@ -16,15 +16,16 @@ INCLUDE Irvine32.inc
 	fraseErro BYTE "Voce errou!", 0
 	frasePassou BYTE "Level: ", 0
 	fraseLeitura BYTE "Sua vez!", 0
-	fraseDireita BYTE "Direita ", 0
-	fraseEsquerda BYTE "Esquerda ", 0
-	fraseCima BYTE "Cima ", 0
-	fraseBaixo BYTE "Baixo ", 0
-	Centro BYTE 'Genius!'
+	frasegDIREITA BYTE "gDIREITA ", 0
+	frasegESQUERDA BYTE "gESQUERDA ", 0
+	frasegCIMA BYTE "gCIMA ", 0
+	frasegBAIXO BYTE "gBAIXO ", 0
+	Centro BYTE 'Genius!', 0
 
 .code
-main PROC
-		call Menu
+Genius PROC
+		call Clrscr
+		call gMenu
 		call CriaSequencia
 		call ImprimeJogo
 		;Mostra sequencia do level	
@@ -59,30 +60,31 @@ main PROC
 			
 	confere: 
 		call readChar ; coloca leitura em ax
-		cmp ax, 4B00h ; esquerda
-		je ESQUERDA
+		cmp ax, 4B00h ; gESQUERDA
+		je gESQUERDA
 		
-		cmp ax, 4800h ; cima
-		je CIMA
+		cmp ax, 4800h ; gCIMA
+		je gCIMA
 		
-		cmp ax, 4D00h ; direita
-		je DIREITA
+		cmp ax, 4D00h ; gDIREITA
+		je gDIREITA
 		
-		cmp ax, 4D00h ; baixo
-		je BAIXO
-	ESQUERDA:
+		cmp ax, 5000h ; gBAIXO
+		je gBAIXO
+
+	gESQUERDA:
 		call PiscaAzul
 		jmp Verifica	
 
-	CIMA:
+	gCIMA:
 		call PiscaAmarelo
 		jmp Verifica
 
-	DIREITA:
+	gDIREITA:
 		call PiscaVerde
 		jmp Verifica
 
-	BAIXO:
+	gBAIXO:
 		call PiscaVermelho
 		jmp Verifica
 	
@@ -102,7 +104,7 @@ main PROC
 		mov edx, OFFSET fraseErro
 		call WriteString
 		call crlf
-		exit
+		ret
 
 	FIM: ; fim do jogo por Acabar os lvl
 		call ClrScr
@@ -111,12 +113,12 @@ main PROC
 		
 	
 	
-	exit
-main ENDP
+	ret
+Genius ENDP
 
 
 ;---------------------------------------------
-Menu Proc
+gMenu Proc
 ;Mostra as frases do menu
 ;----------------------------------------------
 		mov edx, offset fraseAbertura1
@@ -147,7 +149,7 @@ Menu Proc
 		call delay
 		call ClrScr
 		ret
-Menu ENDP
+gMenu ENDP
 
 ;-----------------------------------------------
  CriaSequencia PROC
@@ -160,25 +162,26 @@ aleatorio:
 		push eax
 		call RandomRange
 		cmp ax, 0
-		jz cima
+		jz gCIMA
 		cmp ax, 1
-		jz direita
+		jz gDIREITA
 		cmp ax, 2
-		jz baixo
-		mov sequencia[esi] , 4B00h ; esquerda
+		jz gBAIXO
+		
+		mov sequencia[esi] , 4B00h ; gESQUERDA
 		jmp volta
 	
 	
-		cima:
-			mov sequencia[esi] , 4800h ; cima
+		gCIMA:
+			mov sequencia[esi] , 4800h ; gCIMA
 			jmp volta
 	
-		direita: 
-			mov sequencia[esi], 4D00h ;direita
+		gDIREITA: 
+			mov sequencia[esi], 4D00h ;gDIREITA
 			jmp volta
 
-		baixo:
-			mov sequencia[esi], 4D00h; baixo		
+		gBAIXO:
+			mov sequencia[esi], 5000h; gBAIXO		
 		
 		volta:	
 			pop eax
@@ -205,36 +208,36 @@ MostraSequencia  PROC
 		call Delay
 		popad
 	L2:	mov ax,sequencia[esi]
-		cmp ax, 4D00h ; direita
+		cmp ax, 4D00h ; gDIREITA
 		jnz K1
 		push edx
-		;;DIREITA
+		;;gDIREITA
 		call piscaverde
 	
 		pop edx
 		jmp fimSequencia
 
-	K1:	cmp ax, 4800h ; cima
+	K1:	cmp ax, 4800h ; gCIMA
 		jnz K2
 		push edx
-		;;CIMA
+		;;gCIMA
 		call piscaamarelo
 		
 		pop edx
 		jmp fimSequencia
 
-	k2:	cmp ax, 4D00h; baixo
+	k2:	cmp ax, 5000h; gBAIXO
 		jnz K3
 		push edx
-		;;BAIXO
+		;;gBAIXO
 		call piscavermelho
 		
 		pop edx
 		jmp fimSequencia
 	
-	K3:	cmp ax, 4B00h ; esquerda
+	K3:	cmp ax, 4B00h ; gESQUERDA
 		push edx
-		;;ESQUERDA
+		;;gESQUERDA
 		call piscaazul
 		
 		pop edx
@@ -254,21 +257,20 @@ MostraSequencia  PROC
 		ret
 MostraSequencia ENDP
 
-;------------------------------------
-
+;--------------------------------------
 ImprimeAmarelo PROC USES EDX EAX ECX
-		
+;---------------------------------------		
 		mov dl, 22
 		mov dh, 5
 		call gotoxy
 		mov ecx, 10
+		mov eax,yellow
+		call SetTextColor
+		mov al, 219
 	COLUNA:
 		push ecx
 		mov ecx, 17
 	LINHA:
-		mov eax,yellow
-		call SetTextColor
-		mov al, 219
 		call WriteChar
 		loop LINHA
 		inc dh
@@ -280,21 +282,20 @@ ImprimeAmarelo PROC USES EDX EAX ECX
 ImprimeAmarelo ENDP
 
 ;-----------------------------------
-
-
 ImprimeAzul PROC USES EDX EAX ECX
+;-----------------------------------
 		
 		mov dl, 5
 		mov dh, 15
 		call gotoxy 
 		mov ecx, 10
+		mov eax,lightblue
+		call SetTextColor
+		mov al, 219
 	COLUNA:
 		push ecx
 		mov ecx, 17
 	LINHA:
-		mov eax,lightblue
-		call SetTextColor
-		mov al, 219
 		call WriteChar
 		loop LINHA
 		inc dh
@@ -306,20 +307,20 @@ ImprimeAzul PROC USES EDX EAX ECX
 ImprimeAzul ENDP
 
 ;-----------------------------------
-
 ImprimeVerde PROC USES EDX EAX ECX
+;-----------------------------------
 	
 	mov dl, 39
 	mov dh, 15
 	call gotoxy
 	mov ecx, 10
+	mov eax,lightgreen
+	call SetTextColor
+	mov al, 219
 COLUNA:
 	push ecx
 	mov ecx, 17
 LINHA:
-	mov eax,lightgreen
-	call SetTextColor
-	mov al, 219
 	call WriteChar
 	loop LINHA
 	inc dh
@@ -331,41 +332,37 @@ LINHA:
 ImprimeVerde ENDP
 
 ;-----------------------------------
-
-
-ImprimeVermelho PROC USES EAX ECX
-	push edx
+ImprimeVermelho PROC USES EAX ECX EDX
+;-----------------------------------
 	mov dl, 22
 	mov dh, 25
 	call gotoxy
 	mov ecx, 10
+	mov eax,lightred
+	call SetTextColor
+	mov al, 219
 COLUNA:
 	push ecx
 	mov ecx, 17
 LINHA:
-	mov eax,lightred
-	call SetTextColor
-	mov al, 219
 	call WriteChar
 	loop LINHA
 	inc dh
 	call gotoxy
 	pop ecx
 	loop COLUNA
-	pop edx
-	mov edx, 0
 
 	ret
 ImprimeVermelho ENDP
 
 ;-----------------------------------
+; Funções para piscar os blocos, armazenando X e Y do bloco desejado, 
+; piscando ele rapidamente para branco (300ms) e logo voltando-o para a cor original
+;-----------------------------------
 
-;
-; Funções para piscar os blocos, armazenando X e Y do bloco desejado, piscando ele rapidamente para branco (300ms) e logo voltando-o para a cor original
-;
-
+;-------------------------------
 Pisca PROC USES EDX EAX ECX
-	
+;-------------------------------
 	call gotoxy
 mov ecx, 10
 	COLUNA:
@@ -382,7 +379,7 @@ LINHA:
 	pop ecx
 	loop COLUNA
 	push eax
-	mov eax, 300h
+	mov eax, 150h
 	call Delay
 	pop eax
 	call ImprimeJogo
@@ -391,8 +388,8 @@ LINHA:
 Pisca ENDP
 
 ;-----------------------------------
-
 PiscaVermelho PROC USES EDX
+;-----------------------------------
 	
 	mov dl, 22
 	mov dh, 25
@@ -403,20 +400,19 @@ PiscaVermelho PROC USES EDX
 PiscaVermelho ENDP
 
 ;-----------------------------------
-
 PiscaVerde PROC USES EDX
+;-----------------------------------
 	
 	mov dl, 39
 	mov dh, 15
 	call Pisca
-	;call ImprimeVerde
+	call ImprimeVerde
 	ret
 PiscaVerde ENDP
 
 ;-----------------------------------
-
 PiscaAzul PROC USES EDX
-
+;-----------------------------------
 	mov dl, 5
 	mov dh, 15
 	call Pisca
@@ -426,9 +422,8 @@ PiscaAzul PROC USES EDX
 PiscaAzul ENDP
 
 ;-----------------------------------
-
 PiscaAmarelo PROC USES EDX
-
+;-----------------------------------
 	mov dl, 22
 	mov dh, 5
 	call Pisca
@@ -437,14 +432,25 @@ PiscaAmarelo PROC USES EDX
 	ret
 PiscaAmarelo ENDP
 
-;-----------------------------------
-
 ImprimeJogo PROC 
+;-----------------------------------
 	call ImprimeAmarelo
 	call ImprimeAzul
-	call ImprimeVerde
 	call ImprimeVermelho
+	call ImprimeVerde
+	;Imprimindo a mensagem "Genius!"
+	push edx
+	push eax
+	mov eax, white
+	call SetTextColor
+	mov edx, 0
+	mov dh, 20
+	mov dl, 27
+	call gotoxy
+	mov edx, OFFSET Centro
+	call WriteString
+	pop eax
+	pop edx
 	ret
 ImprimeJogo ENDP
 
-END main

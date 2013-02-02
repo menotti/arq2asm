@@ -14,6 +14,7 @@ INCLUDE Labirinto/labirinto.asm
 INCLUDE LaserMan/lman_proc.asm
 Include Snake/snake.asm
 INCLUDE Frogger/Frogger.asm
+INCLUDE GeniusGame/Genius.asm
 
 .data
 
@@ -29,6 +30,7 @@ myMenu	BYTE	80 dup ('='),
 				'6 - Snake', 13, 10,
 				'7 - Sliding Puzzle', 13, 10,
 				'8 - Laser Man(The incomplete saga)', 13, 10,
+				'9 - Genius', 13, 10,
 				'0 - Sair!', 13, 10, 13, 10,
 				'Opcao: ', 0
 .code
@@ -80,8 +82,12 @@ SPuzzle:
 	;call SlidingPuzzle - problematico tive que comentar> lucas carvalhaes
 LaserMan:
 	cmp eax, 8
-	jne menu
+	jne mGenius
 	call LMAN
+mGenius:
+	cmp eax, 9
+	jne menu
+	call Genius
 jmp menu			;Para retornar ao menu depois q acabar algum jogo
 
 fim:
