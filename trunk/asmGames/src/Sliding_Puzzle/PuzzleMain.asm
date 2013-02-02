@@ -4,6 +4,7 @@ TITLE MASM TioGaedes
 ; 
 ; Revision date:
 
+INCLUDE Irvine32.inc
 INCLUDE Macros.inc
 
 .data
@@ -43,24 +44,24 @@ saida		byte	1h	; tecla para voltar ao menu
 pedidoDica	byte 116d	; tecla para comprar uma dica
 
 estadoAtual	byte 0	; estado em que o jogo se encontra	
-selecionado	byte 0	; diz qual das opÁoes est· selecionado
+selecionado	byte 0	; diz qual das op√ßoes est√° selecionado
 
 proxEG		byte 100d	; tecla para ir para a proxima EG
 antEG		byte	97d	; tecla para ir para a EG anterior
 
-pontuacao		dword 0	;pontuaÁ„o que o jogador recebeu por jogar TioGaedes
+pontuacao		dword 0	;pontua√ß√£o que o jogador recebeu por jogar TioGaedes
 
-pontosFase	dword 100000000	;pontuaÁ„o que vocÍ comeÁa em uma fase
+pontosFase	dword 100000000	;pontua√ß√£o que voc√™ come√ßa em uma fase
 
 
-;vetores auxiliares para a ordenaÁ„o da pontuaÁ„o
+;vetores auxiliares para a ordena√ß√£o da pontua√ß√£o
 iniciais		byte  63 DUP(?)
 chaves		dword 21 DUP(0)
 
 
-faseAtual		byte 0	;fase em q TioGaedes se encontra e que o jogador est· jogando
+faseAtual		byte 0	;fase em q TioGaedes se encontra e que o jogador est√° jogando
 
-EGescolhida	byte 0	;posiÁ„o da eg escolhida
+EGescolhida	byte 0	;posi√ß√£o da eg escolhida
 EGantEscolhida byte 0 ;posicao da eg previamente escolhida
 VoidEgendPos BYTE 0
 
@@ -81,7 +82,7 @@ CursorInfoA DWORD 1
 CursorInfoB DWORD 0
 .code
 
-SlidingPuzzle PROC
+main PROC
 
 Call Clrscr
 Call Randomize
@@ -126,14 +127,14 @@ jmp LoopPrincipal
 
 encerrarPrograma:
 exit
-SlidingPuzzle ENDP
+main ENDP
 
 
 ;-------------------------------------------------------
 ; ID DO ESTADO: 0
 menu_state PROC USES eax edx 
 ; Esse procedimento chama o menu, ele desenha o menu na
-; tela e se encarrega da manipulaÁ„o e escolha de opÁıes
+; tela e se encarrega da manipula√ß√£o e escolha de op√ß√µes
 ; no menu, tambem troca o estado no qual se encontra o 
 ; jogo.
 ;
@@ -148,7 +149,7 @@ P021:
 
 Call write_title
 
-;checagem para ver se essa opÁ„o est· selecionada, se estiver ele fica colorido
+;checagem para ver se essa op√ß√£o est√° selecionada, se estiver ele fica colorido
 cmp ebx,0
 jne primeiro
 mov eax,black+(lightblue*16)
@@ -165,7 +166,7 @@ mWrite <"Jogar">
 mov eax,white+(black*16)
 Call SetTextColor
 
-;checagem para ver se essa opÁ„o est· selecionada, se estiver ele fica colorido
+;checagem para ver se essa op√ß√£o est√° selecionada, se estiver ele fica colorido
 cmp ebx,1
 jne segundo
 mov eax,black+(lightblue*16)
@@ -182,14 +183,14 @@ mWrite <"Controles">
 mov eax,white+(black*16)
 Call SetTextColor
 
-;checagem para ver se essa opÁ„o est· selecionada, se estiver ele fica colorido
+;checagem para ver se essa op√ß√£o est√° selecionada, se estiver ele fica colorido
 cmp ebx,2
 jne terceiro
 mov eax,black+(lightblue*16)
 Call SetTextColor
 terceiro:
 
-;Escreve a pontuaÁ„o
+;Escreve a pontua√ß√£o
 mov dh,13
 mov dl,32d
 Call Gotoxy
@@ -199,7 +200,7 @@ mWrite <"High Scores">
 mov eax,white+(black*16)
 Call SetTextColor
 
-;checagem para ver se essa opÁ„o est· selecionada, se estiver ele fica colorido
+;checagem para ver se essa op√ß√£o est√° selecionada, se estiver ele fica colorido
 cmp ebx,3
 jne quarto
 mov eax,black+(lightblue*16)
@@ -217,7 +218,7 @@ mov eax,white+(black*16)
 Call SetTextColor
 
 
-;checagem para ver se essa opÁ„o est· selecionada, se estiver ele fica colorido
+;checagem para ver se essa op√ß√£o est√° selecionada, se estiver ele fica colorido
 cmp ebx,4
 jne quinto
 mov eax,black+(lightblue*16)
@@ -277,9 +278,9 @@ menu_state ENDP
 ;-------------------------------------------------------
 ; ID DO ESTADO: 1
 jogo_state PROC
-; Esse procedimento chama faz com que vocÍ possa apreciar
-; essa obra-prima como um jogo, e n„o apenas uma histÛria
-; Èpica sobre um personagem Èpico
+; Esse procedimento chama faz com que voc√™ possa apreciar
+; essa obra-prima como um jogo, e n√£o apenas uma hist√≥ria
+; √©pica sobre um personagem √©pico
 ;
 ;AUTOR: THIAGO FARIA, LUCAS Y, NICOLAS OE
 ;-------------------------------------------------------
@@ -313,7 +314,7 @@ call Gotoxy
 
 call CarregarDicas
 
-;adiciona para a pontuaÁ„o do jogador os pontos m·ximos da fase
+;adiciona para a pontua√ß√£o do jogador os pontos m√°ximos da fase
 mov eax,pontosFase
 add pontuacao,eax
 
@@ -330,7 +331,7 @@ call draw_map
 ;espera por um input do usuario
 Call ReadChar
 
-;decide a resposta referente ‡ tecla pressionada
+;decide a resposta referente √† tecla pressionada
 call resposta_entrada
 
 
@@ -356,14 +357,14 @@ controles_state PROC
 pushfd
 Call Clrscr
 
-;Coloca o ponteiro no comeÁo da tela
+;Coloca o ponteiro no come√ßo da tela
 mov dh,0
 mov dl,0d
 Call Gotoxy
 
 Call write_title
 
-;Coloca o ponteiro em uma posiÁ„o especifica para escrever as instruÁıes
+;Coloca o ponteiro em uma posi√ß√£o especifica para escrever as instru√ß√µes
 mov dh,11
 mov dl,16d
 Call Gotoxy
@@ -373,10 +374,10 @@ Call Gotoxy
 mWrite<"Use as teclas < e > para trocar a EG selecionada">
 mov dh,13
 Call Gotoxy
-mWrite<"Ao final de cada fase, vocÍ pode salvar sua Epicness">
+mWrite<"Ao final de cada fase, voc√™ pode salvar sua Epicness">
 
 
-;Coloca o ponteiro em uma posiÁ„o especifica para escrever as instruÁıes
+;Coloca o ponteiro em uma posi√ß√£o especifica para escrever as instru√ß√µes
 mov dh,24
 mov dl,0d
 Call Gotoxy
@@ -403,11 +404,11 @@ egendary_logs_state PROC USES eax ecx edx
 pushfd
 call Clrscr
 
-;abre o arquivo em que as pontuaÁıes est„o salvas
+;abre o arquivo em que as pontua√ß√µes est√£o salvas
 mov edx, OFFSET pontuacoes
 Call OpenInputFile
 
-;grava tudo que est· no arquivo em um local da memÛria
+;grava tudo que est√° no arquivo em um local da mem√≥ria
 mov edx, OFFSET buffer
 mov ecx,100
 Call ReadFromFile
@@ -423,12 +424,12 @@ colocacao:
 	je listaTerminada
 	cmp ecx,20
 	je listaTerminada
-	;numero da colocaÁ„o
+	;numero da coloca√ß√£o
 	mov eax,ecx
 	call WriteDec
-	mWrite<"∫ - ">
+	mWrite<"¬∫ - ">
 	inc ecx
-		;nome e pontuaÁ„o do jogador
+		;nome e pontua√ß√£o do jogador
 		pontos:
 		mov al,[edx]
 		cmp al,'/'
@@ -444,7 +445,7 @@ colocacao:
 jmp colocacao
 
 listaTerminada:
-;Coloca o ponteiro em uma posiÁ„o especifica para escrever as instruÁıes
+;Coloca o ponteiro em uma posi√ß√£o especifica para escrever as instru√ß√µes
 mov dh,24
 mov dl,0d
 Call Gotoxy
@@ -470,14 +471,14 @@ desenvolvimento_state PROC
 pushfd
 Call Clrscr
 
-;Coloca o ponteiro no comeÁo da tela
+;Coloca o ponteiro no come√ßo da tela
 mov dh,0
 mov dl,0d
 Call Gotoxy
 
 Call write_title
 
-;Coloca o ponteiro em uma posiÁ„o especifica para escrever as instruÁıes
+;Coloca o ponteiro em uma posi√ß√£o especifica para escrever as instru√ß√µes
 mov dh,11
 mov dl,16d
 Call Gotoxy
@@ -490,7 +491,7 @@ Call Gotoxy
 mWrite<"Lucas Yamanaka, programador tier +9000">
 
 
-;Coloca o ponteiro em uma posiÁ„o especifica para escrever as instruÁıes
+;Coloca o ponteiro em uma posi√ß√£o especifica para escrever as instru√ß√µes
 mov dh,24
 mov dl,0d
 Call Gotoxy
@@ -507,7 +508,7 @@ desenvolvimento_state ENDP
 
 ;-------------------------------------------------------
 write_title PROC USES eax ebx
-; Esse procedimento escreve o titulo Èpico do jogo de 
+; Esse procedimento escreve o titulo √©pico do jogo de 
 ; uma forma legal
 ;
 ;AUTOR: THIAGO FARIA e LUCAS Y
@@ -858,12 +859,12 @@ je voltarMenu
 ;se apertou para cima
 cmp ah,cima
 jne paraBaixo
-mov al, EGescolhida	; posiÁ„o qualquer pra testar, depois entender como funciona isso com o nicolas
-mov ebx, 0	; codigo de colis„o para colis„o para cima
+mov al, EGescolhida	; posi√ß√£o qualquer pra testar, depois entender como funciona isso com o nicolas
+mov ebx, 0	; codigo de colis√£o para colis√£o para cima
 Call VerifyCollision
-;testa se a colis„o realmente ocorreu e trata a colis„o
+;testa se a colis√£o realmente ocorreu e trata a colis√£o
 cmp edx,0
-je ToTheEgend	; se n„o teve colis„o ele movimenta
+je ToTheEgend	; se n√£o teve colis√£o ele movimenta
 jmp finalizar
 
 
@@ -871,36 +872,36 @@ jmp finalizar
 paraBaixo:
 cmp ah,baixo
 jne paraEsquerda
-mov al, EGescolhida	; posiÁ„o qualquer pra testar, depois entender como funciona isso com o nicolas
-mov ebx, 1	; codigo de colis„o para colis„o para baixo
+mov al, EGescolhida	; posi√ß√£o qualquer pra testar, depois entender como funciona isso com o nicolas
+mov ebx, 1	; codigo de colis√£o para colis√£o para baixo
 Call VerifyCollision
-;testa se a colis„o realmente ocorreu e trata a colis„o
+;testa se a colis√£o realmente ocorreu e trata a colis√£o
 cmp edx,0
-je ToTheEgend	; se n„o teve colis„o ele movimenta
+je ToTheEgend	; se n√£o teve colis√£o ele movimenta
 jmp finalizar
 
 ;se apertou para esquerda
 paraEsquerda:
 cmp ah,esquerda
 jne paraDireita
-mov al, EGescolhida		; posiÁ„o qualquer pra testar, depois entender como funciona isso com o nicolas
-mov ebx, 2	; codigo de colis„o para colis„o para a esquerda
+mov al, EGescolhida		; posi√ß√£o qualquer pra testar, depois entender como funciona isso com o nicolas
+mov ebx, 2	; codigo de colis√£o para colis√£o para a esquerda
 Call VerifyCollision
-;testa se a colis„o realmente ocorreu e trata a colis„o
+;testa se a colis√£o realmente ocorreu e trata a colis√£o
 cmp edx,0
-je ToTheEgend	; se n„o teve colis„o ele movimenta
+je ToTheEgend	; se n√£o teve colis√£o ele movimenta
 jmp finalizar
 
 ;se apertou para direita
 paraDireita:
 cmp ah,direita
 jne trocaEG
-mov al, EGescolhida	; posiÁ„o qualquer pra testar, depois entender como funciona isso com o nicolas
-mov ebx, 3	; codigo de colis„o para colis„o para a direita
+mov al, EGescolhida	; posi√ß√£o qualquer pra testar, depois entender como funciona isso com o nicolas
+mov ebx, 3	; codigo de colis√£o para colis√£o para a direita
 Call VerifyCollision
-;testa se a colis„o realmente ocorreu e trata a colis„o
+;testa se a colis√£o realmente ocorreu e trata a colis√£o
 cmp edx,0
-je ToTheEgend	; se n„o teve colis„o ele movimenta
+je ToTheEgend	; se n√£o teve colis√£o ele movimenta
 jmp finalizar
 
 
@@ -1332,13 +1333,13 @@ GetEgendCoords ENDP
 ExibirDicas PROC uses EDX ECX
 ;
 ; Mostra as dicas que o jogador comprou, afinal, nem
-; todos s„o Egend o bastante para pssar o jogo sem ajuda 
+; todos s√£o Egend o bastante para pssar o jogo sem ajuda 
 ; Autor: Thiago Faria
 ;------------------------------------------------------
 ;contador de dicas escritas
 mov ecx,0
 
-;contador de linhas puladas, comeÁa na linha dois 
+;contador de linhas puladas, come√ßa na linha dois 
 mov bh,7
 
 
@@ -1368,7 +1369,7 @@ mov al,";"
 cmp [edx],al
 je dicafim
 
-;pular linha por motivos estÈticos
+;pular linha por motivos est√©ticos
 mov al,"/"
 cmp	[edx],al
 jne continuaLinha
@@ -1409,11 +1410,11 @@ add al,48
 mov [edx],al
 
 
-;abre o arquivo em que as pontuaÁıes est„o salvas
+;abre o arquivo em que as pontua√ß√µes est√£o salvas
 mov edx, OFFSET dicas
 Call OpenInputFile
 push eax
-;grava tudo que est· no arquivo em um local da memÛria
+;grava tudo que est√° no arquivo em um local da mem√≥ria
 mov edx, OFFSET buffer
 mov ecx,100
 Call ReadFromFile
@@ -1618,7 +1619,7 @@ VerifyEGENDNESS ENDP
 ;------------------------------------------------------
 ExibirPontuacao PROC USES EAX
 ;
-; Exibe a pontuaÁ„o que TioGaedes deu a vocÍ  
+; Exibe a pontua√ß√£o que TioGaedes deu a voc√™  
 ; AUTOR: THIAGO FARIA 
 ;------------------------------------------------------
 
@@ -1751,15 +1752,15 @@ ExibirMovimentos ENDP
 ;------------------------------------------------------
 SalvarPontuacao PROC USES  eax ebx ecx edx esi
 ;
-; Salva a pontuaÁ„o que TioGaedes deu a vocÍ  
+; Salva a pontua√ß√£o que TioGaedes deu a voc√™  
 ; AUTOR: THIAGO FARIA 
 ;------------------------------------------------------
 
-;abre o arquivo em que as pontuaÁıes est„o salvas
+;abre o arquivo em que as pontua√ß√µes est√£o salvas
 mov edx, OFFSET pontuacoes
 Call OpenInputFile
 
-;grava tudo que est· no arquivo em um local da memÛria
+;grava tudo que est√° no arquivo em um local da mem√≥ria
 mov edx, OFFSET buffer
 mov ecx,280
 Call ReadFromFile
@@ -1791,7 +1792,7 @@ mov [ecx],bl
 add ecx,2
 add edx,2
 
-;carrega a pontuaÁ„o como uma lista de inteiros
+;carrega a pontua√ß√£o como uma lista de inteiros
 Call ConverteInt
 mov [esi],ebx
 add esi,4
@@ -1799,10 +1800,10 @@ inc edx
 jmp copiando
 
 ordenar:
-; agora È inserido a pontuaÁ„o atual do jogador no final do vetor, e depois ordena
+; agora √© inserido a pontua√ß√£o atual do jogador no final do vetor, e depois ordena
 mov ebx, pontuacao
 mov [esi],ebx
-;os valores aqui s„o sÛ temporarios
+;os valores aqui s√£o s√≥ temporarios
 mov bl,"T"
 mov [ecx],bl
 inc ecx
@@ -1830,7 +1831,7 @@ SalvarPontuacao ENDP
 ;------------------------------------------------------
 ConverteInt PROC USES eax ecx esi
 ;
-; Le uma string atÈ um "/" e a transforma em um inteiro  
+; Le uma string at√© um "/" e a transforma em um inteiro  
 ; Recebe: EDX=OFFSET da string
 ; Retorna: EBX = inteiro convertido, EDX aponta para o final do inteiro
 ; AUTOR: THIAGO FARIA e LUCAS Y
@@ -1840,7 +1841,7 @@ mov eax,1		;multiplicador
 mov ecx,0
 mov ebx, 0
 push eax
-;anda no vetor atÈ chegar em um "/"
+;anda no vetor at√© chegar em um "/"
 mov al,"/"
 andando:
 cmp [edx],al
@@ -1852,14 +1853,14 @@ jmp andando
 andado:
 pop eax
 push edx
-;aqui comeÁa a convers„o propriamente dita
+;aqui come√ßa a convers√£o propriamente dita
 convertendo:
 dec edx
 mov esi,[edx]
 shl esi, 24
 shr esi, 24
 sub esi, 48
-;agora comeÁam as multiplicaÁıes
+;agora come√ßam as multiplica√ß√µes
 push edx	
 push eax
 mul esi
@@ -1882,7 +1883,7 @@ ConverteInt ENDP
 ;------------------------------------------------------
 TrocaPosicoes PROC USES eax ebx
 ;
-; Inverte as posiÁıes de duas iniciais e chaves (pontuaÁıes)
+; Inverte as posi√ß√µes de duas iniciais e chaves (pontua√ß√µes)
 ; Recebe: ecx= OFFSET iniciais, esi= OFFSET chaves
 ; AUTOR: THIAGO FARIA 
 ;------------------------------------------------------
@@ -1928,7 +1929,7 @@ IntParaString PROC USES edi,
 ; Escreve inteiro em uma string
 ; em ASCII decimal.
 ; Receives: EAX = o inteiro e buffer_B um ponteiro a uma string que tem 12 posicoes
-; Returns:  EDX = o endereÁo p/ a string, ECX = o tamanho da string
+; Returns:  EDX = o endere√ßo p/ a string, ECX = o tamanho da string
 ;-----------------------------------------------------
 WI_Bufsize = 12
 true  =   1
@@ -2001,7 +2002,7 @@ mov ax, bx
 call SetTextColor
 
 mGotoxy 5,17
-mWrite "Preesione T para ir para a proxima fase ou Enter para salvar sua pontuaÁ„o"
+mWrite "Preesione T para ir para a proxima fase ou Enter para salvar sua pontua√ß√£o"
 Call ReadChar
 
 cmp al,pedidoDica
@@ -2024,3 +2025,5 @@ voltaJogo:
 
 ret
 EGEND_state ENDP
+
+END main
