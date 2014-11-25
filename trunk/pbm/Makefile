@@ -1,10 +1,10 @@
-CC=cc
+CC=cc -m32
 CFLAGS=-c -Wall
-LDFLAGS=
-SOURCES=filtro_linux.c
+LDFLAGS=-m32
+SOURCES=filtro_unix.c
 OBJECTS=$(SOURCES:.c=.o)
 TESTS=in/*.pnm
-EXEC=./filtro_linux 
+EXEC=./filtro_unix
 
 all: $(SOURCES) $(EXEC) test 
 
