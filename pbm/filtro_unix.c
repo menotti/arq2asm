@@ -8,7 +8,6 @@ int main() {
 	char filetype[256], *ptri, *ptro, *img;
 	int r, g, b, m;
 	int width, height, depth, pixels;
-	start = clock();
 
 	fscanf(stdin, "%s\n", filetype);
 	fprintf(stdout, "%s\n", filetype);
@@ -18,12 +17,16 @@ int main() {
 
 	pixels = width * height;
 	ptri = ptro = img = (char *) malloc(pixels * 3);
+	fprintf(stderr, "tamanho = %d x %d = %d pixels\n", width, height, pixels);
 	
 	fread(img, 3, pixels, stdin);
+
+	start = clock();
 	for (int i = 0; i < pixels; i++) {
 		r = (int) *ptri++;
 		g = (int) *ptri++;
 		b = (int) *ptri++;
+		//m = (r + (g << 1) + b) >> 2;
 		asm("movl %1, %%eax\n"
 		    "shll $1, %%eax\n"
 		    "addl %0, %%eax\n"
@@ -33,16 +36,16 @@ int main() {
 		     : "=r"(m)
 		     : "r"(r), "r"(g), "r"(b)
 		     : "eax");
-		//m = (r + (g << 1) + b) >> 2;
 		*ptro++ = (char)m;
 		*ptro++ = (char)m;
 		*ptro++ = (char)m;
 	}
+	end = clock();
+
 	fwrite(img, 3, pixels, stdout);
 
 	free(img);
 
-	end = clock();
 	cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
 	fprintf(stderr, "tempo = %f segundos\n", cpu_time_used);
 	return 0;
